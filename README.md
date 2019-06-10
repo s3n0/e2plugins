@@ -9,10 +9,11 @@
        wget -O /tmp/x/master.zip --no-check-certificate https://github.com/s3n0/e2plugins/archive/master.zip
        unzip /tmp/x/master.zip 'e2plugins-master/EpgDownloadReplace/*' -d /tmp/x
        mv -f /tmp/x/e2plugins-master/EpgDownloadReplace /usr/lib/enigma2/python/Plugins/Extensions
-       init 4 && init 3       # or simple:   reboot
+       rm -fr /tmp/x
+       init 4 && init 3         # or simple:   reboot
    ```
    > - How-To remove the plugin EpgDownloadReplace:
    ``` 
        rm -fr /usr/lib/enigma2/python/Plugins/Extensions/EpgDownloadReplace
-       init 4 && init 3       # or simple:   reboot
+       init 4 && init 3         # or simple:   reboot
    ```
