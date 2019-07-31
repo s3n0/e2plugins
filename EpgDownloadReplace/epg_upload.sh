@@ -4,7 +4,7 @@
 log_file="/tmp/epg_upload.log"
 local_file="/etc/enigma2/epg.dat"
 
-# online server to store the epg file:
+# online web-server (ftp connection) to store the epg.dat file:
 online_file="ftp://example-site.com/files/epg.dat"
 xuser="any_username"
 xpass="any_password"
