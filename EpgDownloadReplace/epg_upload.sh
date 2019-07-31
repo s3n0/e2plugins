@@ -26,5 +26,5 @@ then
 	curl --insecure --ftp-ssl -u $xuser:$xpass -T $local_file $online_file
 	echo `date`": $local_file file was uploaded" >> $log_file
 else
-	echo `date`": $local_file file for upload was not found" >> $log_file
+	echo `date`": $local_file file to upload is too small or not found" >> $log_file
 fi
