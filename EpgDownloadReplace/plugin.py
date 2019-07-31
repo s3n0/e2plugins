@@ -69,7 +69,7 @@ class pluginConfigurationMenu(Screen, ConfigListScreen):
         self['txt_green']   = StaticText(_('Save & Exit'))
         self['txt_red']     = StaticText(_('Exit'))
         #self['txt_yellow']  = StaticText(_('Update plugin'))
-        self['txt_blue']    = StaticText(_('Replace now'))
+        self['txt_blue']    = StaticText(_('Launch now'))
         self['version_txt'] = Label('EPG Download & Replace - v1.0')
         self['author_txt']  = Label('(https://github.com/s3n0/)')
         
