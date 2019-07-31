@@ -1,9 +1,11 @@
 #!/bin/sh
 
-
+# enigma2 folders:
 log_file="/tmp/epg_upload.log"
 local_file="/etc/enigma2/epg.dat"
-online_file="ftp://example-site.com/files/epg.dat"     # ...check username and password below, for FTP connection...
+
+# online server to store the epg file:
+online_file="ftp://example-site.com/files/epg.dat"
 xuser="any_username"
 xpass="any_password"
 
