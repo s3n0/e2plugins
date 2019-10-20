@@ -10,8 +10,8 @@ from Components.ActionMap import ActionMap
 
 from Plugins.Plugin import PluginDescriptor
 from Components.config import config
-from Components.EpgLoadSave import EpgSaveMsg               # save or load EPG data
-from Components.EpgLoadSave import EpgDeleteMsg             # flush EPG data (delete)
+#from Components.EpgLoadSave import EpgSaveMsg               # save or load EPG data
+#from Components.EpgLoadSave import EpgDeleteMsg             # flush EPG data (delete)
 from enigma import eEPGCache
 
 from time import localtime, strftime, strptime, time        # time.localtime() = current date and time in local country ; time.strftime("format", <time as 9-tuple object>) = return date and time formated as string ; # time.strptime("<str>-type date and time", "formating") = returning <type 'time.struct_time'> (9-index <tuple> object type)
@@ -28,7 +28,7 @@ config.plugins.epgdownloadreplace  =  ConfigSubsection()
 config.plugins.epgdownloadreplace.enabled       = ConfigYesNo(default=False)
 config.plugins.epgdownloadreplace.scheduledtime = ConfigClock(default=0)         # the output value is a list, for example: [17, 59] - it means [hour, min]
 config.plugins.epgdownloadreplace.scheduleddays = ConfigInteger(default=3, limits=(1, 15))
-config.plugins.epgdownloadreplace.epgonlinefile = ConfigText(default='http://example-site.com/files/epg.dat')
+config.plugins.epgdownloadreplace.epgonlinefile = ConfigText(default='http://example.site.com/folder/epg.dat')
 
 # https://github.com/openatv/enigma2/blob/69bc3dfbf28d95aff4198924a944bf80367aa750/data/menu.xml
 # https://github.com/openatv/enigma2/blob/c38f72b1379438489c82031ace100a137bd44c74/lib/python/Components/EpgLoadSave.py
@@ -148,19 +148,19 @@ class pluginConfigurationMenu(Screen, ConfigListScreen):
 def epgSave():
     epgcache = eEPGCache.getInstance()
     epgcache.save()
-    print('DEBUGLINE - epgSave')
+    print('DEBUGLINE - epgSave was executed')
 
 def epgLoad():
     epgcache = eEPGCache.getInstance()
     epgcache.load()
-    print('DEBUGLINE - epgLoad')
+    print('DEBUGLINE - epgLoad was executed')
 
 def epgDelete():
     if os_path.exists(config.misc.epgcache_filename.value):
         os_remove(config.misc.epgcache_filename.value)      
     epgcache = eEPGCache.getInstance()
     epgcache.flushEPG()
-    print('DEBUGLINE - epgDelete')
+    print('DEBUGLINE - epgDelete was executed')
 
 
 ###############
