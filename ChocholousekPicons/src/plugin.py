@@ -620,9 +620,9 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 class piconsUpdateJobScreen(Screen):
 
     if sizemaxX > 1900:   # skin Full-HD or higher
-        logfontsize = "23"
+        logfontsize = "26"
     else:                 # skin HD ready or lower
-        logfontsize = "17"
+        logfontsize = "18"
 
     skin = '''
         <screen name="piconsUpdateJobScreen" position="center,center" size="''' + str(sizemaxX - 80) + ',' + str(sizemaxY - 80) + '''" title="picons update in progress" flags="wfNoBorder" backgroundColor="#22000000">
