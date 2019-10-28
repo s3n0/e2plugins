@@ -70,19 +70,19 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget name="version_txt" position="0,0" size="1100,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="author_txt"  position="0,60" size="1100,40" font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
-            <widget name="config"      position="center,100" size="1000,600" font="Regular;32" itemHeight="34" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
+            <widget name="config"      position="center,100" size="1000,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
 
             <widget name="previewImage" position="100,350" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="210,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/yellow.png" position="480,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="200,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/yellow.png" position="470,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="775,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="65,755"  size="250,46" halign="left" valign="center" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="250,755" size="250,46" halign="left" valign="center" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="520,755" size="250,46" halign="left" valign="center" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_blue"   position="815,755" size="260,46" halign="left" valign="center" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_red"    position="65,755"  size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_green"  position="240,755" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_yellow" position="510,755" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_blue"   position="815,755" size="260,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
@@ -96,13 +96,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget name="previewImage" position="80,230" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="5,560"   size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="130,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/yellow.png" position="300,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="125,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/yellow.png" position="295,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="475,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
 
             <widget render="Label" source="txt_red"    position="45,560"  size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="170,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="340,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_green"  position="165,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_yellow" position="335,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
             <widget render="Label" source="txt_blue"   position="515,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
         </screen>'''
 
@@ -531,10 +531,10 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
             <widget name="title_txt" position="center,50" size="350,60" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
 
-            <widget name="config" position="center,120" size="350,700" font="Regular;32" itemHeight="32" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
+            <widget name="config" position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
 
             <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <widget render="Label" source="txt_green" position="65,854" size="250,46" halign="left" valign="center" font="Regular;32" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green" position="65,854" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
