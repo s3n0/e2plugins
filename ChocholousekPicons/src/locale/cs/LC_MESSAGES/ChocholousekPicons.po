@@ -14,13 +14,13 @@ msgstr ""
 "X-Generator: Poedit 2.2.4\n"
 
 msgid "Save & Exit"
-msgstr "Uložit & ukončit"
+msgstr "Uložit"
 
 msgid "Update plugin"
-msgstr "Aktualizovat plugin"
+msgstr "Aktualizovat"
 
 msgid "Update picons"
-msgstr "Stáhnout picony"
+msgstr "Picony"
 
 msgid "Picon folder"
 msgstr "Složka pro picony"
@@ -180,3 +180,15 @@ msgstr "Došlo k chybám!"
 
 msgid "Done !"
 msgstr "Konec!"
+
+msgid "Exit"
+msgstr "Ukončit"
+
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Plugin byl aktualizován na novou verzi.\n"
+"Pro dokončení instalace je třeba restart.\n"
+"Přejete si tak učinit nyní?"
