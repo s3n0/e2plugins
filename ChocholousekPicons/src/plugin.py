@@ -72,7 +72,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
             <widget name="config"      position="center,100" size="1000,600" font="Regular;32" itemHeight="34" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
 
-            <widget name="previewImage" position="100,350" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="previewImage" position="center,350" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="210,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
@@ -185,7 +185,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         #config.plugins.chocholousekpicons.satauto  = ConfigYesNo(default = False)
         config.plugins.chocholousekpicons.usersats = ConfigSet(default = ['23.5E','19.2E'] , choices = self.getAllSat() )
         config.plugins.chocholousekpicons.resolution = ConfigSelection(default = '220x132',
-                choices = [('50x30','50x30'), ('100x60','100x60'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300')]  )
+                choices = [('50x30','50x30'), ('96x64','96x64'), ('100x60','100x60'), ('132x46','132x46'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300')]  )
         config.plugins.chocholousekpicons.background = ConfigSelection(default = 'black',
                 choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]    )  # default='white' , choices=[('white', _('White')), ('black', _('Black')), ('transparent', _('Transparent')), ('transparentwhite', _('Transparent-White')), ('mirrorglass', _('Mirror-Glass')) ])      # !!!! ( _(s),s ) biela/white nenajde subor s pikonami v slovencine:)
 
