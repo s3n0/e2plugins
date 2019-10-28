@@ -390,8 +390,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     filename = '7za_sh4'
                 else:
                     filename = 'ERROR_-_UNKNOWN_CHIPSET_ARCHITECTURE'
-                #if not os_system('wget -q --no-check-certificate -O /usr/bin/7za "http://aion.webz.cz/ChocholousekPicons/%s" > /dev/null 2>&1' % filename):  # if no error received from os_system, then...
-                if downloadFile('http://aion.webz.cz/ChocholousekPicons/%s' % filename , '/usr/bin/7za'):
+                #if not os_system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % filename):  # if no error received from os_system, then...
+                if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s' % filename , '/usr/bin/7za'):
                     os_system('chmod 755 /usr/bin/7za')
                     if os_system('/usr/bin/7za'):                   # let's try to execute the binary file cleanly    # if some error number was received from the 7za executed binary file, then...
                         os_remove('/usr/bin/7za')                   # remove the binary file on error - because of a incorect binary file for the chipset architecture !!!
@@ -877,14 +877,14 @@ class piconsUpdateJobScreen(Screen):
 ###########################################################################
 
 
-def pluginUpdateCheck():
+def findHostnameAndNewPlugin():
     '''
-    return "" - if no new version was found online
-    return the hostname - if a new online version was found
+    return "" ----- if a new online version was not found
+    return URL ---- if a new online version was found
     '''
     global plugin_version_local, plugin_version_online
     url_lnk = ''
-    url_list = ['http://aion.webz.cz/ChocholousekPicons/', 'https://github.com/s3n0/e2plugins/tree/master/ChocholousekPicons/']        # pozor ! je dolezite zachovat na konci retazca vo web.adresach vzdy aj lomitko, pre dalsie korektne pouzivanie tohoto retazca v algoritme
+    url_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/', 'http://aion.webz.cz/ChocholousekPicons/']        # pozor ! je dolezite zachovat na konci retazca vo web.adresach vzdy aj lomitko, pre dalsie korektne pouzivanie tohoto retazca v algoritme
     for hostname in url_list:
         try:
             mycontext = ssl._create_unverified_context()
@@ -902,27 +902,21 @@ def pluginUpdateCheck():
 
 def pluginUpdateDo():
     '''
-    return True - if new version was successfull downloaded and installed
-    return False - if not successfull
+    return True ----- if a new version was successfull downloaded and installed
+    return False ---- if a new version was not found
     '''
     global plugin_version_local, plugin_version_online
-    url_host = pluginUpdateCheck()
+    url_host = findHostnameAndNewPlugin()
     if url_host:
         url_host = url_host + 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + '_all.ipk'
         dwn_file = '/tmp/' + url_host.split('/')[-1]
-        try:
-            mycontext = ssl._create_unverified_context()
-            url_hnd = urllib2.urlopen(url_host, context = mycontext)
-        except urllib2.URLError as err:
-            print('ERROR:%s - reading from URL:%s' % (err.reason, url_host)  )
-            return False
-        else:
-            with open(dwn_file , 'wb') as o_file:
-                o_file.write( url_hnd.read() )
+        if downloadFile(url_host, dwn_file):
             os_system("opkg install --force-reinstall %s > /dev/null 2>&1" % dwn_file)
             print('New plugin version was installed ! old ver.:%s , new ver.:%s' % (plugin_version_local, plugin_version_online)  )
             plugin_version_local = plugin_version_online
             return True
+        else:
+            return False
     else:
         print('New plugin version is not available - local ver.:%s , online ver.:%s' % (plugin_version_local, plugin_version_online)  )
         return False
