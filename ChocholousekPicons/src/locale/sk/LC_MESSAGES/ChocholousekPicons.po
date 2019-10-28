@@ -1,0 +1,182 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ChocholousekPicons\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-10-25 19:26+0200\n"
+"PO-Revision-Date: 2019-10-27 18:45+0100\n"
+"Last-Translator: s3n0 <https://github.com/s3n0>\n"
+"Language-Team: \n"
+"Language: cs_CZ\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 2.2.4\n"
+
+msgid "Save & Exit"
+msgstr "Uložiť & Ukončiť"
+
+msgid "Update plugin"
+msgstr "Aktualizovať plugin"
+
+msgid "Update picons"
+msgstr "Aktualizovať picony"
+
+msgid "Picon folder"
+msgstr "Zložka pre picony"
+
+msgid "User defined folder"
+msgstr "Zložka definovaná užívateľom"
+
+msgid "Include radio picons"
+msgstr "Zahrnúť picony rádií"
+
+msgid "Satellite positions"
+msgstr "Satelitné pozície"
+
+msgid "Select satellites:"
+msgstr "Výber satelitov:"
+
+msgid "Picon resolution"
+msgstr "Rozlíšenie picon"
+
+msgid "Picon background"
+msgstr "Pozadie picon"
+
+msgid "(user defined)"
+msgstr "(definované užívateľom)"
+
+msgid ""
+"Plugin version is up to date.\n"
+"\n"
+"Installed version: %s"
+msgstr ""
+"Verzia pluginu je aktuálna.\n"
+"\n"
+"Nainštalovaná verzia: %s"
+
+msgid ""
+"You have changed the plugin configuration.\n"
+"Do you want to save all changes now ?"
+msgstr ""
+"Zmenili ste konfiguráciu pluginu.\n"
+"Prejete si uložiť zmeny?"
+
+msgid ""
+"The 7-zip archiver was not found on your system.\n"
+"There is possible to update the 7-zip archiver now in two steps:\n"
+"\n"
+"(1) try to install via package manager \"opkg install p7zip\"\n"
+"...or...\n"
+"(2) try to download the binary file \"7za\" (standalone archiver) from the internet\n"
+"\n"
+"Do you want to try it now?"
+msgstr ""
+"Archivátor 7-zip nebol nájdený vo Vašom systéme.\n"
+"Inštaláciu je možné vykonať v dvoch krokoch:\n"
+"\n"
+"(1) Pokus o nainštalovanie balíčka z repozitáru (\"opkg install p7zip\")\n"
+"...alebo...\n"
+"(2) Pokus o stiahnutie binárneho súboru \"7za\" z internetu\n"
+"Chcete skúsiť nainštalovať 7-zip teraz?"
+
+msgid ""
+"The installation of the 7-zip archiver from the Enigma2\n"
+"feed server was successful."
+msgstr ""
+"Inštalácia 7-zip archivátora z Enigma2\n"
+"repozitáru prebehla úspešne."
+
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr "Inštalácia binárneho súboru \"7za\" (7-zip) prebehla úspešne."
+
+msgid "Installation of 7-zip archiver failed!"
+msgstr "Nepodarilo sa nainštalovať 7-zip archivátor!"
+
+msgid "Internet connection is not available !"
+msgstr "Pripojenie k internetu nie je k dispozícii!"
+
+msgid "Internet connection is OK."
+msgstr "Pripojenie k internetu je OK."
+
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Neboli nájdené žiadne súbory \"userbouquet\"!\n"
+"Skontrolujte prítomnosť súborov \"userbouquet\" v zložke \"/etc/enigma2\"."
+
+msgid "Preparing a list of picons from the picon directory on the local disk..."
+msgstr "Príprava zoznamu picon z lokálneho disku..."
+
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Príprava zoznamu picon zo súborov \"userbouquet\"..."
+
+msgid "...done."
+msgstr "...hotovo."
+
+msgid "Deleting unneccessary picons from local disk..."
+msgstr "Odstraňovanie nepotrebných picon z lokálneho disku..."
+
+msgid "...%s picons deleted."
+msgstr "...%s picon bolo odstránených."
+
+msgid "The process started..."
+msgstr "Proces začal..." 
+
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(sťahovanie zoznamov + rozbaľovanie všetkých potrebných picon)"
+
+msgid "...the process is complete."
+msgstr "...proces skončil."
+
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Po aktualizácii picon bude zrejme potrebné zreštartovať Enigmu (GUI)."
+
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(%s pridaných / %s zmenených / %s odstránených)"
+
+msgid "No picons added or changed"
+msgstr "Žiadné picony neboli pridané alebo zmenené"
+
+msgid "Download ID for file %s was not found!"
+msgstr "ID pre stiahnutie súboru %s sa nepodarilo vyhladať!"
+
+msgid "Trying download the file archive... %s"
+msgstr "Pokus o stiahnutie súboru s archívom... %s"
+
+msgid "...file download failed !"
+msgstr "...súbor se nepodarilo stiahnúť!"
+
+msgid ""
+"Download failed!\n"
+"File: %s\n"
+"URL: %s"
+msgstr ""
+"Chyba pri sťahovaní!\n"
+"Súbor: %s\n"
+"URL: %s"
+
+msgid "...file download successful."
+msgstr "...súbor bol úspešne stiahnutý."
+
+msgid "Browse the contents of the downloaded archive file."
+msgstr "Prechádzanie obsahu stiahnutého súboru archívu."
+
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Chyba! Stiahnutý archiv neobsahuje žiadne picony!"
+
+msgid "Preparing picon list for extracting (missing files and files of different sizes)..."
+msgstr "Príprava zoznamu picon pre rozbalenie (súbory chybajúce a s odlišnou veľkosťou)..."
+
+msgid "...%s picons was extracted from the archive."
+msgstr "...%s picon bolo rozbalených z archívu."
+
+msgid "Extracting files from the archive..."
+msgstr "Rozbaľovanie súborov z archivu..."
+
+msgid "Some errors has occurred !"
+msgstr "Došlo k chybám !"
+
+msgid "Done !"
+msgstr "Hotovo !"
