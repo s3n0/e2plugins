@@ -549,7 +549,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
     def __init__(self, session, satList):
 
-        self.allSatellites = satList
+        self.allSat = satList
 
         Screen.__init__(self, session)
 
@@ -597,7 +597,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
     def showListMenu(self):
         self.list = []
-        for sat in self.allSatellites:
+        for sat in self.allSat:
             if sat in config.plugins.chocholousekpicons.usersats.value:
                 self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=True)  ) )
             else:
@@ -637,7 +637,7 @@ class piconsUpdateJobScreen(Screen):
         Screen.__init__(self, session)
         #self.session = session            # toto netreba, nakolko presne toto vykonava uz aj Screen.__init__
 
-        self['logWindow'] = ScrollLabel('LOG:\n\n')
+        self['logWindow'] = ScrollLabel('LOG:\n')
         self['logWindow'].scrollbarmode = "showOnDemand"
         
         self['actions'] = ActionMap( ['SetupActions','DirectionActions'], {
@@ -689,7 +689,7 @@ class piconsUpdateJobScreen(Screen):
         # 3b) Vytvorí sa zoznam z picon uložených na disku (v internej flash pamäti set top boxu alebo na externom USB ci HDD) - včetne atributu veľkosti u týchto súborov
         self.writeLog(_('Preparing a list of picons from the picon directory on the local disk...'))
         self.piconCodesInHDD = {}
-        dir_list = glob.glob(self.piconDIR + '/*.png') # osetrim tymto prvym krokom neexistujuce PNG subory v adresary, aby sa predislo vyvolaniu vynimky pri pouziti metody listdir, a tiez tymto docielim to, aby sa ignorovali aj pripadne *.txt alebo dalsie formaty suborov, ktore je nutne ignorovat v tomto adresari
+        dir_list = glob.glob(self.piconDIR + '/*.png')
         if dir_list:
             for path_N_file in dir_list:
                 self.piconCodesInHDD.update( { path_N_file.split("/")[-1].split(".")[0]  :   int(os_path.getsize(path_N_file))  } )     # os.stat.st_time('/etc/enigma2/'+filename)
@@ -702,11 +702,7 @@ class piconsUpdateJobScreen(Screen):
             #with open(bq_file) as f:
             #    self.piconCodesInBouquets += f.read()
         self.piconCodesInBouquets = re.findall('.*#SERVICE\s([0-9a-fA-F]+_0_[0-9a-fA-F_]+0_0_0).*\n*', self.piconCodesInBouquets.replace(":","_") )
-        #--- povodne som pouzival pomalsi a komplikovanejsi regex - cely proces spomaloval "match" s otaznikom ".*?" alebo aj niektore flags (re.S + re.M) a tiez som pouzival vtedy 2x po sebe spomaleny "re.sub" ---
-        #self.piconCodesInBouquets = re.sub(ur'#DESCR.*|#NAME.*|#SERVICE 1:64.*', '', self.piconCodesInBouquets, flags=re.M)     # remove a unneccesary lines
-        #self.piconCodesInBouquets = re.sub(r'.*?#SERVICE ([0-9a-fA-F]+:)(0:)([:0-9a-fA-F]+)(:0:0:0).*?\n+', r'1_\2\3\4;', self.piconCodesInBouquets, flags = re.S).replace(':','_').split(';')   # get the service reference codes only
-        #self.piconCodesInBouquets = [s for s in self.piconCodesInBouquets if s != '']
-        self.piconCodesInBouquets = list(set(self.piconCodesInBouquets))      # a small trick to remove duplicated entries ---- converting to <set> and then again back to the <list>
+        self.piconCodesInBouquets = list(set(self.piconCodesInBouquets))          # remove duplicated entries --- converting to <set> and then again back to the <list>
         self.writeLog(_('...done.'))
 
         # 5) Vymažú sa neexistujúce picon-súbory na disku v set-top-box-e, ktoré sú zbytočné nakoľko neexistujú v žiadnom userbouquet súbore a teda na disku budú iba zavadziať
@@ -720,15 +716,15 @@ class piconsUpdateJobScreen(Screen):
         self.writeLog(_('...%s picons deleted.') % piconResults['removed'] )
 
         # 6) Pripraví sa zoznam názvov archívov .7z pre sťahovanie z internetu - podľa konfigurácie pluginu
-        self.piconArchivesToDownload = []
+        self.filesForDownload = []
         for sat in config.plugins.chocholousekpicons.usersats.value:            # example:  ['19.2E','23.5E']
-            self.piconArchivesToDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , sat)   )
+            self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , sat)   )
 
         # 7) Následovne v cykle sa budú sťahovať z internetu všetky používateľom zafajknuté archívy s piconami a spracovávať po jednom (t.j. pre viacero družíc, postupne jeden archív a potom stiahnem ďalší a znova spracujem)
         self.writeLog(_('The process started...') + _('(downloading and extracting all necessary picons)')  )
         self.writeLog('#' * 40)
-        for count, fname in enumerate(self.piconArchivesToDownload, 1):
-            s = ' %s / %s ' % (count, len(self.piconArchivesToDownload))
+        for count, fname in enumerate(self.filesForDownload, 1):
+            s = ' %s / %s ' % (count, len(self.filesForDownload))
             self.writeLog('-' * 16 + s.ljust(20,'-'))
             self.proceedArchiveFile(fname)
             #self.writeLog('-' * 40)
