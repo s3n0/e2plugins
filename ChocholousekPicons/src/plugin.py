@@ -4,34 +4,11 @@
 ###########################################################################
 
 ###########################################################################
+from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
-from Plugins.Plugin import PluginDescriptor
-from Screens.Standby import TryQuitMainloop, inStandby      # TryQuitMainLoop for the enigma2 gui restart # inStandby to detect if enigma2 is in Standby mode
-import urllib2
-import ssl                                                  # SSL modul vyuzivam pre neverifikovane pripojenia s modulom urllib2, z dovodu problemov so SSL certifikatmi na google.drive
-ssl._create_default_https_context = ssl._create_unverified_context        # nastavenie bez verifikacie SSL-klucom ako defaultne, pre vsetky otvorene HTTPS web-stranky
+from Screens.Standby import TryQuitMainloop, inStandby                      # TryQuitMainLoop for the enigma2 gui restart # inStandby to detect if enigma2 is in Standby mode
 ###########################################################################
-from enigma import ePicLoad, eActionMap, eTimer, eEnv       # eEnv sluzi pre ziskavanie premennych z Enigmy (systemove dresare v systeme napriklad)
-###########################################################################
-from enigma import getDesktop
-sizemaxY = getDesktop(0).size().height()
-sizemaxX = getDesktop(0).size().width()
-###########################################################################
-import threading
-import re                              # reg-ex modul pre Python jazyk
-import glob                            # jednoduchy modul pre ziskavanie kompletneho zoznamu suborov z urceneho adresara, vratene kompletnej cesty
-###########################################################################
-from os import system as os_system, path as os_path, makedirs as os_makedirs, remove as os_remove, listdir as os_listdir
-from sys import maxint                 # maximum value of the integer type - used on eActionMap binding the maximum priority (max. integer value is necessary)
-from commands import getstatusoutput   # sluzi na spustenie prikazu v command-line shell, ale s preberanim celeho standardneho vystupu do premennej pythonu
-from datetime import datetime          # pouzivam predovsetkym ako:  datetime.now().replace(microsecond=0)  -  vracia UnixTime bez mikrosekund, efektivnejsie je vsak namiesto toho pouzit rychlejsi kod:  int(time.time())
-#from time import mktime               # pouzivam na konverziu: datetime <object type> TO unixtime <integer type>
-#from time import time
-from time import sleep
-###########################################################################
-from Components.Harddisk import harddiskmanager      # vyuzivam vo funkciach umiestnene dolu v kode - pre vyhladanie dostupnych zloziek + nejakych .PNG picon-suborov v set top boxe
-#from Components.Sources.CurrentService import CurrentService
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.ScrollLabel import ScrollLabel
@@ -43,8 +20,28 @@ from Components.Sources.StaticText import StaticText
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import config, configfile, getConfigListEntry, ConfigDirectory, ConfigSubsection, ConfigSubList, ConfigEnableDisable, ConfigSelection, ConfigYesNo, ConfigSet, ConfigText
 ###########################################################################
-#from Tools.Directories import resolveFilename, SCOPE_PLUGINS
-#PLUGIN_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/ChocholousekPicons/')
+import urllib2
+import ssl
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass                                                                    # Legacy Python version (for example v2.7.2) that doesn't verify HTTPS certificates by default
+else:  
+    ssl._create_default_https_context = _create_unverified_https_context    # Handle target environment that doesn't support HTTPS verification
+###########################################################################
+import threading
+import re
+import glob
+###########################################################################
+from os import system as os_system, path as os_path, makedirs as os_makedirs, remove as os_remove, listdir as os_listdir
+from commands import getstatusoutput
+from datetime import datetime
+from time import sleep
+###########################################################################
+from enigma import ePicLoad, eActionMap, eTimer, eEnv, getDesktop
+sizemaxY = getDesktop(0).size().height()
+sizemaxX = getDesktop(0).size().width()
+###########################################################################
 from . import _, PLUGIN_PATH
 ###########################################################################
 
@@ -52,7 +49,7 @@ from . import _, PLUGIN_PATH
 
 session = None
 
-plugin_version_local  = '0.0.000000'        # napriklad:  '1.0.180625'
+plugin_version_local  = '0.0.000000'
 plugin_version_online = '0.0.000000'
 
 
@@ -79,43 +76,42 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="470,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="775,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="65,755"  size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="240,755" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="510,755" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_blue"   position="815,755" size="260,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_red"    position="65,755"  size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_green"  position="240,755" size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_yellow" position="510,755" size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_blue"   position="815,755" size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
-        <screen name="mainConfigScreen" position="center,center" size="800,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
+        <screen name="mainConfigScreen" position="center,center" size="850,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
-            <widget name="version_txt" position="0,0"  size="800,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="author_txt"  position="0,40" size="800,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="version_txt" position="0,0"  size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="author_txt"  position="0,40" size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
-            <widget name="config"      position="center,70" size="750,400" font="Regular;22" itemHeight="20" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
+            <widget name="config"      position="center,70" size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
 
-            <widget name="previewImage" position="80,230" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="previewImage" position="70,225" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
-            <ePixmap pixmap="skin_default/buttons/red.png"    position="5,560"   size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="125,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/yellow.png" position="295,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/blue.png"   position="475,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/red.png"    position="20,560"  size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="175,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/yellow.png" position="380,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/blue.png"   position="605,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="45,560"  size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="165,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="335,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_blue"   position="515,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_red"    position="55,560"  size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_green"  position="210,560" size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_yellow" position="415,560" size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_blue"   position="640,560" size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
         </screen>'''
 
     def __init__(self, session):
 
         Screen.__init__(self, session)
-        #self.session = session          # toto netreba, toto sa vykona uz aj v Screen.__init__
+        #self.session = session          # this is not necessary, this is done already during class initialization - Screen.__init__
 
-        self.onChangedEntry = []        # list pomenenych poloziek pre zobrazovane konfiguracne MENU nastavim pri inicializacii tiez naprazdno
-        self.list = []                  # list pre konfiguracne MENU zatial ponecham prazdny a naplnim ho az neskor resp. aj pri zmenach hodnoty konfiguracie (po sttlaceni tlacidiel do lava / do prava)
+        self.onChangedEntry = []
+        self.list = []
 
-        ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)       # ???? asi tu ma byt:  session = self.session
-        #ConfigListScreen.__init__(self, self.list, session, on_change = self.changedEntry)
+        ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
 
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
 
@@ -144,8 +140,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         global piconResults
         piconResults = {'added': 0, 'changed': 0, 'removed': 0}
 
-        self.bin7zip = None             # path to '7z' or '7za' executable (binary) file
-        self.chochoContent = None       # content of the file "id_for_permalinks*.log" from google.drive
+        self.bin7zip = None             # path to directory with '7z' or '7za' executable binary file
+        self.chochoContent = None       # content of the file "id_for_permalinks*.log" - downloaded from google.drive
 
         #self.onShown.append(self.showListMenu)
         #self.onLayoutFinish.append(self.layoutFinished)
@@ -156,7 +152,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.layoutFinishTimer.callback.append(self.prepareSetup)
         self.layoutFinishTimer.start(200, True)
 
-        #self.onLayoutFinish.append(self.check7zip)    # tento riadok je tiez bez ucelu - Screen totiz stale nieje pripraveny, aby bolo mozne pouzivat MessageBox vo funkcii check7zip
+        #self.onLayoutFinish.append(self.check7zip)      # this line is no longer useful ... Screen is still not ready to call MessageBox in check7zip()
 
     def prepareSetup(self):
 
@@ -172,9 +168,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
                             ('/usr/share/enigma2/ZZPicons/picon','/usr/share/enigma2/ZZPicons/picon'),
                             ('(user defined)' , _('(user defined)')  )
                           ]
-                        )   # https://github.com/openatv/MetrixHD/blob/aa9a302bd06a844fc5d53e017fec0d420bccd762/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
+                        )     # --- all folders are from source code, here:   https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
         config.plugins.chocholousekpicons.piconFolderUser = ConfigText(default = '/')
-        # change the default picon directory + set this found entry, if some .png files will found in some folder
+        # change the default picon directory + set this found entry, if some .png files will found in some folder:
         if config.plugins.chocholousekpicons.piconFolder.value != '(user defined)':
             for picdir in config.plugins.chocholousekpicons.piconFolder.choices:
                 if glob.glob(picdir[0] + '/*.png'):
@@ -187,7 +183,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         config.plugins.chocholousekpicons.resolution = ConfigSelection(default = '220x132',
                 choices = [('50x30','50x30'), ('100x60','100x60'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300')]  )
         config.plugins.chocholousekpicons.background = ConfigSelection(default = 'black',
-                choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]    )  # default='white' , choices=[('white', _('White')), ('black', _('Black')), ('transparent', _('Transparent')), ('transparentwhite', _('Transparent-White')), ('mirrorglass', _('Mirror-Glass')) ])      # !!!! ( _(s),s ) biela/white nenajde subor s pikonami v slovencine:)
+                choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]   )
 
         self.downloadPreviewPicons()
         self.showListMenu()
@@ -201,7 +197,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.showListMenu()
 
     def keyToOk(self):
-        k = self['config'].getCurrent()[0]            # [0] = config text/label (from cursor position) , [1] user selected config value (from cursor position)
+        k = self['config'].getCurrent()[0]              # [0] = config text/label (from cursor position) ,  [1] user selected config value (from cursor position)
         if k == _('Satellite positions'):
             self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat() )
         elif k == _('User defined folder'):
@@ -209,7 +205,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def satellitesConfigScreenReturn(self, retval):
         if retval:
-            self.loadChochoContent()       # ak doslo k zmene v nastaveni potrebnych satelitov, tak musim vykonat nove preskenovanie dostupnych dizajnov pikon podla predvoleneho rozlisenia pikon
+            self.loadChochoContent()        # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
             self.reloadAvailableBackgrounds()
             self.changedEntry()
             self.showListMenu()
@@ -224,7 +220,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         global pluginUpdateDo, plugin_version_local
         if pluginUpdateDo():
             message = _("The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?")
-            self.session.openWithCallback(self.restartEnigmaBeforeClosing, MessageBox, message, type = MessageBox.TYPE_YESNO, default = False) # ukazem tzv. MessageBox s upozornenim a moznostou rebootovania, ze uz bol updatnuty plugin a ze je potrebny restart Enigmy (GUI)
+            self.session.openWithCallback(self.restartEnigmaBeforeClosing, MessageBox, message, type = MessageBox.TYPE_YESNO, default = False)
         else:
             message = _("Plugin version is up to date.\n\n"
                         "Installed version: %s") % (plugin_version_local)
@@ -238,13 +234,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def keyToExit(self):
         self.s = self['txt_green'].getText()
-        if self.s[-1:] == '*':                  # doslo k zmene konfiguracie pluginu... ? ak ano, tak vyvolam MessageBox s moznostou ulozenia ci naopak obnovenia povodnych nastaveni v konfiguracii pluginu
+        if self.s[-1:] == '*':                  # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
             message = _("You have changed the plugin configuration.\nDo you want to save all changes now ?")
             self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
         else:
             self.exitWithConditionalSave(False)
 
-    def exitWithConditionalSave(self, condition=True):       # ulozim alebo stornujem vykonane zmeny v uzivatelskej konfiguracii pluginu, default = True => ulozenie konfiguracie
+    def exitWithConditionalSave(self, condition=True):      # save or cancel changes made to the plugin's user configuration, default=True -> to save the configuration
         if condition:
             for x in self['config'].list:
                 x[1].save()
@@ -260,7 +256,6 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self['txt_green'].setText(_('Save & Exit') + '*')
 
         k = self['config'].getCurrent()[0]
-        #print('MYDEBUGLOGLINE - self["config"].getCurrent()[0] = %s ; [1] = %s ; k = %s' % (self["config"].getCurrent()[0], self["config"].getCurrent()[1], k)  )
         if k == _('Picon resolution'):
             self.reloadAvailableBackgrounds()
         #elif k == _('Picon background'):
@@ -303,7 +298,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
         the online version will be detected from the http request header
         the  local version will be detected from the existing local file
-        archive filename example:         nova-cz-(all)_by_chocholousek_(191020).7z      (the parentheses will replace by underline characters)
+        archive filename example:         nova-cz-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
         files inside the archive file:    nova-cz-transparent-220x132.png ; nova-cz-gray-400x240.png
         """
         self.check7zip()
@@ -315,7 +310,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             localfilenamefull = localfilenamefull[0]                                                # simple converting the list type to string type
         else:
             localfilenamefull = '___(000000).7z'                                                    # version 000000 as very low version means to download a preview images from internet in next step
-        url = 'https://drive.google.com/uc?export=download&id=1wX6wwhTf2dJ30Pe2GWb20UuJ6d-HjERA'    # archiv .7z v ktorom sa nachadzaju nahladove obrazky (pikony kanalu NOVA pre vsetky styly avsak nie pre vsetky rozlisenia !)
+        url = 'https://drive.google.com/uc?export=download&id=1wX6wwhTf2dJ30Pe2GWb20UuJ6d-HjERA'    # .7z archive with preview images (NOVA channel picons for all styles but not for all resolutions)
         try:
             rq = urllib2.urlopen(url)
         except urllib2.URLError as e:
@@ -341,13 +336,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     with open(localfilenamefull, 'w') as f:
                         f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
                 elif status == 32512:
-                    print('...error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status )
+                    print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
                     self.deleteFile(localfilenamefull)
                 elif status == 512:
-                    print('...error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, localfilenamefull) )
+                    print('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, localfilenamefull) )
                     self.deleteFile(localfilenamefull)
                 else:
-                    print('...error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
+                    print('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
                     self.deleteFile(localfilenamefull)
 
     def deleteFile(self, directorymask):
@@ -407,7 +402,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         detecting chipset architecture
         mips32el, armv7l, armv7a-neon, armv7ahf, armv7ahf-neon, cortexa9hf-neon, cortexa15hf-neon-vfpv4, aarch64, sh4, sh_4
         '''
-        status, out = getstatusoutput('opkg print-architecture | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')
+        status, out = getstatusoutput('opkg print-architecture | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             return out.replace('arch ','').replace('\n',' ')        # return architectures by OPKG manager, such as:  'mips32el 16 mipsel 46'
 
@@ -447,7 +442,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         file name example:   id_for_permalinks191017.log
         example entry from inside the file:   1xmITO0SouVDTrATgh0JauEpIS7IfIQuB              piconblack-220x132-13.0E_by_chocholousek_(191016).7z                              bin   16.3 MB    2018-09-07 19:40:54
         '''
-        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'   # id_for_permalinks191017.log
+        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'        # id_for_permalinks191017.log
 
         pathlist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
         if pathlist:
@@ -457,8 +452,6 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
         try:
             rq = urllib2.urlopen(url)
-            #mycontext = ssl._create_unverified_context()
-            #rq = urllib2.urlopen(url, context = mycontext)
         except urllib2.URLError as err:
             print('Error %s when reading from URL: %s' % (err.reason, url)  )
         except Exception:
@@ -529,7 +522,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     if sizemaxX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="title_txt" position="center,50" size="350,60" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
+            <widget name="title_txt" position="center,40" size="350,60" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
 
             <widget name="config" position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
 
@@ -539,12 +532,12 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     else:                   # HD-ready or lower
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="350,600" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="title_txt" position="center,50" size="300,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
+            <widget name="title_txt" position="center,20" size="300,40" font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
 
-            <widget name="config" position="center,70" size="300,500" font="Regular;22" itemHeight="22" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
+            <widget name="config" position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
 
-            <ePixmap pixmap="skin_default/buttons/green.png" position="5,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <widget render="Label" source="txt_green" position="45,560" size="140,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <widget render="Label" source="txt_green" position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
 
     def __init__(self, session, satList):
@@ -553,8 +546,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
         Screen.__init__(self, session)
 
-        self.onChangedEntry = []        # list pomenenych poloziek pre zobrazovane konfiguracne MENU nastavim pri inicializacii tiez naprazdno
-        self.list = []                  # list pre konfiguracne MENU zatial ponecham prazdny a naplnim ho az neskor resp. aj pri zmenach hodnoty konfiguracie (po sttlaceni tlacidiel do lava / do prava)
+        self.onChangedEntry = []
+        self.list = []
 
         ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
 
@@ -584,8 +577,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.showListMenu()
 
     def switchSelectedSat(self):
-        selected = self['config'].getCurrent()[0]                               # value example:  '23.5E'
-        if selected in config.plugins.chocholousekpicons.usersats.value:        # list example:   ['19.2E', '23.5E']
+        selected = self['config'].getCurrent()[0]                               # value example:   '23.5E'
+        if selected in config.plugins.chocholousekpicons.usersats.value:        # list example:    ['19.2E', '23.5E']
             config.plugins.chocholousekpicons.usersats.value.remove(selected)
         else:
             config.plugins.chocholousekpicons.usersats.value.append(selected)
@@ -607,7 +600,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
     def keyToExit(self):
         self.s = self['txt_green'].getText()
-        if self.s[-1:] == '*':                  # doslo k zmene konfiguracie... ?
+        if self.s[-1:] == '*':                  # plugin configuration changed...?
             self.close(True)
         else:
             self.close(False)
@@ -635,7 +628,7 @@ class piconsUpdateJobScreen(Screen):
         self.bin7zip = bin7zip
 
         Screen.__init__(self, session)
-        #self.session = session            # toto netreba, nakolko presne toto vykonava uz aj Screen.__init__
+        #self.session = session          # this is not necessary, this is done already during class initialization - Screen.__init__
 
         self['logWindow'] = ScrollLabel('LOG:\n')
         self['logWindow'].scrollbarmode = "showOnDemand"
@@ -649,7 +642,7 @@ class piconsUpdateJobScreen(Screen):
 
         self.timeoutPrevention = eTimer()
         self.timeoutPrevention.callback.append(self.abortPiconsUpdating)
-        self.timeoutPrevention.start(15000, True)                       # (milisekundy , True = spustit len 1x / False = spustat opakovane)
+        self.timeoutPrevention.start(15000, True)                  # [miliseconds] ..... True = to run only once / False = to run repeatedly
 
         self.startTime = datetime.now()
 
@@ -664,7 +657,7 @@ class piconsUpdateJobScreen(Screen):
         piconResults = {'added': 0, 'changed': 0, 'removed': 0}
         
         # 1) Ocheckuje sa internetové pripojenie
-        if os_system('ping -c 1 -w 1 www.google.com > /dev/null 2>&1'): # test konektivity do internetu
+        if os_system('ping -c 1 -w 1 www.google.com > /dev/null 2>&1'):
             self.abortPiconsUpdating(True, _("Internet connection is not available !") )
         else:
             self.writeLog(_('Internet connection is OK.'))
@@ -800,22 +793,22 @@ class piconsUpdateJobScreen(Screen):
     def getPiconListFromArchive(self, archiveFile = ''):
         #out, status = subprocess.Popen([self.bin7zip, 'l', archiveFile], stdout=subprocess.PIPE ).communicate()
         #out = subprocess.check_output([self.bin7zip, 'l', archiveFile])
-        status, out = getstatusoutput('%s l %s' % (self.bin7zip, archiveFile))      # vracia dvojicu, prva prestavuje chybovy kod (0 ak nedoslo k ziadnym problemom) a druha predstavuje std.output (kompletny textovy vystup z command-line / Shell)
+        status, out = getstatusoutput('%s l %s' % (self.bin7zip, archiveFile) )     # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
             tempDict = {}
             i = -3
-            while not '-----' in out[i]:
-                # vycucnem udaje z vystupu / z kazdeho riadka:
-                # 0               :19 20:25    26  :  38             53:
-                # 2018-07-14 14:48:53 ....A          797               CONTROL/postinst
+            while not "-----" in out[i]:
+                # vycucnem udaje z vystupu Shell-u, vsetky subory (jednotlivo po riadkoch):
+                # index: 0----------------19 20-25    26-----38               53-------------------------->
+                # out:   2018-07-14 14:48:53 ....A          797               CONTROL/postinst
                 fdatetime, fattr, fsize, fpath = out[i][0:19] , out[i][20:25] , out[i][26:38] , out[i][53:]
-                if fattr[0] != 'D':    # retreive all files with a full path, but no individual directories from the list
-                    tempDict.update({  fpath.split('/')[-1].split('.')[0]  :  int(fsize)  })      #  { servisny_referencny_kod_<key> : velkost_suboru_<int> }
+                if fattr[0] != 'D':         # retreive all files with a full path, but no individual directories from the list
+                    tempDict.update({  fpath.split('/')[-1].split('.')[0]  :  int(fsize)  })            # { "service_reference_code_<as_a_string-dictionary_key>"  :  file_size_<as_a_integer> }
                 i -= 1
             return tempDict
         elif status == 32512:
-            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:\nopkg update && opkg install p7zip\n...or download and install the package from internet.\n' % status )
+            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
         elif status == 512:
             self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
         else:
@@ -832,16 +825,20 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog(_('...done.'))
             return True
         elif status == 32512:
-            self.writeLog('...error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status )
+            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
         elif status == 512:
-            self.writeLog('...error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
+            self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
         else:
-            self.writeLog('...error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
+            self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
         if os_path.exists('/tmp/picons-to-extraction.txt'):
             os_remove('/tmp/picons-to-extraction.txt')
         return False
 
-    def abortPiconsUpdating(self, boo=True, msssg=''):   # boo=True -- exit with some errors ;  boo=False -- exit without errors
+    def abortPiconsUpdating(self, boo = True, msssg = ''):
+        '''
+        boo = True ---- to exit with some error
+        boo = False --- to exit without error
+        '''
         self.message = msssg
         if boo:
             self.type = MessageBox.TYPE_ERROR
@@ -866,7 +863,7 @@ class piconsUpdateJobScreen(Screen):
             print(msgg)
             self['logWindow'].appendText('\n[' + str( ( datetime.now() - self.startTime ).total_seconds() ).ljust(10,"0")[:6] + '] ' + msgg)
             self['logWindow'].lastPage()
-            self.timeoutPrevention.start(20000, True)                  # (milisekundy , True = spustit len 1x / False = spustat opakovane)
+            self.timeoutPrevention.start(20000, True)                  # [miliseconds] ..... True = to run only once / False = to run repeatedly
 
 
 ###########################################################################
@@ -883,8 +880,7 @@ def findHostnameAndNewPlugin():
     url_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/', 'http://aion.webz.cz/ChocholousekPicons/']        # pozor ! je dolezite zachovat na konci retazca vo web.adresach vzdy aj lomitko, pre dalsie korektne pouzivanie tohoto retazca v algoritme
     for hostname in url_list:
         try:
-            mycontext = ssl._create_unverified_context()
-            url_handle = urllib2.urlopen(hostname + 'version.txt', context = mycontext)
+            url_handle = urllib2.urlopen(hostname + 'version.txt')
         except urllib2.URLError as err:
             print('Error %s when reading from URL %s' % (err.reason, hostname + 'version.txt')  )
         except Exception:
@@ -938,10 +934,9 @@ def downloadFile______old(self, url, targetfile):
 
 def downloadFile(url, targetfile):
     header = {'User-Agent':'Mozilla/5.0'}
-    my_context = ssl._create_unverified_context()
     try:
         req = urllib2.Request(url, None, header)
-        data = urllib2.urlopen(req, context = my_context).read()
+        data = urllib2.urlopen(req).read()              #data = urllib2.urlopen(req, context = ssl._create_unverified_context()).read()
         with open(targetfile, 'wb') as f:
             f.write(data)
     except urllib2.HTTPError as e:
@@ -960,10 +955,9 @@ def downloadFile(url, targetfile):
 
 def downloadFile________old(url, targetfile):
     header = {'User-Agent':'Mozilla/5.0'}
-    mycontext = ssl._create_unverified_context()
     try:
         req = urllib2.Request(url, None, header)
-        handle = urllib2.urlopen(req, context = mycontext)
+        handle = urllib2.urlopen(req)                   #handle = urllib2.urlopen(req, context = ssl._create_unverified_context() )
         with open(file, 'wb') as f:
             while True:
                 cache = handle.read(16 * 1024)
@@ -989,19 +983,13 @@ def downloadFile________old(url, targetfile):
 ###########################################################################
 
 
-def autoStart(reason, **kwargs):                           # starts DURING the Enigma2 booting
-    if reason == 0:    # and kwargs.has_key('session'):
-        print('PLUGINSTARTDEBUGLOG - autoStart executed , reason == 0 , kwargs.has_key("session") = %s' % kwargs.has_key("session")  )
-    if reason == 1:
-        print('PLUGINSTARTDEBUGLOG - autoStart executed , reason == 1 , kwargs.has_key("session") = %s' % kwargs.has_key("session")  )
-
 def pluginMenu(session, **kwargs):                          # starts when the plugin is opened via Plugin-MENU
     print('PLUGINSTARTDEBUGLOG - pluginMenu executed')
     global plugin_version_local
     plugin_version_local = open(PLUGIN_PATH + 'version.txt','r').read()
     session.open(mainConfigScreen)
 
-def sessionStart(reason, session):                         # starts AFTER the Enigma2 booting
+def sessionStart(reason, session):                         # starts after the Enigma2 (the session) booting
     if reason == 0:
         print('PLUGINSTARTDEBUGLOG - sessionStart executed, reason == 0')
         #session = kwargs['session']
@@ -1010,17 +998,12 @@ def sessionStart(reason, session):                         # starts AFTER the En
         session = None
 
 def Plugins(**kwargs):
-    """ Register plugin in the plugin menu and prepare the plugin with autostart """
     return [
         PluginDescriptor(
-            where = PluginDescriptor.WHERE_AUTOSTART,      # starts DURING the Enigma2 booting
-            #where = [PluginDescriptor.WHERE_AUTOSTART , PluginDescriptor.WHERE_SESSIONSTART],
-            fnc = autoStart),
-        PluginDescriptor(
-            where = PluginDescriptor.WHERE_SESSIONSTART,   # starts AFTER the Enigma2 booting
+            where = PluginDescriptor.WHERE_SESSIONSTART,
             fnc = sessionStart),
         PluginDescriptor(
-            where = PluginDescriptor.WHERE_PLUGINMENU,     # starts when the plugin is opened via Plugin-MENU
+            where = PluginDescriptor.WHERE_PLUGINMENU,
             name = "Chocholousek picons",
             description = "Download and update Chocholousek picons",
             icon = "images/plugin.png",
