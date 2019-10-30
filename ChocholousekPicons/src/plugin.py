@@ -882,7 +882,7 @@ def findHostnameAndNewPlugin():
         except Exception:
             print('Error when reading URL %s' % hostname + 'version.txt')
         else:
-            plugin_version_online = url_handle.read()
+            plugin_version_online = url_handle.read().strip()
             if plugin_version_online > plugin_version_local:    # Python 2.7 dokaze porovnat aj dva retazce... poradie porovnavania dvoch <str> je postupnostou hodnot znakov ASCII kodov v poradi z lava do prava a paradoxom v porovnani je, ze male znaky ASCII maju vyssiu hodnotu a preto su v porovnani <str> na vyssiej urovni ! v mojom pripade sa vsak jedna o cislice a tie su v ASCII kode rovnake (kod 0x30 az 0x39)
                 url_lnk = hostname
                 break
@@ -1014,7 +1014,7 @@ def downloadFile______old(self, url, targetfile):
 def pluginMenu(session, **kwargs):                          # starts when the plugin is opened via Plugin-MENU
     print('PLUGINSTARTDEBUGLOG - pluginMenu executed')
     global plugin_version_local
-    plugin_version_local = open(PLUGIN_PATH + 'version.txt','r').read()
+    plugin_version_local = open(PLUGIN_PATH + 'version.txt','r').read().strip()
     session.open(mainConfigScreen)
 
 def sessionStart(reason, session):                         # starts after the Enigma2 (the session) booting
