@@ -21,13 +21,14 @@ from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import config, configfile, getConfigListEntry, ConfigDirectory, ConfigSubsection, ConfigSubList, ConfigEnableDisable, ConfigSelection, ConfigYesNo, ConfigSet, ConfigText
 ###########################################################################
 import urllib2
+import cookielib
 import ssl
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
     pass                                                                    # Legacy Python version (for example v2.7.2) that doesn't verify HTTPS certificates by default
-else:  
-    ssl._create_default_https_context = _create_unverified_https_context    # Handle target environment that doesn't support HTTPS verification
+else:
+    ssl._create_default_https_context = _create_unverified_https_context    # Handle target environment that doesn't support HTTPS verification --- https://www.python.org/dev/peps/pep-0476/
 ###########################################################################
 import threading
 import re
@@ -76,10 +77,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="470,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="775,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="65,755"  size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="240,755" size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="510,755" size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_blue"   position="815,755" size="270,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_red"    position="65,755"  size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_green"  position="240,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_yellow" position="510,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_blue"   position="815,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
@@ -93,14 +94,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget name="previewImage" position="70,225" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="20,560"  size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="175,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/yellow.png" position="380,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="165,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/yellow.png" position="370,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="605,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="55,560"  size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="210,560" size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="415,560" size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_blue"   position="640,560" size="170,40" halign="left" valign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_red"    position="55,560"  size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_green"  position="200,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_yellow" position="405,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_blue"   position="640,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
         </screen>'''
 
     def __init__(self, session):
@@ -263,17 +264,17 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def showListMenu(self):
         self.list = []
-        self.list.append(getConfigListEntry( _('Picon folder')    ,  config.plugins.chocholousekpicons.piconFolder  ))
+        self.list.append(getConfigListEntry( _('Picon folder')    ,  config.plugins.chocholousekpicons.piconFolder ))
         if config.plugins.chocholousekpicons.piconFolder.value == '(user defined)':
             self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.piconFolderUser ))
-        self.list.append(getConfigListEntry( _('Include radio picons'), config.plugins.chocholousekpicons.radio     ))
+        self.list.append(getConfigListEntry( _('Include radio picons'), config.plugins.chocholousekpicons.radio    ))
         #self.list.append(getConfigListEntry( _('Satellite auto-detection') , config.plugins.chocholousekpicons.satauto , _('The plug-in will attempt to automatically detect\nthe used satellite positions\nfrom the tuner configuration.')   ))
         #if not config.plugins.chocholousekpicons.satauto.value:      # ..........
-        self.list.append(getConfigListEntry( _('Satellite positions'), config.plugins.chocholousekpicons.usersats   ))
+        self.list.append(getConfigListEntry( _('Satellite positions'), config.plugins.chocholousekpicons.usersats  ))
         self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution  ))
-        self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background ,  _('Choose picon design')  ))
+        self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
         self['config'].list = self.list
-        self['config'].l.setList(self.list)
+        self['config'].setList(self.list)           # self['config'].l.setList(self.list)
         self.showPreviewImage()
 
     def restartEnigmaBeforeClosing(self, answer = None):
@@ -414,7 +415,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if status == 0:
             return out                                              # return architectures from system, like as:  'mips'
 
-        print('MYDEBUGLOGLINE - Error ! Unknown or unidentified chipset architecture.')
+        print('MYDEBUGLOGLINE - Error! Could not get information about chipset-architecture! Returning an empty string!')
         return ''
 
     #def createDefaultPiconDir(self):
@@ -442,7 +443,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         file name example:   id_for_permalinks191017.log
         example entry from inside the file:   1xmITO0SouVDTrATgh0JauEpIS7IfIQuB              piconblack-220x132-13.0E_by_chocholousek_(191016).7z                              bin   16.3 MB    2018-09-07 19:40:54
         '''
-        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'        # id_for_permalinks191017.log
+        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'    # id_for_permalinks191017.log -- means the chochoFile for the chochoContent value :)
 
         pathlist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
         if pathlist:
@@ -596,11 +597,11 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             else:
                 self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=False) ) )
         self['config'].list = self.list
-        self['config'].l.setList(self.list)
+        self['config'].setList(self.list)           # self['config'].l.setList(self.list)
 
     def keyToExit(self):
         self.s = self['txt_green'].getText()
-        if self.s[-1:] == '*':                  # plugin configuration changed...?
+        if self.s[-1:] == '*':                      # plugin configuration changed...?
             self.close(True)
         else:
             self.close(False)
@@ -612,14 +613,9 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
 class piconsUpdateJobScreen(Screen):
 
-    if sizemaxX > 1900:   # skin Full-HD or higher
-        logfontsize = "26"
-    else:                 # skin HD ready or lower
-        logfontsize = "18"
-
     skin = '''
         <screen name="piconsUpdateJobScreen" position="center,center" size="''' + str(sizemaxX - 80) + ',' + str(sizemaxY - 80) + '''" title="picons update in progress" flags="wfNoBorder" backgroundColor="#22000000">
-            <widget name="logWindow" position="center,center" size="''' + str(sizemaxX - 180) + ',' + str(sizemaxY - 180) + '''" font="Regular;''' + logfontsize + '''" transparent="0" foregroundColor="white" backgroundColor="#11330000" zPosition="3" />
+            <widget name="logWindow" position="center,center" size="''' + str(sizemaxX - 180) + ',' + str(sizemaxY - 180) + '''" font="Regular;''' + (str(26) if sizemaxX > 1900 else str(18)) + '''" transparent="0" foregroundColor="white" backgroundColor="#11330000" zPosition="3" />
         </screen>'''
 
     def __init__(self, session, chochoContent, bin7zip):
@@ -918,25 +914,43 @@ def pluginUpdateDo():
 ###########################################################################
 
 
-def downloadFile____old(self, url, targetfile):
-    if os_system('wget -q -O "%s" --no-check-certificate "%s" > /dev/null 2>&1' % (targetfile, url)  ):
-        return False
-    else:
-        return True
-
-def downloadFile______old(self, url, targetfile):
-    status, out = getstatusoutput('wget -q -O "%s" --no-check-certificate "%s"' % (targetfile, url) )
-    if status == 0:
-        return True
-    else:
-        self.writeLog('CMD-Line: %s\nDownload error number: %s\nError console output: %s\n' % ('wget -q -O "%s" --no-check-certificate "%s"' % (targetfile,url) , status , out)   )
-        return False
-
 def downloadFile(url, targetfile):
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+    cookie_jar = cookielib.CookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
+    urllib2.install_opener(opener)
+    try:
+        req = urllib2.Request(url, data=None, headers=headers)
+        handler = urllib2.urlopen(req)
+        if 'drive.google' in url:
+            for c in cookie_jar:
+                if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
+                    url = url.replace('&id=','&confirm=%s&id=' % c.value)    # and then it's necessary to add a parameter with confirmation of the warning message
+                    req = urllib2.Request(url, data=None, headers=headers)
+                    handler = urllib2.urlopen(req)
+                    break
+        data = handler.read()
+        with open(targetfile, 'wb') as f:
+            f.write(data)
+    except urllib2.HTTPError as e:
+        print("HTTP Error: %s, URL: %s" % (e.code, url))
+        return False
+    except urllib2.URLError as e:
+        print("URL Error: %s, URL: %s" % (e.reason, url))
+        return False
+    except IOError as e:
+        print("I/O Error: %s, File: %s" % (e.reason, targetfile))
+        return False
+    except Exception as e:
+        print("File download error: %s, URL: %s" % (e, url))
+        return False
+    return True
+
+def downloadFile____old_without_cookie(url, targetfile):
     header = {'User-Agent':'Mozilla/5.0'}
     try:
         req = urllib2.Request(url, None, header)
-        data = urllib2.urlopen(req).read()              #data = urllib2.urlopen(req, context = ssl._create_unverified_context()).read()
+        data = urllib2.urlopen(req).read()                  #data = urllib2.urlopen(req, context = ssl._create_unverified_context()).read()
         with open(targetfile, 'wb') as f:
             f.write(data)
     except urllib2.HTTPError as e:
@@ -977,6 +991,20 @@ def downloadFile________old(url, targetfile):
         print("File download error: %s, URL: %s" % (e, url))
         return False
     return True
+
+def downloadFile____old(self, url, targetfile):
+    if os_system('wget -q -O "%s" --no-check-certificate "%s" > /dev/null 2>&1' % (targetfile, url)  ):
+        return False
+    else:
+        return True
+
+def downloadFile______old(self, url, targetfile):
+    status, out = getstatusoutput('wget -q -O "%s" --no-check-certificate "%s"' % (targetfile, url) )
+    if status == 0:
+        return True
+    else:
+        self.writeLog('CMD-Line: %s\nDownload error number: %s\nError console output: %s\n' % ('wget -q -O "%s" --no-check-certificate "%s"' % (targetfile,url) , status , out)   )
+        return False
 
 
 ###########################################################################
