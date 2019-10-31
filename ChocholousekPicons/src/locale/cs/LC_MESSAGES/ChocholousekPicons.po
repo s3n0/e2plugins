@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-25 19:26+0200\n"
-"PO-Revision-Date: 2019-10-27 18:45+0100\n"
+"PO-Revision-Date: 2019-10-31 08:39+0100\n"
 "Last-Translator: Chocholousek (https://www.linuxsat-support.com/cms/user/25586-chocholousek/)\n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -14,13 +14,13 @@ msgstr ""
 "X-Generator: Poedit 2.2.4\n"
 
 msgid "Save & Exit"
-msgstr "Uložit"
+msgstr "Uložit & ukončit"
 
 msgid "Update plugin"
-msgstr "Aktualizovat"
+msgstr "Aktualizovat plugin"
 
 msgid "Update picons"
-msgstr "Picony"
+msgstr "Stáhnout picony"
 
 msgid "Picon folder"
 msgstr "Složka pro picony"
@@ -192,3 +192,15 @@ msgstr ""
 "Plugin byl aktualizován na novou verzi.\n"
 "Pro dokončení instalace je třeba restart.\n"
 "Přejete si tak učinit nyní?"
+
+msgid "Picon update method"
+msgstr "Metoda aktualizace picon"
+
+msgid "copy all picons"
+msgstr "kopírovat všechny picony"
+
+msgid "sync with TV userbouquets"
+msgstr "rozbalit picony TV nalezené v oblíbených"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "rozbalit picony TV+RADIO nalezené v oblíbených"
