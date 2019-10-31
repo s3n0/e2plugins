@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-25 19:26+0200\n"
 "PO-Revision-Date: 2019-10-27 18:45+0100\n"
-"Last-Translator: Chocholousek (https://www.linuxsat-support.com/cms/user/25586-chocholousek/)\n"
+"Last-Translator: Chocholousek <https://www.linuxsat-support.com/cms/user/25586-chocholousek/>\n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
@@ -28,8 +28,17 @@ msgstr "Složka pro picony"
 msgid "User defined folder"
 msgstr "Složka definovaná uživatelem"
 
-msgid "Include radio picons"
-msgstr "Vložit picony radií"
+msgid "Picon update method"
+msgstr "Metoda aktualizace picon"
+
+msgid "copy all picons (no sync)"
+msgstr "zkopírovat všechny picony (bez synch.)"
+
+msgid "sync with TV userbouquets"
+msgstr "synchronizovat se seznamy TV kanálů"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "synchronizovat se seznamy TV+RADIO kanálů"
 
 msgid "Satellite positions"
 msgstr "Satelitní pozice"
