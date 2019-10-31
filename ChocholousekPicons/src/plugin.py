@@ -144,7 +144,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.bin7zip = None             # path to directory with '7z' or '7za' executable binary file
         self.chochoContent = None       # content of the file "id_for_permalinks*.log" - downloaded from google.drive
 
-        #self.onShown.append(self.showListMenu)
+        #self.onShown.append(self.rebuildConfigList)
         #self.onLayoutFinish.append(self.layoutFinished)
 
         #self.prepareSetup()
@@ -178,8 +178,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     config.plugins.chocholousekpicons.piconFolder.default = picdir[0]
                     config.plugins.chocholousekpicons.piconFolder.setValue(picdir[0])
                     break
-        config.plugins.chocholousekpicons.radio = ConfigYesNo(default = False)
-        #config.plugins.chocholousekpicons.satauto  = ConfigYesNo(default = False)
+        config.plugins.chocholousekpicons.method = ConfigSelection(default = 'sync_tv', 
+                choices = [ ('all', _('copy all picons')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]   )
         config.plugins.chocholousekpicons.usersats = ConfigSet(default = ['23.5E','19.2E'] , choices = self.getAllSat() )
         config.plugins.chocholousekpicons.resolution = ConfigSelection(default = '220x132',
                 choices = [('50x30','50x30'), ('96x64','96x64'), ('100x60','100x60'), ('132x46','132x46'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300')]  )
@@ -187,15 +187,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]   )
 
         self.downloadPreviewPicons()
-        self.showListMenu()
+        self.rebuildConfigList()
 
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
-        self.showListMenu()
+        self.rebuildConfigList()
 
     def keyToRight(self):
         ConfigListScreen.keyRight(self)
-        self.showListMenu()
+        self.rebuildConfigList()
 
     def keyToOk(self):
         k = self['config'].getCurrent()[0]              # [0] = config text/label (from cursor position) ,  [1] user selected config value (from cursor position)
@@ -209,7 +209,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.loadChochoContent()        # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
             self.reloadAvailableBackgrounds()
             self.changedEntry()
-            self.showListMenu()
+            self.rebuildConfigList()
 
     def keyToUpdatePicons(self):
         if self.bin7zip:
@@ -262,19 +262,19 @@ class mainConfigScreen(Screen, ConfigListScreen):
         #elif k == _('Picon background'):
         #    self.showPreviewImage()
 
-    def showListMenu(self):
+    def rebuildConfigList(self):
         self.list = []
         self.list.append(getConfigListEntry( _('Picon folder')    ,  config.plugins.chocholousekpicons.piconFolder ))
         if config.plugins.chocholousekpicons.piconFolder.value == '(user defined)':
             self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.piconFolderUser ))
-        self.list.append(getConfigListEntry( _('Include radio picons'), config.plugins.chocholousekpicons.radio    ))
-        #self.list.append(getConfigListEntry( _('Satellite auto-detection') , config.plugins.chocholousekpicons.satauto , _('The plug-in will attempt to automatically detect\nthe used satellite positions\nfrom the tuner configuration.')   ))
-        #if not config.plugins.chocholousekpicons.satauto.value:      # ..........
+        self.list.append(getConfigListEntry( _('Picon update method'), config.plugins.chocholousekpicons.method    ))
         self.list.append(getConfigListEntry( _('Satellite positions'), config.plugins.chocholousekpicons.usersats  ))
         self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution  ))
         self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
+        
         self['config'].list = self.list
         self['config'].setList(self.list)           # self['config'].l.setList(self.list)
+        
         self.showPreviewImage()
 
     def restartEnigmaBeforeClosing(self, answer = None):
@@ -475,7 +475,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         '''
         config.plugins.chocholousekpicons.background = ConfigSelection( default = None ,   # default = config.plugins.chocholousekpicons.background.value  ,
           choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]    )     # !!!! ( _(s),s ) biela/white nenajde subor s pikonami v slovencine:)
-
+    
     def contentByUserCfgSatRes(self, satellites, resolution):
         result = []
         for line in self.chochoContent.splitlines():
@@ -487,8 +487,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         return '\n'.join(result)            # return = a very long string with "\n" newlines
 
     def getAllBckByUserCfg(self, sats, res):
-        self.userdata = self.contentByUserCfgSatRes(sats, res)
-        return sorted(list(set(  re.findall('.*picon(.*)-%s-[0-9]+\.[0-9]+.*\n+' % res, self.userdata)  )))    # using the set() to remove duplicites and the sorted() to sort the list by ASCII
+        userdata = self.contentByUserCfgSatRes(sats, res)
+        return sorted(list(set(  re.findall('.*picon(.*)-%s-.*' % (res), userdata)  )))    # using the set() to remove duplicites and the sorted() to sort the list by ASCII
 
     def getAllSat(self): # Satellites
         lst = re.findall('.*piconblack-220x132-(.*)_by_chocholousek_.*\n+', self.chochoContent)
@@ -565,17 +565,17 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             'cancel': self.keyToExit
             } , -2)
 
-        self.onShown.append(self.showListMenu)
+        self.onShown.append(self.rebuildConfigList)
 
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
         self.switchSelectedSat()
-        self.showListMenu()
+        self.rebuildConfigList()
 
     def keyToRight(self):
         ConfigListScreen.keyRight(self)
         self.switchSelectedSat()
-        self.showListMenu()
+        self.rebuildConfigList()
 
     def switchSelectedSat(self):
         selected = self['config'].getCurrent()[0]                               # value example:   '23.5E'
@@ -589,7 +589,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             x()
         self['txt_green'].setText(_('OK') + '*')
 
-    def showListMenu(self):
+    def rebuildConfigList(self):
         self.list = []
         for sat in self.allSat:
             if sat in config.plugins.chocholousekpicons.usersats.value:
@@ -658,14 +658,17 @@ class piconsUpdateJobScreen(Screen):
         else:
             self.writeLog(_('Internet connection is OK.'))
 
-        # 2) Vytvorí sa zoznam všetkých dostupných súborov "userbouquet.*.tv" aj ".radio" ktoré sa nachádzajú v "/etc/enigma2" zložke
-        self.bouqet_list = glob.glob('/etc/enigma2/userbouquet.*.tv')
-        if config.plugins.chocholousekpicons.radio.value:
+        # 2) Vytvorí sa zoznam dostupných userbouquets súborov "/etc/enigma2/userbouquet.*.tv"
+        #    prípadne aj "/etc/enigma2/userbouquet.*.radio" súborov    
+        self.bouqet_list = []
+        if config.plugins.chocholousekpicons.method.value == 'sync_tv':
+            self.bouqet_list = glob.glob('/etc/enigma2/userbouquet.*.tv')
+        if config.plugins.chocholousekpicons.method.value == 'sync_tv_radio':
             self.bouqet_list.extend(glob.glob('/etc/enigma2/userbouquet.*.radio'))
-        if not self.bouqet_list:
+        if config.plugins.chocholousekpicons.method.value != 'all' and not self.bouqet_list:
             self.abortPiconsUpdating(True, _('No userbouquet files found !\nPlease check the folder /etc/enigma2 for the userbouquet files.')  )
 
-        # 3a) Skontroluje sa zložka s pikonami a ak neexistuje, vytvorí sa nová zložka
+        # 3) Skontroluje sa existencia zložky s pikonami na disku (ak zložka neexistuje, vytvorí sa nová)
         if config.plugins.chocholousekpicons.piconFolder.value == '(user defined)':
             self.piconDIR = config.plugins.chocholousekpicons.piconFolderUser.value
         else:
@@ -675,114 +678,122 @@ class piconsUpdateJobScreen(Screen):
         #if not os_path.exists(self.piconDIR):
         #    self.abortPiconsUpdating(True, _('The configured picon folder does not exist!\nPlease check the picon folder in plugin configuration.\nCurrent picon folder: %s') % (self.piconDIR)  )
         
-        # 3b) Vytvorí sa zoznam z picon uložených na disku (v internej flash pamäti set top boxu alebo na externom USB ci HDD) - včetne atributu veľkosti u týchto súborov
+        if 'sync' in config.plugins.chocholousekpicons.method.value:
+            # 4.a) Vytvorí sa zoznam serv.ref.kódov nájdených vo všetkych userbouquet súboroch v set-top boxe (vytiahnem z nich len servisné referenčné kódy)        
+            self.writeLog(_('Preparing a list of picons from userbouquet files...'))
+            self.SRC_in_Bouquets = ''
+            for bq_file in self.bouqet_list:
+                self.SRC_in_Bouquets += open(bq_file,'r').read()
+                #with open(bq_file) as f:
+                #    self.SRC_in_Bouquets += f.read()
+            self.SRC_in_Bouquets = re.findall('.*#SERVICE\s([0-9a-fA-F]+_0_[0-9a-fA-F_]+0_0_0).*\n*', self.SRC_in_Bouquets.replace(":","_") )
+            self.SRC_in_Bouquets = list(set(self.SRC_in_Bouquets))              # remove duplicate items ---- converting to <set> and then again back to the <list>
+            self.writeLog(_('...done.'))
+        else:
+            # 4.b) Vytvorí sa fiktívny t.j. prázdny zoznam SRC kódov z userbouquets súborov, aby v ďalšiom kroku boli všetky aktuálne pikony na lokálnom disku kompletne zmazané
+            self.SRC_in_Bouquets = []
+        
+        # 5) Vytvorí sa zoznam picon uložených na lokálnom disku (v internom flash-disku alebo na externom USB či HDD) - včetne veľkostí týchto súborov !
         self.writeLog(_('Preparing a list of picons from the picon directory on the local disk...'))
-        self.piconCodesInHDD = {}
+        self.SRC_in_HDD = {}
         dir_list = glob.glob(self.piconDIR + '/*.png')
         if dir_list:
             for path_N_file in dir_list:
-                self.piconCodesInHDD.update( { path_N_file.split("/")[-1].split(".")[0]  :   int(os_path.getsize(path_N_file))  } )     # os.stat.st_time('/etc/enigma2/'+filename)
+                self.SRC_in_HDD.update( { path_N_file.split("/")[-1].split(".")[0]  :   int(os_path.getsize(path_N_file))  } )     # os.stat.st_time('/etc/enigma2/'+filename)
 
-        # 4) Vytvorí sa zoznam picon, zo serv.ref.kódov nájdených vo všetkych userbouquet súboroch na disku (vytiahnem z nich len servisné referenčné kódy)
-        self.writeLog(_('Preparing a list of picons from userbouquet files...'))
-        self.piconCodesInBouquets = ''
-        for bq_file in self.bouqet_list:
-            self.piconCodesInBouquets += open(bq_file,'r').read()
-            #with open(bq_file) as f:
-            #    self.piconCodesInBouquets += f.read()
-        self.piconCodesInBouquets = re.findall('.*#SERVICE\s([0-9a-fA-F]+_0_[0-9a-fA-F_]+0_0_0).*\n*', self.piconCodesInBouquets.replace(":","_") )
-        self.piconCodesInBouquets = list(set(self.piconCodesInBouquets))          # remove duplicated entries --- converting to <set> and then again back to the <list>
-        self.writeLog(_('...done.'))
-
-        # 5) Vymažú sa neexistujúce picon-súbory na disku v set-top-box-e, ktoré sú zbytočné nakoľko neexistujú v žiadnom userbouquet súbore a teda na disku budú iba zavadziať
+        # 6) Vymažú sa neexistujúce picon-súbory na disku v set-top-box-e, ktoré sú zbytočné, nakoľko neexistujú tiež v žiadnom userbouquet súbore a teda na disku budú iba zavadziať
         self.writeLog(_('Deleting unneccessary picons from local disk...'))
-        self.piconsToDelete = list(  set(self.piconCodesInHDD.keys()) - set(self.piconCodesInBouquets)  )
-        #self.piconsToDelete = list(  set( [self.kluc for self.kluc in self.piconCodesInHDD] )  -  set(self.piconCodesInBouquets)   )
-        for self.piconcode in self.piconsToDelete:
-            os_remove(self.piconDIR + '/' + self.piconcode + '.png') # v OpenATV nedostavam v adresaroch aj lomitko naviac, takze ho tu musim pridavat
-            #os_remove(self.piconDIR + self.piconcode + '.png') # v OpenPLi dostavam v adresaroch aj lomitko naviac, takze ho tu netreba pridavat
+        self.SRC_to_Delete = list(  set(self.SRC_in_HDD.keys()) - set(self.SRC_in_Bouquets)  )
+        #self.SRC_to_Delete = list(  set( [self.kluc for self.kluc in self.SRC_in_HDD] )  -  set(self.SRC_in_Bouquets)   )
+        for src in self.SRC_to_Delete:
+            os_remove(self.piconDIR + '/' + src + '.png')       # v OpenATV nedostavam v adresaroch aj znak lomitka naviac, takze ho tu musim pridavat
+            #os_remove(self.piconDIR + src + '.png')            # v OpenPLi dostavam v adresaroch aj znak lomitka naviac, takze ho tu netreba pridavat
             piconResults['removed'] += 1
         self.writeLog(_('...%s picons deleted.') % piconResults['removed'] )
-
-        # 6) Pripraví sa zoznam názvov archívov .7z pre sťahovanie z internetu - podľa konfigurácie pluginu
+        
+        # 7) Pripraví sa zoznam názvov všetkých súborov .7z na sťahovanie z internetu - podľa konfigurácie pluginu
         self.filesForDownload = []
         for sat in config.plugins.chocholousekpicons.usersats.value:            # example:  ['19.2E','23.5E']
             self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , sat)   )
-
-        # 7) Následovne v cykle sa budú sťahovať z internetu všetky používateľom zafajknuté archívy s piconami a spracovávať po jednom (t.j. pre viacero družíc, postupne jeden archív a potom stiahnem ďalší a znova spracujem)
+        
+        # 8) Ďalej sa v cykle stiahnú z internetu a spracujú sa všetky používateľom zafajknuté archívy s piconami - spracuvávajú sa po jednom (pre viac družíc - postupne každý jeden archív sa stiahne a spracuje)
         self.writeLog(_('The process started...') + _('(downloading and extracting all necessary picons)')  )
         self.writeLog('#' * 40)
         for count, fname in enumerate(self.filesForDownload, 1):
             s = ' %s / %s ' % (count, len(self.filesForDownload))
             self.writeLog('-' * 16 + s.ljust(20,'-'))
             self.proceedArchiveFile(fname)
-            #self.writeLog('-' * 40)
         self.writeLog('#' * 40)
         self.writeLog(_('...the process is complete.') + _('(downloading and extracting all necessary picons)')  )
         
-        # 8) Nakoniec sa zobrazí výsledok celého procesu do konzoly a zavolá sa "ukončovacia procedúra" (metóda) pod aktuálnou triedou, určenou na updatovanie pikon
+        # 9) Nakoniec sa zobrazí výsledok celého procesu do konzoly a zavolá sa "ukončovacia procedúra" (metóda) pod aktuálnou triedou, určenou na updatovanie pikon
         if piconResults['added'] or piconResults['changed']:
             message = _('After updating the picons you may need to restart the Enigma (GUI).') + '\n' + _('(%s added / %s changed / %s removed)') % (piconResults['added'] , piconResults['changed'] , piconResults['removed'])
             self.abortPiconsUpdating(False, message)
         else:
             message = _('No picons added or changed.') + '\n' + _('(%s added / %s changed / %s removed)') % (piconResults['added'] , piconResults['changed'] , piconResults['removed'])
             self.abortPiconsUpdating(False, message)
-
+    
     def proceedArchiveFile(self, search_filename):
 
-        # 0. Vyhľadanie google.drive ID kódu v obsahu "chochoContent" pre download konkrétneho súboru
+        # 1. Vyhľadanie google.drive ID - kódu v "chochoContent", pre konkrétny súbor (pre potrebu jeho následovného stiahnutia)
         found = []
         for line in self.chochoContent.splitlines():
             if search_filename in line:
                 found = line.split()
                 break
-        
         if not found:
             self.writeLog(_('Download ID for file %s was not found!') % search_filename)
             self.abortPiconsUpdating(True, _('Download ID for file %s was not found!') % search_filename )
-        
         url_link = 'https://drive.google.com/uc?export=download&id=' + found[0]
         dwn_filename = found[1].replace('(','_').replace(')','_')               # replace the filename mask by new original archive filename and replace the parentheses by underline characters
 
-        # 1. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
+        # 2. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
         self.writeLog(_('Trying download the file archive... %s') % dwn_filename)
         if not downloadFile(url_link, '/tmp/' + dwn_filename):
             self.writeLog(_('...file download failed !'))
             self.abortPiconsUpdating(True, _('Download failed!\nFile: %s\nURL: %s') % ('/tmp/' + dwn_filename , url_link)   )
         else:
             self.writeLog(_('...file download successful.'))
-
-        # 2. Načítanie zoznamu všetkých súborov z archívu, včetne ich atribútov (veľkosti súborov)
+                
+        # 3. Načítanie zoznamu všetkých .png súborov z archívu, včetne ich atribútov (veľkostí súborov)
         self.writeLog(_('Browse the contents of the downloaded archive file.'))
-        self.piconCodesInArchive = self.getPiconListFromArchive('/tmp/' + dwn_filename)
-        if not self.piconCodesInArchive:
+        self.SRC_in_Archive = self.getPiconListFromArchive('/tmp/' + dwn_filename)
+        if not self.SRC_in_Archive:
             self.writeLog(_('Error! No picons found in the downloaded archive file!'))
             return          # navratenie vykonavania kodu z tohto podprogramu pre spracovanie archivu/suboru s piconami
 
-        # 3. Rozbalenie a prepísanie potrebných picon (podľa listu potrebných piconiek), priamo do zložky s piconami v internej flash pamäti alebo do USB kľúča
-        # 3A. ak meno súboru na disku existuje, tak potom ak veľkosť súborov sa nezhoduje, tak súbor nakopírujem/prepíšem z archívu na disk
-        # 3B. ak meno súboru na disku vôbec neexistuje, tak súbor nakopírujem z archívu na disk
+        # 4. Rozbalenie úplne všetkých pikon - ak užívateľ zvolil v plugin-konfigurácii metódu aktualizácie všetkých pikon - kópiou pikon z archívu) + návrat zpäť
+        #    v opačnom prípade bude updatovací algoritmus pokračovať ďalej
+        if 'all' == config.plugins.chocholousekpicons.method.value:
+            self.extractAllPiconsFromArchive('/tmp/' + dwn_filename)
+            global piconResults
+            piconResults['added'] += len(self.SRC_in_Archive)
+            return
+        
+        # 5. Rozbalenie a prepísanie potrebných picon (podľa listu potrebných piconiek), priamo do zložky s piconami v internej flash pamäti alebo do USB kľúča
+        # 5A. ak meno súboru na disku existuje, tak potom ak veľkosť súborov sa nezhoduje, tak súbor nakopírujem/prepíšem z archívu na disk
+        # 5B. ak meno súboru na disku vôbec neexistuje, tak súbor nakopírujem z archívu na disk
         self.writeLog(_('Preparing picon list for extracting (missing files and files of different sizes)...'))
-        self.piconsToExtract = []
+        self.SRC_to_Extract = []
         global piconResults
-        # zaujimam sa len o tie picony z archivu, ktore sa nachadzaju zaroven v zozname piconCodesInBouquets a zaroven v zozname piconCodesInArchive - tzn. vyberiem len zhodne prvky z dvoch mnozin: set(a) & set(b)
-        #print('MYDEBUGLOGLINE\npikony v archive: %s \n pikony v buketoch: %s \npikony z hdd: %s \nprienik: %s' % (self.piconCodesInArchive, self.piconCodesInBouquets, self.piconCodesInHDD, set(self.piconCodesInArchive) & set(self.piconCodesInBouquets)  ))
-        for piconcode in set(self.piconCodesInArchive) & set(self.piconCodesInBouquets):
-            if piconcode in self.piconCodesInHDD:                                          # ak sa uz nachadza cez cyklus prechadzana picona z archivu aj na HDD (v klucoch slovnikoveho typu), tak...
-                if self.piconCodesInHDD[piconcode] != self.piconCodesInArchive[piconcode]: # porovnam este velkosti tychto dvoch piconiek (archiv VS. HDD) a ak su velkosti picon odlisne...
-                    self.piconsToExtract.append(piconcode)                                 # tak pridam tuto piconu do zoznamu potrebnych pre pozdejsie nakopirovanie pikon z archivu
+        # zaujimam sa len o tie picony z archivu, ktore sa nachadzaju zaroven v zozname SRC_in_Bouquets a zaroven v zozname SRC_in_Archive - tzn. vyberiem len zhodne prvky z dvoch mnozin: set(a) & set(b)
+        #print('MYDEBUGLOGLINE\npikony v archive: %s \n pikony v buketoch: %s \npikony z hdd: %s \nprienik: %s' % (self.SRC_in_Archive, self.SRC_in_Bouquets, self.SRC_in_HDD, set(self.SRC_in_Archive) & set(self.SRC_in_Bouquets)  ))
+        for src in set(self.SRC_in_Archive) & set(self.SRC_in_Bouquets):
+            if src in self.SRC_in_HDD:                               # ak sa uz nachadza cez cyklus prechadzana picona z archivu aj na HDD (v klucoch slovnikoveho typu), tak...
+                if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]: # porovnam este velkosti tychto dvoch piconiek (archiv VS. HDD) a ak su velkosti picon odlisne...
+                    self.SRC_to_Extract.append(src)                  # tak pridam tuto piconu do zoznamu potrebnych pre pozdejsie nakopirovanie pikon z archivu
                     piconResults['changed'] += 1
                 else:
                     pass
-            else:                                                                          # no ak sa vobec este nenachadza cyklom prechadzana picona z archivu aj na HDD, tak...
-                self.piconsToExtract.append(piconcode)                                     # ju musim nakopirovat na HDD (pridam ju na zoznam kopirovanych)
+            else:                                                    # ak sa vobec este nenachadza cyklom prechadzana picona z archivu aj na HDD, tak...
+                self.SRC_to_Extract.append(src)                      # musim tuto piconu nakopirovat na HDD (pridam ju na zoznam kopirovanych)
                 piconResults['added'] += 1
 
-        # Overovanie, či sa našli vôbec nejaké picony k nakopírovaniu do boxu, ak áno potom sa začne extrakcia + kopírovanie súborov,
-        # a v prípade že sa nenašli, tak funkcia bude prerušená (k žiadnému nakopírovaniu súborov nedôjde)
-        if self.piconsToExtract:
-            self.extractPiconsFromArchive('/tmp/' + dwn_filename , self.piconsToExtract)        
-        self.writeLog(_('...%s picons was extracted from the archive.') % len(self.piconsToExtract))
+        # 6. Overenie, či sa našli vôbec nejaké picony na extrahovanie
+        if self.SRC_to_Extract:
+            self.extractCertainPiconsFromArchive('/tmp/' + dwn_filename , self.SRC_to_Extract)        
+        self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_to_Extract))
 
         os_remove('/tmp/' + dwn_filename)
 
@@ -792,7 +803,7 @@ class piconsUpdateJobScreen(Screen):
         status, out = getstatusoutput('%s l %s' % (self.bin7zip, archiveFile) )     # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
-            tempDict = {}
+            tmp = {}
             i = -3
             while not "-----" in out[i]:
                 # vycucnem udaje z vystupu Shell-u, vsetky subory (jednotlivo po riadkoch):
@@ -800,9 +811,9 @@ class piconsUpdateJobScreen(Screen):
                 # out:   2018-07-14 14:48:53 ....A          797               CONTROL/postinst
                 fdatetime, fattr, fsize, fpath = out[i][0:19] , out[i][20:25] , out[i][26:38] , out[i][53:]
                 if fattr[0] != 'D':         # retreive all files with a full path, but no individual directories from the list
-                    tempDict.update({  fpath.split('/')[-1].split('.')[0]  :  int(fsize)  })            # { "service_reference_code_<as_a_string-dictionary_key>"  :  file_size_<as_a_integer> }
+                    tmp.update({  fpath.split('/')[-1].split('.')[0]  :  int(fsize)  })            # { "service_reference_code_<as_a_string-dictionary_key>"  :  file_size_<as_a_integer> }
                 i -= 1
-            return tempDict
+            return tmp
         elif status == 32512:
             self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
         elif status == 512:
@@ -810,13 +821,14 @@ class piconsUpdateJobScreen(Screen):
         else:
             self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out) )
         return ''         # return the empty string on any errors !
-
-    def extractPiconsFromArchive(self, archiveFile, piconsForProcessing):
+    
+    def extractCertainPiconsFromArchive(self, archiveFile, piconsForProcessing):
         self.writeLog(_('Extracting files from the archive...'))
-        with open('/tmp/picons-to-extraction.txt','w') as f:
+        with open('/tmp/picons-to-extraction.txt', 'w') as f:
             for s in piconsForProcessing:
                 f.write(s + '.png\n')
         status, out = getstatusoutput('%s e -y -o%s %s @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile) )
+        os_remove('/tmp/picons-to-extraction.txt')
         if status == 0:
             self.writeLog(_('...done.'))
             return True
@@ -826,10 +838,22 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
         else:
             self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
-        if os_path.exists('/tmp/picons-to-extraction.txt'):
-            os_remove('/tmp/picons-to-extraction.txt')
         return False
-
+    
+    def extractAllPiconsFromArchive(self, archiveFile):
+        self.writeLog(_('Extracting files from the archive...'))
+        status, out = getstatusoutput('%s e -y -o%s %s' % (self.bin7zip, self.piconDIR, archiveFile) )
+        if status == 0:
+            self.writeLog(_('...done.'))
+            return True
+        elif status == 32512:
+            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
+        elif status == 512:
+            self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
+        else:
+            self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
+        return False
+        
     def abortPiconsUpdating(self, boo = True, msssg = ''):
         '''
         boo = True ---- to exit with some error
