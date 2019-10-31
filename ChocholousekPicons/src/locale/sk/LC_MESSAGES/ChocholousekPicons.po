@@ -28,8 +28,17 @@ msgstr "Zložka pre picony"
 msgid "User defined folder"
 msgstr "Zložka definovaná užívateľom"
 
-msgid "Include radio picons"
-msgstr "Zahrnúť picony rádií"
+msgid "Picon update method"
+msgstr "Metóda aktualizovania pikon"
+
+msgid "copy all picons (no sync)"
+msgstr "skopírovať všetky pikony (bez synch.)"
+
+msgid "sync with TV userbouquets"
+msgstr "synchronizovať so zoznamami TV kanálov"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "synchronizovať so zoznamami TV+RADIO kanálov"
 
 msgid "Satellite positions"
 msgstr "Satelitné pozície"
