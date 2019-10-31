@@ -8,7 +8,7 @@
    >    2) Sync with TV channel lists (userbouquets)
    >    3) Sync with TV + RADIO channel lists (userbouquets)
    
-   >- If the 7-zip archiver is not found on the system, it will be attempted to install it in two steps:
+   >- If the archiver is not found on the system, it will be attempted to install it in two steps:
    >
-   >    1) with opkg manager `opkg update && opkg install p7zip` (ie attempt to install 7-zip from your Enigma feed server)
-   >    2) attempt to download a standalone `7za` binary file
+   >    1) With opkg manager `opkg update && opkg install p7zip` (ie attempt to install 7-zip from your Enigma feed server)
+   >    2) Attempt to download a standalone `7za` binary file
