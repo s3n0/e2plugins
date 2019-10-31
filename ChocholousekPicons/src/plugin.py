@@ -179,7 +179,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     config.plugins.chocholousekpicons.piconFolder.setValue(picdir[0])
                     break
         config.plugins.chocholousekpicons.method = ConfigSelection(default = 'sync_tv', 
-                choices = [ ('all', _('copy all picons')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]   )
+                choices = [ ('all', _('copy all picons (no sync)')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]   )
         config.plugins.chocholousekpicons.usersats = ConfigSet(default = ['23.5E','19.2E'] , choices = self.getAllSat() )
         config.plugins.chocholousekpicons.resolution = ConfigSelection(default = '220x132',
                 choices = [ ('50x30','50x30'), ('100x60','100x60'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]     )
