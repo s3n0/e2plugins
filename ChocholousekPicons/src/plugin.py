@@ -35,7 +35,9 @@ import re
 import glob
 ###########################################################################
 from os import system as os_system, path as os_path, makedirs as os_makedirs, remove as os_remove, listdir as os_listdir
-from commands import getstatusoutput
+#from commands import getstatusoutput                                       # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
+from subprocess import check_output, CalledProcessError
+from shlex import split as shlexSplit
 from datetime import datetime
 from time import sleep
 ###########################################################################
@@ -43,7 +45,7 @@ from enigma import ePicLoad, eActionMap, eTimer, eEnv, getDesktop
 sizemaxY = getDesktop(0).size().height()
 sizemaxX = getDesktop(0).size().width()
 ###########################################################################
-from . import _, PLUGIN_PATH
+from Plugins.Extensions.ChocholousekPicons import _, PLUGIN_PATH            # from . import _, PLUGIN_PATH
 ###########################################################################
 
 
@@ -65,10 +67,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="1100,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
+            <widget name="config"      position="center,100" size="1000,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
+            
             <widget name="version_txt" position="0,0" size="1100,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="author_txt"  position="0,60" size="1100,40" font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-
-            <widget name="config"      position="center,100" size="1000,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
 
             <widget name="previewImage" position="100,350" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
@@ -86,10 +88,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="850,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
+            <widget name="config"      position="center,70" size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
+            
             <widget name="version_txt" position="0,0"  size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="author_txt"  position="0,40" size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-
-            <widget name="config"      position="center,70" size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
 
             <widget name="previewImage" position="70,225" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
@@ -127,7 +129,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self['version_txt']  = Label('Chocholousek picons - plugin ver.%s' % plugin_version_local)
         self['author_txt']   = Label('(https://github.com/s3n0)')
 
-        self['actions'] = ActionMap( ['SetupActions', 'ColorActions'], {
+        self['actions'] = ActionMap( ['SetupActions', 'ColorActions'],
+        {
             'left'  : self.keyToLeft,
             'right' : self.keyToRight,
             'yellow': self.keyToUpdatePlugin,
@@ -136,8 +139,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
             'red'   : self.exitWithoutSave,
             'cancel': self.keyToExit,
             'ok'    : self.keyToOk
-            } , -2)
-
+        }, -2)
+        
         global piconResults
         piconResults = {'added': 0, 'changed': 0, 'removed': 0}
 
@@ -150,7 +153,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
         #self.prepareSetup()
 
         self.layoutFinishTimer = eTimer()
-        self.layoutFinishTimer.callback.append(self.prepareSetup)
+        if newOE():
+            i = mainConfigScreen.skin.index('font=')
+            self.skin = mainConfigScreen.skin[ : i ] + mainConfigScreen.skin[ i+34 : ]
+            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for newer versions (OE2.5)
+        else:
+            self.skin = mainConfigScreen.skin
+            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions (OE2.0)
         self.layoutFinishTimer.start(200, True)
 
         #self.onLayoutFinish.append(self.check7zip)      # this line is no longer useful ... Screen is still not ready to call MessageBox in check7zip()
@@ -182,12 +191,18 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 choices = [ ('all', _('copy all picons (no sync)')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]   )
         config.plugins.chocholousekpicons.usersats = ConfigSet(default = ['23.5E','19.2E'] , choices = self.getAllSat() )
         config.plugins.chocholousekpicons.resolution = ConfigSelection(default = '220x132',
-                choices = [ ('50x30','50x30'), ('100x60','100x60'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]     )
+                choices = [ ('50x30','50x30'), ('100x60','100x60'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]     )
         config.plugins.chocholousekpicons.background = ConfigSelection(default = 'black',
                 choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]   )
 
         self.downloadPreviewPicons()
         self.rebuildConfigList()
+
+    def getCursorEntry(self):
+        return self["config"].getCurrent()[0]
+
+    def getCursorValue(self):
+        return str(self["config"].getCurrent()[1].getText())
 
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
@@ -198,12 +213,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.rebuildConfigList()
 
     def keyToOk(self):
-        k = self['config'].getCurrent()[0]              # [0] = config text/label (from cursor position) ,  [1] user selected config value (from cursor position)
+        k = self.getCursorEntry()
         if k == _('Satellite positions'):
-            self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat() )
+            self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat())
         elif k == _('User defined folder'):
             self.keyOK()
-
+    
     def satellitesConfigScreenReturn(self, retval):
         if retval:
             self.loadChochoContent()        # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
@@ -221,7 +236,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         global pluginUpdateDo, plugin_version_local
         if pluginUpdateDo():
             message = _("The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?")
-            self.session.openWithCallback(self.restartEnigmaBeforeClosing, MessageBox, message, type = MessageBox.TYPE_YESNO, default = False)
+            self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type = MessageBox.TYPE_YESNO, default = False)
         else:
             message = _("Plugin version is up to date.\n\n"
                         "Installed version: %s") % (plugin_version_local)
@@ -234,8 +249,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.exitWithConditionalSave(False)
 
     def keyToExit(self):
-        self.s = self['txt_green'].getText()
-        if self.s[-1:] == '*':                  # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
+        if self['txt_green'].getText().endswith('*'):       # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
             message = _("You have changed the plugin configuration.\nDo you want to save all changes now ?")
             self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
         else:
@@ -254,11 +268,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def changedEntry(self):
         for x in self.onChangedEntry:
             x()
+        
         self['txt_green'].setText(_('Save & Exit') + '*')
-
-        k = self['config'].getCurrent()[0]
+        k = self.getCursorEntry()
         if k == _('Picon resolution'):
-            self.reloadAvailableBackgrounds()
+            self.reloadAvailableBackgrounds()               # reload all available backgrounds/styles for the new changed picon resolution
         #elif k == _('Picon background'):
         #    self.showPreviewImage()
 
@@ -272,12 +286,18 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution  ))
         self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
         
-        self['config'].list = self.list
-        self['config'].setList(self.list)           # self['config'].l.setList(self.list)
+        #self['config'].setFont(0, gFont("Regular", 30))
+        #self['config'].setItemHeight(32)
+        
+        #self["config"].l.setValueFont(gFont("Regular", 30))
+        #self["config"].l.setItemHeight(32)
+        
+        self['config'].l.list = self.list
+        self['config'].l.setList(self.list)           # self['config'].setList(self.list)
         
         self.showPreviewImage()
 
-    def restartEnigmaBeforeClosing(self, answer = None):
+    def restartEnigmaOrCloseScreen(self, answer = None):
         if answer:
             self.session.open(TryQuitMainloop, 3)   # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
         else:
@@ -505,12 +525,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
         else:
             return 0
 
-    #def getAllRes(self): # Resolutions
+    #def getAllRes(self):       # all picon resolutions
     #    tmp = list(set(re.findall('.*picon.*-([0-9]+x[0-9]+)-23\.5.*\n+', self.chochoContent)))
     #    tmp = [int(x) for x in tmp]     # simple sort method for numeric strings (better as the .sort() method)
     #    return tmp
 
-    #def getAllBck(self): # Backgrounds
+    #def getAllBck(self):       # all picon backgrounds (styles)
     #    return re.findall('.*picon(.*)-220x132-23\.5.*\n+', self.chochoContent)
 
 
@@ -523,22 +543,20 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     if sizemaxX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="title_txt" position="center,40" size="350,60" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
-
-            <widget name="config" position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
-
+            <widget name="config"    position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
+            <widget name="title_txt" position="center,40"  size="350,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
+            
             <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <widget render="Label" source="txt_green" position="65,854" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"        position="65,854" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="350,600" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="title_txt" position="center,20" size="300,40" font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
-
-            <widget name="config" position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
-
+            <widget name="config"    position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
+            <widget name="title_txt" position="center,20" size="300,40"  font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
+            
             <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <widget render="Label" source="txt_green" position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"        position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
 
     def __init__(self, session, satList):
@@ -557,14 +575,21 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self['title_txt'] = Label(_('Select satellites:'))
         self['txt_green'] = StaticText(_('OK'))
 
-        self["actions"] = ActionMap( ["SetupActions", "ColorActions"], {
+        self["actions"] = ActionMap( ["SetupActions", "ColorActions"], 
+        {
             'left'  : self.keyToLeft,
             'right' : self.keyToRight,
             'green' : self.keyToExit,
             'ok'    : self.keyToExit,
             'cancel': self.keyToExit
-            } , -2)
+        }, -2)
 
+        if newOE():
+            i = satellitesConfigScreen.skin.index('font=')
+            self.skin = satellitesConfigScreen.skin[ : i ] + mainConfigScreen.skin[ i+34 : ]
+        else:
+            self.skin = satellitesConfigScreen.skin
+        
         self.onShown.append(self.rebuildConfigList)
 
     def keyToLeft(self):
@@ -596,8 +621,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
                 self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=True)  ) )
             else:
                 self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=False) ) )
-        self['config'].list = self.list
-        self['config'].setList(self.list)           # self['config'].l.setList(self.list)
+        self['config'].l.list = self.list
+        self['config'].l.setList(self.list)           # self['config'].setList(self.list)
 
     def keyToExit(self):
         self.s = self['txt_green'].getText()
@@ -635,15 +660,18 @@ class piconsUpdateJobScreen(Screen):
             "down"  :   self["logWindow"].pageDown,
             "right" :   self["logWindow"].pageDown
             }, -1)
-
+        
         self.timeoutPrevention = eTimer()
-        self.timeoutPrevention.callback.append(self.abortPiconsUpdating)
-        self.timeoutPrevention.start(15000, True)                  # [miliseconds] ..... True = to run only once / False = to run repeatedly
-
+        if newOE():
+            self.timeoutPrevention_conn = self.timeoutPrevention.timeout.connect(self.abortPiconsUpdating)      # eTimer for newer versions (OE2.5)
+        else:
+            self.timeoutPrevention.callback.append(self.abortPiconsUpdating)                                    # eTimer for older versions (OE2.0)
+        self.timeoutPrevention.start(15000, True)                           # [miliseconds] ..... True = to run only once / False = to run repeatedly
+        
         self.startTime = datetime.now()
-
+        
         threading.Thread(target = self.mainFunc).start()
-
+        
         #self.onLayoutFinish.append(self.mainFunc)
         #self.onShown.append(self.mainFunc)
         #self.onClose.append(self.nazov_funkcie)
@@ -653,7 +681,7 @@ class piconsUpdateJobScreen(Screen):
         piconResults = {'added': 0, 'changed': 0, 'removed': 0}
         
         # 1) Ocheckuje sa internetové pripojenie
-        if os_system('ping -c 1 -w 1 www.google.com > /dev/null 2>&1'):
+        if os_system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr enigma image
             self.abortPiconsUpdating(True, _("Internet connection is not available !") )
         else:
             self.writeLog(_('Internet connection is OK.'))
@@ -679,8 +707,8 @@ class piconsUpdateJobScreen(Screen):
         #    self.abortPiconsUpdating(True, _('The configured picon folder does not exist!\nPlease check the picon folder in plugin configuration.\nCurrent picon folder: %s') % (self.piconDIR)  )
         
         if 'sync' in config.plugins.chocholousekpicons.method.value:
-            # 4.a) Vytvorí sa zoznam serv.ref.kódov nájdených vo všetkych userbouquet súboroch v set-top boxe (vytiahnem z nich len servisné referenčné kódy)        
-            self.writeLog(_('Preparing a list of picons from userbouquet files...'))
+        # 4.A) Vytvorí sa zoznam serv.ref.kódov nájdených vo všetkych userbouquet súboroch v set-top boxe (vytiahnem z nich len servisné referenčné kódy)        
+            self.writeLog(_('Preparing a list of picons from userbouquet files.'))
             self.SRC_in_Bouquets = ''
             for bq_file in self.bouqet_list:
                 self.SRC_in_Bouquets += open(bq_file,'r').read()
@@ -690,11 +718,11 @@ class piconsUpdateJobScreen(Screen):
             self.SRC_in_Bouquets = list(set(self.SRC_in_Bouquets))              # remove duplicate items ---- converting to <set> and then again back to the <list>
             self.writeLog(_('...done.'))
         else:
-            # 4.b) Vytvorí sa fiktívny t.j. prázdny zoznam SRC kódov z userbouquets súborov, aby v ďalšiom kroku boli všetky aktuálne pikony na lokálnom disku kompletne zmazané
+        # 4.B) Vytvorí sa fiktívny t.j. prázdny zoznam SRC kódov z userbouquet zoznamov, aby v ďalšiom kroku boli všetky aktuálne pikony na lokálnom disku vymazané (metóda bez synchronizácie pikon s userbouquets)
             self.SRC_in_Bouquets = []
         
         # 5) Vytvorí sa zoznam picon uložených na lokálnom disku (v internom flash-disku alebo na externom USB či HDD) - včetne veľkostí týchto súborov !
-        self.writeLog(_('Preparing a list of picons from the picon directory on the local disk...'))
+        self.writeLog(_('Preparing a list of picons from the picon directory on the local disk.'))
         self.SRC_in_HDD = {}
         dir_list = glob.glob(self.piconDIR + '/*.png')
         if dir_list:
@@ -704,7 +732,6 @@ class piconsUpdateJobScreen(Screen):
         # 6) Vymažú sa neexistujúce picon-súbory na disku v set-top-box-e, ktoré sú zbytočné, nakoľko neexistujú tiež v žiadnom userbouquet súbore a teda na disku budú iba zavadziať
         self.writeLog(_('Deleting unneccessary picons from local disk...'))
         self.SRC_to_Delete = list(  set(self.SRC_in_HDD.keys()) - set(self.SRC_in_Bouquets)  )
-        #self.SRC_to_Delete = list(  set( [self.kluc for self.kluc in self.SRC_in_HDD] )  -  set(self.SRC_in_Bouquets)   )
         for src in self.SRC_to_Delete:
             os_remove(self.piconDIR + '/' + src + '.png')       # v OpenATV nedostavam v adresaroch aj znak lomitka naviac, takze ho tu musim pridavat
             #os_remove(self.piconDIR + src + '.png')            # v OpenPLi dostavam v adresaroch aj znak lomitka naviac, takze ho tu netreba pridavat
@@ -757,49 +784,48 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog(_('...file download successful.'))
                 
         # 3. Načítanie zoznamu všetkých .png súborov z archívu, včetne ich atribútov (veľkostí súborov)
-        self.writeLog(_('Browse the contents of the downloaded archive file.'))
+        #self.writeLog(_('Browse the contents of the downloaded archive file.'))
         self.SRC_in_Archive = self.getPiconListFromArchive('/tmp/' + dwn_filename)
         if not self.SRC_in_Archive:
             self.writeLog(_('Error! No picons found in the downloaded archive file!'))
             return          # navratenie vykonavania kodu z tohto podprogramu pre spracovanie archivu/suboru s piconami
 
-        # 4. Rozbalenie úplne všetkých pikon - ak užívateľ zvolil v plugin-konfigurácii metódu aktualizácie všetkých pikon - kópiou pikon z archívu) + návrat zpäť
-        #    v opačnom prípade bude updatovací algoritmus pokračovať ďalej
-        if 'all' == config.plugins.chocholousekpicons.method.value:
-            self.extractAllPiconsFromArchive('/tmp/' + dwn_filename)
-            global piconResults
-            piconResults['added'] += len(self.SRC_in_Archive)
-            return
-        
-        # 5. Rozbalenie a prepísanie potrebných picon (podľa listu potrebných piconiek), priamo do zložky s piconami v internej flash pamäti alebo do USB kľúča
-        # 5A. ak meno súboru na disku existuje, tak potom ak veľkosť súborov sa nezhoduje, tak súbor nakopírujem/prepíšem z archívu na disk
-        # 5B. ak meno súboru na disku vôbec neexistuje, tak súbor nakopírujem z archívu na disk
-        self.writeLog(_('Preparing picon list for extracting (missing files and files of different sizes)...'))
-        self.SRC_to_Extract = []
+        # 4. Rozbalenie pikon zo stiahnutého archívu
+        self.writeLog(_('Extracting files from the archive...'))
         global piconResults
-        # zaujimam sa len o tie picony z archivu, ktore sa nachadzaju zaroven v zozname SRC_in_Bouquets a zaroven v zozname SRC_in_Archive - tzn. vyberiem len zhodne prvky z dvoch mnozin: set(a) & set(b)
-        #print('MYDEBUGLOGLINE\npikony v archive: %s \n pikony v buketoch: %s \npikony z hdd: %s \nprienik: %s' % (self.SRC_in_Archive, self.SRC_in_Bouquets, self.SRC_in_HDD, set(self.SRC_in_Archive) & set(self.SRC_in_Bouquets)  ))
-        for src in set(self.SRC_in_Archive) & set(self.SRC_in_Bouquets):
-            if src in self.SRC_in_HDD:                               # ak sa uz nachadza cez cyklus prechadzana picona z archivu aj na HDD (v klucoch slovnikoveho typu), tak...
-                if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]: # porovnam este velkosti tychto dvoch piconiek (archiv VS. HDD) a ak su velkosti picon odlisne...
-                    self.SRC_to_Extract.append(src)                  # tak pridam tuto piconu do zoznamu potrebnych pre pozdejsie nakopirovanie pikon z archivu
-                    piconResults['changed'] += 1
-                else:
-                    pass
-            else:                                                    # ak sa vobec este nenachadza cyklom prechadzana picona z archivu aj na HDD, tak...
-                self.SRC_to_Extract.append(src)                      # musim tuto piconu nakopirovat na HDD (pridam ju na zoznam kopirovanych)
-                piconResults['added'] += 1
-
-        # 6. Overenie, či sa našli vôbec nejaké picony na extrahovanie
-        if self.SRC_to_Extract:
-            self.extractCertainPiconsFromArchive('/tmp/' + dwn_filename , self.SRC_to_Extract)        
-        self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_to_Extract))
-
+        if 'all' == config.plugins.chocholousekpicons.method.value:
+            #### Ak používateľ zvolil v plugin-konfigurácii metódu aktualizácie všetkých pikon - kópiou pikon z archívu) tak...
+            piconResults['added'] += len(self.SRC_in_Archive)
+            self.extractAllPiconsFromArchive('/tmp/' + dwn_filename)
+            self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_in_Archive))
+        else:        
+            #### V prípade metódy synchronizácie, prebehne rozbalenie a prepísanie iba potrebných picon (podľa listu potrebných piconiek)
+            # (A) ak meno súboru na disku už existuje, tak potom porovnam veľkosť týchto dvoch súborov a ak sa nezhodujú tak súbor nakopírujem (prepíšem) z archívu na disk
+            # (B) ak meno súboru na disku ešte vôbec neexistuje, tak súbor jednoducho nakopírujem z archívu na disk
+            self.writeLog(_('Preparing picon list for extracting (missing files and files of different sizes).'))
+            self.SRC_to_Extract = []
+            # Zaujímam sa iba o tie picony z archívu, ktoré sa nachádzajú zároveň v zozname SRC_in_Bouquets a zároveň v zozname SRC_in_Archive
+            # Tzn. že budem prechádzať len zoznam zhodných pikon v archíve + v bouquets ... zoznam zhodných prvkov získam pomocou operácie s množinami:  set(A) & set(B)
+            for src in set(self.SRC_in_Archive) & set(self.SRC_in_Bouquets):
+                if src in self.SRC_in_HDD:                                  # ak sa uz konkretna pikona z archivu nachadza na HDD, tak...
+                    if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]:    # porovnam este velkosti tychto dvoch pikon (Archiv VS. HDD) a ak su velkosti picon odlisne...
+                        self.SRC_to_Extract.append(src)                     # tak pridam tuto pikonu na zoznam kopirovanych pikon (zoznam pikon na extrahovanie)
+                        piconResults['changed'] += 1
+                    else:
+                        pass
+                else:                                                       # ak sa pikona zo zoznamu "potrebnych" este nenachadza na HDD, tak...
+                    self.SRC_to_Extract.append(src)                         # musim tuto pikonu pridat na zoznam kopirovanych (zoznam pikon na extrahovanie)
+                    piconResults['added'] += 1
+                self.SRC_in_Bouquets.remove(src)                            # tuto pikonu uz viac nebudem musiet kopirovat na HDD, ak by sa nachadzala dalsia kopia aj v inych stiahnutych archivoch, takze ju odstranim zo zoznamu SRC_in_Bouquets
+            # Extrahovanie vybraných konkrétnych pikon (len v prípade, že sú tam nejaké pikony na extrahovanie)
+            if self.SRC_to_Extract:
+                self.extractCertainPiconsFromArchive('/tmp/' + dwn_filename , self.SRC_to_Extract)
+            self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_to_Extract))
         os_remove('/tmp/' + dwn_filename)
 
     def getPiconListFromArchive(self, archiveFile = ''):
-        #out, status = subprocess.Popen([self.bin7zip, 'l', archiveFile], stdout=subprocess.PIPE ).communicate()
-        #out = subprocess.check_output([self.bin7zip, 'l', archiveFile])
+        #t = subprocess.Popen([self.bin7zip, 'l', archiveFile], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        #status, out = t.returncode, t.communicate()[0]
         status, out = getstatusoutput('%s l %s' % (self.bin7zip, archiveFile) )     # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
@@ -822,15 +848,12 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out) )
         return ''         # return the empty string on any errors !
     
-    def extractCertainPiconsFromArchive(self, archiveFile, piconsForProcessing):
-        self.writeLog(_('Extracting files from the archive...'))
+    def extractCertainPiconsFromArchive(self, archiveFile, SRC_list):
         with open('/tmp/picons-to-extraction.txt', 'w') as f:
-            for s in piconsForProcessing:
-                f.write(s + '.png\n')
-        status, out = getstatusoutput('%s e -y -o%s %s @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile) )
+            f.write('.png\n'.join(SRC_list) + '.png\n')
+        status, out = getstatusoutput('%s e -y -o%s %s @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile)  )
         os_remove('/tmp/picons-to-extraction.txt')
         if status == 0:
-            self.writeLog(_('...done.'))
             return True
         elif status == 32512:
             self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
@@ -841,10 +864,8 @@ class piconsUpdateJobScreen(Screen):
         return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
-        self.writeLog(_('Extracting files from the archive...'))
         status, out = getstatusoutput('%s e -y -o%s %s' % (self.bin7zip, self.piconDIR, archiveFile) )
         if status == 0:
-            self.writeLog(_('...done.'))
             return True
         elif status == 32512:
             self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
@@ -870,20 +891,19 @@ class piconsUpdateJobScreen(Screen):
                 self.message = _('Done !') + '\n' + _('(%s added / %s changed / %s removed)') % (piconResults['added'] , piconResults['changed'] , piconResults['removed'])
         self.writeLog(self.message)
         sleep(3)
-        if self.timeoutPrevention is not None:
+        if self.timeoutPrevention.isActive():                   # if self.timeoutPrevention is not None:
             self.timeoutPrevention.stop()
-        self.timeoutPrevention = None
         self['logWindow'].hide()
         self.session.open(MessageBox, self.message, type = self.type)
         self.close()
 
     def writeLog(self, msgg = ''):
-        if self.timeoutPrevention is not None:
+        if self.timeoutPrevention.isActive():                   # if self.timeoutPrevention is not None:
             self.timeoutPrevention.stop()
             print(msgg)
             self['logWindow'].appendText('\n[' + str( ( datetime.now() - self.startTime ).total_seconds() ).ljust(10,"0")[:6] + '] ' + msgg)
             self['logWindow'].lastPage()
-            self.timeoutPrevention.start(20000, True)                  # [miliseconds] ..... True = to run only once / False = to run repeatedly
+            self.timeoutPrevention.start(20000, True)           # [miliseconds] ..... True = to run only once / False = to run repeatedly
 
 
 ###########################################################################
@@ -966,69 +986,37 @@ def downloadFile(url, targetfile):
         print("I/O Error: %s, File: %s" % (e.reason, targetfile))
         return False
     except Exception as e:
-        print("File download error: %s, URL: %s" % (e, url))
+        print("File download error: %s, URL: %s" % (e.message, url))
         return False
     return True
 
-def downloadFile____old_without_cookie(url, targetfile):
-    header = {'User-Agent':'Mozilla/5.0'}
+def getstatusoutput(cmd):
     try:
-        req = urllib2.Request(url, None, header)
-        data = urllib2.urlopen(req).read()                  #data = urllib2.urlopen(req, context = ssl._create_unverified_context()).read()
-        with open(targetfile, 'wb') as f:
-            f.write(data)
-    except urllib2.HTTPError as e:
-        print("HTTP Error: %s, URL: %s" % (e.code, url))
-        return False
-    except urllib2.URLError as e:
-        print("URL Error: %s, URL: %s" % (e.reason, url))
-        return False
-    except IOError as e:
-        print("I/O Error: %s, File: %s" % (e.reason, targetfile))
-        return False
+        t =  0 , check_output(shlexSplit(cmd))
+    except CalledProcessError as e:
+        t = e.returncode , e.message
     except Exception as e:
-        print("File download error: %s, URL: %s" % (e, url))
-        return False
-    return True
+        t = -1 , e.message
+    except:
+        t = -1 , ''
+    return t
 
-def downloadFile________old(url, targetfile):
-    header = {'User-Agent':'Mozilla/5.0'}
+def newOE():
     try:
-        req = urllib2.Request(url, None, header)
-        handle = urllib2.urlopen(req)                   #handle = urllib2.urlopen(req, context = ssl._create_unverified_context() )
-        with open(file, 'wb') as f:
-            while True:
-                cache = handle.read(16 * 1024)
-                if not cache:
-                    break
-                f.write(cache)
-    except urllib2.HTTPError as e:
-        print("HTTP Error: %s, URL: %s" % (e.code, url))
-        return False
-    except urllib2.URLError as e:
-        print("URL Error: %s, URL: %s" % (e.reason, url))
-        return False
-    except IOError as e:
-        print("I/O Error: %s, File: %s" % (e.reason, targetfile))
-        return False
-    except Exception as e:
-        print("File download error: %s, URL: %s" % (e, url))
-        return False
-    return True
-
-def downloadFile____old(self, url, targetfile):
-    if os_system('wget -q -O "%s" --no-check-certificate "%s" > /dev/null 2>&1' % (targetfile, url)  ):
-        return False
-    else:
-        return True
-
-def downloadFile______old(self, url, targetfile):
-    status, out = getstatusoutput('wget -q -O "%s" --no-check-certificate "%s"' % (targetfile, url) )
-    if status == 0:
-        return True
-    else:
-        self.writeLog('CMD-Line: %s\nDownload error number: %s\nError console output: %s\n' % ('wget -q -O "%s" --no-check-certificate "%s"' % (targetfile,url) , status , out)   )
-        return False
+        from enigma import PACKAGE_VERSION
+        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
+        if major > 4 or major == 4 and minor >= 2:
+            retval = True                       # newer OE versions (OpenDreambox - OE2.5, ...)
+        else:
+            retval = False                      # older OE versions (OpenATV, OpenPLi, VTi, ...)
+    except:
+        retval = False
+    return retval
+    #if os_path.exists('/etc/dpkg'):
+    #    retval = True
+    #else:
+    #    retval = False
+    #return retval
 
 
 ###########################################################################
@@ -1053,11 +1041,13 @@ def Plugins(**kwargs):
     return [
         PluginDescriptor(
             where = PluginDescriptor.WHERE_SESSIONSTART,
+            needsRestart = False,
             fnc = sessionStart),
         PluginDescriptor(
             where = PluginDescriptor.WHERE_PLUGINMENU,
             name = "Chocholousek picons",
             description = "Download and update Chocholousek picons",
             icon = "images/plugin.png",
+            needsRestart = False,
             fnc = pluginMenu)
         ]
