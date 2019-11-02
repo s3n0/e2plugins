@@ -115,11 +115,11 @@ msgstr ""
 "Neboli nájdené žiadne súbory \"userbouquet\"!\n"
 "Skontrolujte prítomnosť súborov \"userbouquet\" v zložke \"/etc/enigma2\"."
 
-msgid "Preparing a list of picons from the picon directory on the local disk..."
-msgstr "Príprava zoznamu picon z lokálneho disku..."
+msgid "Preparing a list of picons from the picon directory on the local disk."
+msgstr "Príprava zoznamu picon zo zložky na lokálnom disku."
 
-msgid "Preparing a list of picons from userbouquet files..."
-msgstr "Príprava zoznamu picon zo súborov \"userbouquet\"..."
+msgid "Preparing a list of picons from userbouquet files."
+msgstr "Príprava zoznamu picon z \"userbouquets\"."
 
 msgid "...done."
 msgstr "...hotovo."
@@ -175,8 +175,8 @@ msgstr "Prechádzanie obsahu stiahnutého súboru archívu."
 msgid "Error! No picons found in the downloaded archive file!"
 msgstr "Chyba! Stiahnutý archiv neobsahuje žiadne picony!"
 
-msgid "Preparing picon list for extracting (missing files and files of different sizes)..."
-msgstr "Príprava zoznamu picon pre rozbalenie (súbory chybajúce a s odlišnou veľkosťou)..."
+msgid "Preparing picon list for extracting (missing files and files of different sizes)."
+msgstr "Príprava zoznamu picon pre rozbalenie (súbory chybajúce a s odlišnou veľkosťou)."
 
 msgid "...%s picons was extracted from the archive."
 msgstr "...%s picon bolo rozbalených z archívu."
