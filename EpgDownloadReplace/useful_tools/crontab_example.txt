@@ -1,2 +1,0 @@
-# example for upload the epg.dat file every 2nd day at 04:30
-30 04 */2 * *      sh /usr/script/epg_upload.sh
