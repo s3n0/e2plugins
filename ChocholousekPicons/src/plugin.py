@@ -140,9 +140,6 @@ class mainConfigScreen(Screen, ConfigListScreen):
             'cancel': self.keyToExit,
             'ok'    : self.keyToOk
         }, -2)
-        
-        global piconResults
-        piconResults = {'added': 0, 'changed': 0, 'removed': 0}
 
         self.bin7zip = None             # path to directory with '7z' or '7za' executable binary file
         self.chochoContent = None       # content of the file "id_for_permalinks*.log" - downloaded from google.drive
@@ -157,6 +154,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
             i = mainConfigScreen.skin.index('font=')
             self.skin = mainConfigScreen.skin[ : i ] + mainConfigScreen.skin[ i+34 : ]
             self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for newer versions (OE2.5)
+
+            #self.l.setFont(0,gFont("Regular",30))
+            #self.l.setItemHeight(32)
+            
+            #self['config'].setFont(0, gFont("Regular", 30))
+            #self['config'].setItemHeight(32)
+            
+            #self["config"].l.setValueFont(gFont("Regular", 30))
+            #self["config"].l.setItemHeight(32)
         else:
             self.skin = mainConfigScreen.skin
             self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions (OE2.0)
@@ -286,14 +292,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution  ))
         self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
         
-        #self['config'].setFont(0, gFont("Regular", 30))
-        #self['config'].setItemHeight(32)
-        
-        #self["config"].l.setValueFont(gFont("Regular", 30))
-        #self["config"].l.setItemHeight(32)
-        
-        self['config'].l.list = self.list
-        self['config'].l.setList(self.list)           # self['config'].setList(self.list)
+        self['config'].list = self.list
+        self['config'].setList(self.list)           # self['config'].setList(self.list)
         
         self.showPreviewImage()
 
@@ -585,8 +585,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         }, -2)
 
         if newOE():
-            i = satellitesConfigScreen.skin.index('font=')
-            self.skin = satellitesConfigScreen.skin[ : i ] + mainConfigScreen.skin[ i+34 : ]
+            i = satellitesConfigScreen.skin.index('font')
+            self.skin = satellitesConfigScreen.skin[ : i ] + satellitesConfigScreen.skin[ i+34 : ]
         else:
             self.skin = satellitesConfigScreen.skin
         
@@ -621,8 +621,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
                 self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=True)  ) )
             else:
                 self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=False) ) )
-        self['config'].l.list = self.list
-        self['config'].l.setList(self.list)           # self['config'].setList(self.list)
+        self['config'].list = self.list
+        self['config'].setList(self.list)           # self['config'].setList(self.list)
 
     def keyToExit(self):
         self.s = self['txt_green'].getText()
@@ -655,34 +655,52 @@ class piconsUpdateJobScreen(Screen):
         self['logWindow'].scrollbarmode = "showOnDemand"
         
         self['actions'] = ActionMap( ['SetupActions','DirectionActions'], {
-            "up"    :   self["logWindow"].pageUp,
-            "left"  :   self["logWindow"].pageUp,
-            "down"  :   self["logWindow"].pageDown,
-            "right" :   self["logWindow"].pageDown
+            "up"    :  self["logWindow"].pageUp,
+            "left"  :  self["logWindow"].pageUp,
+            "down"  :  self["logWindow"].pageDown,
+            "right" :  self["logWindow"].pageDown
             }, -1)
         
-        self.timeoutPrevention = eTimer()
-        if newOE():
-            self.timeoutPrevention_conn = self.timeoutPrevention.timeout.connect(self.abortPiconsUpdating)      # eTimer for newer versions (OE2.5)
-        else:
-            self.timeoutPrevention.callback.append(self.abortPiconsUpdating)                                    # eTimer for older versions (OE2.0)
-        self.timeoutPrevention.start(15000, True)                           # [miliseconds] ..... True = to run only once / False = to run repeatedly
-        
+        self.piconCounters = {'added' : 0, 'changed' : 0, 'removed' : 0}
         self.startTime = datetime.now()
         
-        threading.Thread(target = self.mainFunc).start()
+        self.th = threading.Thread(target = self.threadProcess)
+        self.th.daemon = True
+        self.th.start()             # start thread process
+        self.onClose.append(self.th.join)
         
         #self.onLayoutFinish.append(self.mainFunc)
         #self.onShown.append(self.mainFunc)
         #self.onClose.append(self.nazov_funkcie)
-
+        
+    def threadProcess(self):
+        
+        boo, msg = self.mainFunc()
+        # boo = True ------ close the class Screen with some error
+        # boo = False ----- close the class Screen without error
+        # msg = <string> -- warning/sucessful message for MessageBox()
+        
+        if boo:
+            type = MessageBox.TYPE_ERROR
+            if not msg:
+                msg = _('Some errors has occurred !')
+        else:
+            type = MessageBox.TYPE_INFO
+            if not msg:
+                msg = _('Done !') + '\n' + _('(%s added / %s changed / %s removed)') % (self.piconCounters['added'] , self.piconCounters['changed'] , self.piconCounters['removed'])
+        self.writeLog(msg)
+        sleep(3)
+        
+        #self.session.open(MessageBox, msg, type)
+        
+        self['logWindow'].hide()                    # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
+        self.close()
+    
     def mainFunc(self):
-        global piconResults
-        piconResults = {'added': 0, 'changed': 0, 'removed': 0}
         
         # 1) Ocheckuje sa internetové pripojenie
         if os_system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr enigma image
-            self.abortPiconsUpdating(True, _("Internet connection is not available !") )
+            return True, _("Internet connection is not available !")
         else:
             self.writeLog(_('Internet connection is OK.'))
 
@@ -694,7 +712,7 @@ class piconsUpdateJobScreen(Screen):
         if config.plugins.chocholousekpicons.method.value == 'sync_tv_radio':
             self.bouqet_list.extend(glob.glob('/etc/enigma2/userbouquet.*.radio'))
         if config.plugins.chocholousekpicons.method.value != 'all' and not self.bouqet_list:
-            self.abortPiconsUpdating(True, _('No userbouquet files found !\nPlease check the folder /etc/enigma2 for the userbouquet files.')  )
+            return True, _('No userbouquet files found !\nPlease check the folder /etc/enigma2 for the userbouquet files.')
 
         # 3) Skontroluje sa existencia zložky s pikonami na disku (ak zložka neexistuje, vytvorí sa nová)
         if config.plugins.chocholousekpicons.piconFolder.value == '(user defined)':
@@ -704,7 +722,7 @@ class piconsUpdateJobScreen(Screen):
         if not os_path.exists(self.piconDIR):
             os_makedirs(self.piconDIR)
         #if not os_path.exists(self.piconDIR):
-        #    self.abortPiconsUpdating(True, _('The configured picon folder does not exist!\nPlease check the picon folder in plugin configuration.\nCurrent picon folder: %s') % (self.piconDIR)  )
+        #    return True, _('The configured picon folder does not exist!\nPlease check the picon folder in plugin configuration.\nCurrent picon folder: %s') % (self.piconDIR)
         
         if 'sync' in config.plugins.chocholousekpicons.method.value:
         # 4.A) Vytvorí sa zoznam serv.ref.kódov nájdených vo všetkych userbouquet súboroch v set-top boxe (vytiahnem z nich len servisné referenčné kódy)        
@@ -735,8 +753,8 @@ class piconsUpdateJobScreen(Screen):
         for src in self.SRC_to_Delete:
             os_remove(self.piconDIR + '/' + src + '.png')       # v OpenATV nedostavam v adresaroch aj znak lomitka naviac, takze ho tu musim pridavat
             #os_remove(self.piconDIR + src + '.png')            # v OpenPLi dostavam v adresaroch aj znak lomitka naviac, takze ho tu netreba pridavat
-            piconResults['removed'] += 1
-        self.writeLog(_('...%s picons deleted.') % piconResults['removed'] )
+            self.piconCounters['removed'] += 1
+        self.writeLog(_('...%s picons deleted.') % self.piconCounters['removed'] )
         
         # 7) Pripraví sa zoznam názvov všetkých súborov .7z na sťahovanie z internetu - podľa konfigurácie pluginu
         self.filesForDownload = []
@@ -744,22 +762,21 @@ class piconsUpdateJobScreen(Screen):
             self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , sat)   )
         
         # 8) Ďalej sa v cykle stiahnú z internetu a spracujú sa všetky používateľom zafajknuté archívy s piconami - spracuvávajú sa po jednom (pre viac družíc - postupne každý jeden archív sa stiahne a spracuje)
-        self.writeLog(_('The process started...') + _('(downloading and extracting all necessary picons)')  )
+        self.writeLog(_('The process started...') + ' ' + _('(downloading and extracting all necessary picons)')  )
         self.writeLog('#' * 40)
         for count, fname in enumerate(self.filesForDownload, 1):
             s = ' %s / %s ' % (count, len(self.filesForDownload))
             self.writeLog('-' * 16 + s.ljust(20,'-'))
             self.proceedArchiveFile(fname)
         self.writeLog('#' * 40)
-        self.writeLog(_('...the process is complete.') + _('(downloading and extracting all necessary picons)')  )
+        self.writeLog(_('...the process is complete.') + ' ' + _('(downloading and extracting all necessary picons)')  )
         
         # 9) Nakoniec sa zobrazí výsledok celého procesu do konzoly a zavolá sa "ukončovacia procedúra" (metóda) pod aktuálnou triedou, určenou na updatovanie pikon
-        if piconResults['added'] or piconResults['changed']:
-            message = _('After updating the picons you may need to restart the Enigma (GUI).') + '\n' + _('(%s added / %s changed / %s removed)') % (piconResults['added'] , piconResults['changed'] , piconResults['removed'])
-            self.abortPiconsUpdating(False, message)
+        if self.piconCounters['added'] or self.piconCounters['changed']:
+            message = _('After updating the picons you may need to restart the Enigma (GUI).') + '\n' + _('(%s added / %s changed / %s removed)') % (self.piconCounters['added'] , self.piconCounters['changed'] , self.piconCounters['removed'])
         else:
-            message = _('No picons added or changed.') + '\n' + _('(%s added / %s changed / %s removed)') % (piconResults['added'] , piconResults['changed'] , piconResults['removed'])
-            self.abortPiconsUpdating(False, message)
+            message = _('No picons added or changed.') + '\n' + _('(%s added / %s changed / %s removed)') % (self.piconCounters['added'] , self.piconCounters['changed'] , self.piconCounters['removed'])
+        return False, message
     
     def proceedArchiveFile(self, search_filename):
 
@@ -771,7 +788,7 @@ class piconsUpdateJobScreen(Screen):
                 break
         if not found:
             self.writeLog(_('Download ID for file %s was not found!') % search_filename)
-            self.abortPiconsUpdating(True, _('Download ID for file %s was not found!') % search_filename )
+            return
         url_link = 'https://drive.google.com/uc?export=download&id=' + found[0]
         dwn_filename = found[1].replace('(','_').replace(')','_')               # replace the filename mask by new original archive filename and replace the parentheses by underline characters
 
@@ -779,23 +796,22 @@ class piconsUpdateJobScreen(Screen):
         self.writeLog(_('Trying download the file archive... %s') % dwn_filename)
         if not downloadFile(url_link, '/tmp/' + dwn_filename):
             self.writeLog(_('...file download failed !'))
-            self.abortPiconsUpdating(True, _('Download failed!\nFile: %s\nURL: %s') % ('/tmp/' + dwn_filename , url_link)   )
+            return
         else:
             self.writeLog(_('...file download successful.'))
-                
+        
         # 3. Načítanie zoznamu všetkých .png súborov z archívu, včetne ich atribútov (veľkostí súborov)
         #self.writeLog(_('Browse the contents of the downloaded archive file.'))
         self.SRC_in_Archive = self.getPiconListFromArchive('/tmp/' + dwn_filename)
         if not self.SRC_in_Archive:
             self.writeLog(_('Error! No picons found in the downloaded archive file!'))
-            return          # navratenie vykonavania kodu z tohto podprogramu pre spracovanie archivu/suboru s piconami
+            return          # navratenie vykonavania kodu z tohto podprogramu pre spracovanie dalsieho archivu/suboru s piconami v poradi
 
         # 4. Rozbalenie pikon zo stiahnutého archívu
         self.writeLog(_('Extracting files from the archive...'))
-        global piconResults
         if 'all' == config.plugins.chocholousekpicons.method.value:
             #### Ak používateľ zvolil v plugin-konfigurácii metódu aktualizácie všetkých pikon - kópiou pikon z archívu) tak...
-            piconResults['added'] += len(self.SRC_in_Archive)
+            self.piconCounters['added'] += len(self.SRC_in_Archive)
             self.extractAllPiconsFromArchive('/tmp/' + dwn_filename)
             self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_in_Archive))
         else:        
@@ -810,12 +826,12 @@ class piconsUpdateJobScreen(Screen):
                 if src in self.SRC_in_HDD:                                  # ak sa uz konkretna pikona z archivu nachadza na HDD, tak...
                     if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]:    # porovnam este velkosti tychto dvoch pikon (Archiv VS. HDD) a ak su velkosti picon odlisne...
                         self.SRC_to_Extract.append(src)                     # tak pridam tuto pikonu na zoznam kopirovanych pikon (zoznam pikon na extrahovanie)
-                        piconResults['changed'] += 1
+                        self.piconCounters['changed'] += 1
                     else:
                         pass
                 else:                                                       # ak sa pikona zo zoznamu "potrebnych" este nenachadza na HDD, tak...
                     self.SRC_to_Extract.append(src)                         # musim tuto pikonu pridat na zoznam kopirovanych (zoznam pikon na extrahovanie)
-                    piconResults['added'] += 1
+                    self.piconCounters['added'] += 1
                 self.SRC_in_Bouquets.remove(src)                            # tuto pikonu uz viac nebudem musiet kopirovat na HDD, ak by sa nachadzala dalsia kopia aj v inych stiahnutych archivoch, takze ju odstranim zo zoznamu SRC_in_Bouquets
             # Extrahovanie vybraných konkrétnych pikon (len v prípade, že sú tam nejaké pikony na extrahovanie)
             if self.SRC_to_Extract:
@@ -874,36 +890,11 @@ class piconsUpdateJobScreen(Screen):
         else:
             self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
         return False
-        
-    def abortPiconsUpdating(self, boo = True, msssg = ''):
-        '''
-        boo = True ---- to exit with some error
-        boo = False --- to exit without error
-        '''
-        self.message = msssg
-        if boo:
-            self.type = MessageBox.TYPE_ERROR
-            if not self.message:
-                self.message = _('Some errors has occurred !')
-        else:
-            self.type = MessageBox.TYPE_INFO
-            if not self.message:
-                self.message = _('Done !') + '\n' + _('(%s added / %s changed / %s removed)') % (piconResults['added'] , piconResults['changed'] , piconResults['removed'])
-        self.writeLog(self.message)
-        sleep(3)
-        if self.timeoutPrevention.isActive():                   # if self.timeoutPrevention is not None:
-            self.timeoutPrevention.stop()
-        self['logWindow'].hide()
-        self.session.open(MessageBox, self.message, type = self.type)
-        self.close()
 
-    def writeLog(self, msgg = ''):
-        if self.timeoutPrevention.isActive():                   # if self.timeoutPrevention is not None:
-            self.timeoutPrevention.stop()
-            print(msgg)
-            self['logWindow'].appendText('\n[' + str( ( datetime.now() - self.startTime ).total_seconds() ).ljust(10,"0")[:6] + '] ' + msgg)
-            self['logWindow'].lastPage()
-            self.timeoutPrevention.start(20000, True)           # [miliseconds] ..... True = to run only once / False = to run repeatedly
+    def writeLog(self, msg = ''):
+        print(msg)
+        self['logWindow'].appendText('\n[' + str(( datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6] + '] ' + msg)
+        self['logWindow'].lastPage()
 
 
 ###########################################################################
@@ -1002,21 +993,21 @@ def getstatusoutput(cmd):
     return t
 
 def newOE():
+    '''
+    return True --- if Enigma is a newer OE version (OpenDreambox - OE2.5, ...)
+    return False -- if Enigma is a older OE version (OpenATV, OpenPLi, VTi, ...)
+    '''
+    ####return os_path.exists('/etc/dpkg')
     try:
         from enigma import PACKAGE_VERSION
         major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
         if major > 4 or major == 4 and minor >= 2:
-            retval = True                       # newer OE versions (OpenDreambox - OE2.5, ...)
+            retval = True                       # newer OE version (OpenDreambox - OE2.5, ...)
         else:
-            retval = False                      # older OE versions (OpenATV, OpenPLi, VTi, ...)
+            retval = False                      # older OE version (OpenATV, OpenPLi, VTi, ...)
     except:
         retval = False
     return retval
-    #if os_path.exists('/etc/dpkg'):
-    #    retval = True
-    #else:
-    #    retval = False
-    #return retval
 
 
 ###########################################################################
