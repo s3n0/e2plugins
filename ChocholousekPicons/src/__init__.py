@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from Components.Language import language
-from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 import gettext
 
-PLUGIN_PATH = resolveFilename(SCOPE_PLUGINS, 'Extensions/ChocholousekPicons/')
+PLUGIN_PATH          = "/usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/"
+PluginLanguagePath   = "/usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/locale"
 PluginLanguageDomain = "ChocholousekPicons"
-PluginLanguagePath = "Extensions/ChocholousekPicons/locale"
 
 def localeInit():
-	gettext.bindtextdomain(PluginLanguageDomain, resolveFilename(SCOPE_PLUGINS, PluginLanguagePath))
+	gettext.bindtextdomain(PluginLanguageDomain, PluginLanguagePath)
 
 def _(txt):
 	t = gettext.dgettext(PluginLanguageDomain, txt)
