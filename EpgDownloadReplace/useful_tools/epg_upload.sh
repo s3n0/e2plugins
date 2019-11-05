@@ -1,5 +1,10 @@
 #!/bin/sh
 
+#### CRON config example - epg refresh via the script every 2nd day at 03:00
+#### 00 03 */2 * *      python /usr/script/epg_refresh.py &
+
+
+
 # enigma2 folders:
 log_file="/tmp/epg_upload.log"
 local_file="/etc/enigma2/epg.dat"
