@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#### CRON config example - epg refresh via the script every 2nd day at 03:00
-#### 00 03 */2 * *      python /usr/script/epg_refresh.py &
+#### CRON config example - upload epg.dat file via the script, every 2nd day, at 03:00
+#### 00 03 */2 * *      sh /usr/script/epg_upload.sh
 
 
 
