@@ -145,11 +145,6 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.bin7zip = None             # path to directory with '7z' or '7za' executable binary file
         self.chochoContent = None       # content of the file "id_for_permalinks*.log" - downloaded from google.drive
 
-        #self.onShown.append(self.rebuildConfigList)
-        #self.onLayoutFinish.append(self.layoutFinished)
-
-        #self.prepareSetup()
-
         self.layoutFinishTimer = eTimer()
         if newOE():
             i = mainConfigScreen.skin.index('font=')
@@ -167,9 +162,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
         else:
             self.skin = mainConfigScreen.skin
             self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions (OE2.0)
+        
         self.layoutFinishTimer.start(200, True)
-
-        #self.onLayoutFinish.append(self.check7zip)      # this line is no longer useful ... Screen is still not ready to call MessageBox in check7zip()
+        
+        #self.onShown.append(self.rebuildConfigList)
+        #self.onLayoutFinish.append(self.layoutFinished)
 
     def prepareSetup(self):
 
@@ -213,19 +210,21 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
-        self.rebuildConfigList()
+        #if self.getCursorEntry() != _('User defined folder'):
+        #    self.rebuildConfigList()
 
     def keyToRight(self):
         ConfigListScreen.keyRight(self)
-        self.rebuildConfigList()
+        #if self.getCursorEntry() != _('User defined folder'):
+        #    self.rebuildConfigList()
 
     def keyToOk(self):
         k = self.getCursorEntry()
         if k == _('Satellite positions'):
             self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat())
         elif k == _('User defined folder'):
-            self['config'].handleKey(KEY_OK)
-            #ConfigListScreen.keyOK(self)
+            #self['config'].handleKey(KEY_OK)
+            ConfigListScreen.keyOK(self)
             #self.keyOK()
 
     def satellitesConfigScreenReturn(self, retval):
@@ -284,6 +283,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.reloadAvailableBackgrounds()               # reload all available backgrounds/styles for the new changed picon resolution
         #elif k == _('Picon background'):
         #    self.showPreviewImage()
+        
+        if self.getCursorEntry() != _('User defined folder'):
+            self.rebuildConfigList()                        # config list rebuild - is allowed only if the cursor is not at ConfigText (picon folder configuration by user input), because left/arrow RCU buttons are neccessary to move the cursor inside ConfigText
 
     def rebuildConfigList(self):
         self.list = []
@@ -574,15 +576,14 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
 
         self['title_txt'] = Label(_('Select satellites:'))
-        self['txt_green'] = StaticText(_('OK'))
+        self['txt_green'] = StaticText(_('Done'))
 
-        self["actions"] = ActionMap( ["SetupActions", "ColorActions"], 
+        self["actions"] = ActionMap( ["SetupActions", "ColorActions"],
         {
-            'left'  : self.keyToLeft,
-            'right' : self.keyToRight,
+            'left'  : self['config'].pageUp,
+            'right' : self['config'].pageDown,
             'green' : self.keyToExit,
-            'ok'    : self.keyToExit,
-            'cancel': self.keyToExit
+            'ok'    : self.keyToOk
         }, -2)
 
         if newOE():
@@ -593,27 +594,22 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         self.onShown.append(self.rebuildConfigList)
 
-    def keyToLeft(self):
-        ConfigListScreen.keyLeft(self)
+    def keyToOk(self):
         self.switchSelectedSat()
-        self.rebuildConfigList()
-
-    def keyToRight(self):
-        ConfigListScreen.keyRight(self)
-        self.switchSelectedSat()
-        self.rebuildConfigList()
-
+        self.changedEntry()
+    
     def switchSelectedSat(self):
         selected = self['config'].getCurrent()[0]                               # value example:   '23.5E'
         if selected in config.plugins.chocholousekpicons.usersats.value:        # list example:    ['19.2E', '23.5E']
-            config.plugins.chocholousekpicons.usersats.value.remove(selected)
+            config.plugins.chocholousekpicons.usersats.value.remove(selected)   # remove the cursor selected satellite position from user satellites list
         else:
-            config.plugins.chocholousekpicons.usersats.value.append(selected)
+            config.plugins.chocholousekpicons.usersats.value.append(selected)   # append the cursor selected satellite position to user satellites list
 
     def changedEntry(self):
         for x in self.onChangedEntry:
             x()
-        self['txt_green'].setText(_('OK') + '*')
+        self['txt_green'].setText(_('Done') + '*')
+        self.rebuildConfigList()
 
     def rebuildConfigList(self):
         self.list = []
