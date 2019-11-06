@@ -691,7 +691,7 @@ class piconsUpdateJobScreen(Screen):
         self.writeLog(msg)
         sleep(3)
         
-        #self.session.open(MessageBox, msg, type)
+        self.session.open(MessageBox, msg, type)
         
         self['logWindow'].hide()                    # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
         self.close()
