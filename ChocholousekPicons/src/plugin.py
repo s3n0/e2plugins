@@ -18,7 +18,7 @@ from Components.Sources.StaticText import StaticText
 ###########################################################################
 #from Components.MenuList import MenuList
 from Components.ConfigList import ConfigList, ConfigListScreen
-from Components.config import config, configfile, getConfigListEntry, ConfigDirectory, ConfigSubsection, ConfigSubList, ConfigEnableDisable, ConfigSelection, ConfigYesNo, ConfigSet, ConfigText, KEY_OK
+from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSubList, ConfigSubDict, ConfigSelection, ConfigYesNo, ConfigText, NoSave, KEY_OK
 ###########################################################################
 import urllib2
 import cookielib
@@ -57,6 +57,7 @@ plugin_version_online = '0.0.000000'
 
 
 
+###########################################################################
 ###########################################################################
 ###########################################################################
 
@@ -135,8 +136,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
             'left'  : self.keyToLeft,
             'right' : self.keyToRight,
             'ok'    : self.keyToOk,
-            'yellow': self.keyToUpdatePlugin,
-            'blue'  : self.keyToUpdatePicons,
+            'yellow': self.keyToPluginUpdate,
+            'blue'  : self.keyToPiconsUpdate,
             'green' : self.exitWithSave,
             'red'   : self.exitWithoutSave,
             'cancel': self.keyToExit
@@ -150,19 +151,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             i = mainConfigScreen.skin.index('font=')
             self.skin = mainConfigScreen.skin[ : i ] + mainConfigScreen.skin[ i+34 : ]
             self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for newer versions (OE2.5)
-
-            #self.l.setFont(0,gFont("Regular",30))
-            #self.l.setItemHeight(32)
-            
-            #self['config'].setFont(0, gFont("Regular", 30))
-            #self['config'].setItemHeight(32)
-            
-            #self["config"].l.setValueFont(gFont("Regular", 30))
-            #self["config"].l.setItemHeight(32)
         else:
             self.skin = mainConfigScreen.skin
-            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions (OE2.0)
-        
+            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions (OE2.0)        
         self.layoutFinishTimer.start(200, True)
         
         #self.onShown.append(self.rebuildConfigList)
@@ -173,74 +164,91 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.loadChochoContent()
 
         config.plugins.chocholousekpicons = ConfigSubsection()
-        config.plugins.chocholousekpicons.piconFolder = ConfigSelection(default = '/usr/share/enigma2/picon',
+        
+        config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
+                default = '/usr/share/enigma2/picon',
                 choices = [ ('/usr/share/enigma2/picon','/usr/share/enigma2/picon'),
                             ('/media/hdd/picon','/media/hdd/picon'),
                             ('/media/usb/picon','/media/usb/picon'),
                             ('/picon','/picon'),
                             ('/usr/share/enigma2/XPicons/picon','/usr/share/enigma2/XPicons/picon'),
                             ('/usr/share/enigma2/ZZPicons/picon','/usr/share/enigma2/ZZPicons/picon'),
-                            ('user_defined' , _('(user defined)')  )
+                            ('user_defined' , _('(user defined)')   )
                           ]
                         )     # --- all folders are from source code, here:   https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
-        config.plugins.chocholousekpicons.piconFolderUser = ConfigText(default = '/', fixed_size = False)
-        # change the default picon directory + set this found entry, if some .png files will found in some folder:
-        if config.plugins.chocholousekpicons.piconFolder.value != 'user_defined':
-            for picdir in config.plugins.chocholousekpicons.piconFolder.choices:
+        
+        config.plugins.chocholousekpicons.picon_folder_user = ConfigText( default = '/', fixed_size = False )
+        
+        if config.plugins.chocholousekpicons.picon_folder.value != 'user_defined':
+            for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
                 if glob.glob(picdir[0] + '/*.png'):
-                    config.plugins.chocholousekpicons.piconFolder.default = picdir[0]
-                    config.plugins.chocholousekpicons.piconFolder.setValue(picdir[0])
+                    config.plugins.chocholousekpicons.picon_folder.default = picdir[0]      # change the default picon directory + select this found entry, if some .png files will found in some folder
+                    config.plugins.chocholousekpicons.picon_folder.setValue(picdir[0])
                     break
-        config.plugins.chocholousekpicons.method = ConfigSelection(default = 'sync_tv', 
-                choices = [ ('all', _('copy all picons (no sync)')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]   )
-        config.plugins.chocholousekpicons.usersats = ConfigSet(default = ['23.5E','19.2E'] , choices = self.getAllSat() )
-        config.plugins.chocholousekpicons.resolution = ConfigSelection(default = '220x132',
-                choices = [ ('50x30','50x30'), ('100x60','100x60'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]     )
-        config.plugins.chocholousekpicons.background = ConfigSelection(default = 'black',
-                choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]   )
+        
+        config.plugins.chocholousekpicons.method = ConfigSelection(
+                default = 'sync_tv', 
+                choices = [ ('all', _('copy all picons (no sync)')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]
+                )
+        
+        config.plugins.chocholousekpicons.sats = ConfigSubDict()        # ConfigSubList()  /  ConfigSubDict()  /  ConfigDictionarySet()
+        for sat in self.getAllSat():
+            config.plugins.chocholousekpicons.sats[sat] = ConfigYesNo(default = False)
+        config.plugins.chocholousekpicons.sats['23.5E'] = ConfigYesNo(default = True)     # setting at least one value as default
+        
+        config.plugins.chocholousekpicons.resolution = ConfigSelection(
+                default = '220x132',
+                choices = [ ('50x30','50x30'), ('100x60','100x60'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]
+                )
+        
+        config.plugins.chocholousekpicons.background = ConfigSelection(
+                default = 'black',
+                choices = [(s, s) for s in self.getAllBckByUserCfg( [sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value] , config.plugins.chocholousekpicons.resolution.value )]
+                )
 
         self.downloadPreviewPicons()
         self.rebuildConfigList()
 
-    def getCursorEntry(self):
+    def getCursorTitle(self):
         return self["config"].getCurrent()[0]
 
-    def getCursorValue(self):
+    def getCursorObject(self):
+        return self["config"].getCurrent()[1]
+        
+    def getCursorObjectAsText(self):
         return str(self["config"].getCurrent()[1].getText())
 
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
-        #if self.getCursorEntry() != _('User defined folder'):
+        #if self.getCursorTitle() != _('User defined folder'):
         #    self.rebuildConfigList()
 
     def keyToRight(self):
         ConfigListScreen.keyRight(self)
-        #if self.getCursorEntry() != _('User defined folder'):
+        #if self.getCursorTitle() != _('User defined folder'):
         #    self.rebuildConfigList()
 
     def keyToOk(self):
-        k = self.getCursorEntry()
+        k = self.getCursorTitle()
         if k == _('Satellite positions'):
-            self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat())
+            self.session.openWithCallback(self.satellitesConfigScreenBack, satellitesConfigScreen, self.getAllSat() )
         elif k == _('User defined folder'):
-            #self['config'].handleKey(KEY_OK)
-            ConfigListScreen.keyOK(self)
-            #self.keyOK()
+            ConfigListScreen.keyOK(self)        # self['config'].handleKey(KEY_OK)          # self.keyOK()
 
-    def satellitesConfigScreenReturn(self, retval):
+    def satellitesConfigScreenBack(self, retval):
         if retval:
-            self.loadChochoContent()        # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
-            self.reloadAvailableBackgrounds()
+            #self.loadChochoContent()
+            self.reloadAvailableBackgrounds()   # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
             self.changedEntry()
             self.rebuildConfigList()
 
-    def keyToUpdatePicons(self):
+    def keyToPiconsUpdate(self):
         if self.bin7zip:
             self.session.open(piconsUpdateJobScreen, self.chochoContent, self.bin7zip)
         else:
             self.check7zip()
 
-    def keyToUpdatePlugin(self):
+    def keyToPluginUpdate(self):
         global pluginUpdateDo, plugin_version_local
         if pluginUpdateDo():
             message = _("The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?")
@@ -257,17 +265,18 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.exitWithConditionalSave(False)
 
     def keyToExit(self):
-        if self['txt_green'].getText().endswith('*'):       # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
+        if self['txt_green'].getText().endswith('*'):           # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
             message = _("You have changed the plugin configuration.\nDo you want to save all changes now ?")
             self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
         else:
             self.exitWithConditionalSave(False)
 
-    def exitWithConditionalSave(self, condition=True):      # save or cancel changes made to the plugin's user configuration, default=True -> to save the configuration
+    def exitWithConditionalSave(self, condition=True):          # save or cancel changes made to the plugin's user configuration, default=True -> to save the configuration
         if condition:
             for x in self['config'].list:
                 x[1].save()
-            configfile.save()                               # '/etc/enigma2/settings' - the configuration file will be saved only when the Enigma is stopped or restarted
+            config.plugins.chocholousekpicons.sats.save()       # the satellite selection is not in the ["config"].list and therefore after changing the satellites through another Screen class, so I have to save the satellites to disk additionally
+            configfile.save()                                   # '/etc/enigma2/settings' - the configuration file will be saved only when the Enigma is stopped or restarted
         else:
             for x in self['config'].list:
                 x[1].cancel()
@@ -278,27 +287,27 @@ class mainConfigScreen(Screen, ConfigListScreen):
             x()
         
         self['txt_green'].setText(_('Save & Exit') + '*')
-        k = self.getCursorEntry()
+        k = self.getCursorTitle()
         if k == _('Picon resolution'):
             self.reloadAvailableBackgrounds()               # reload all available backgrounds/styles for the new changed picon resolution
         #elif k == _('Picon background'):
         #    self.showPreviewImage()
         
-        if self.getCursorEntry() != _('User defined folder'):
+        if self.getCursorTitle() != _('User defined folder'):
             self.rebuildConfigList()                        # config list rebuild - is allowed only if the cursor is not at ConfigText (picon folder configuration by user input), because left/arrow RCU buttons are neccessary to move the cursor inside ConfigText
 
     def rebuildConfigList(self):
         self.list = []
-        self.list.append(getConfigListEntry( _('Picon folder')    ,  config.plugins.chocholousekpicons.piconFolder ))
-        if config.plugins.chocholousekpicons.piconFolder.value == 'user_defined':
-            self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.piconFolderUser ))
-        self.list.append(getConfigListEntry( _('Picon update method'), config.plugins.chocholousekpicons.method    ))
-        self.list.append(getConfigListEntry( _('Satellite positions'), config.plugins.chocholousekpicons.usersats  ))
-        self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution  ))
+        self.list.append(getConfigListEntry( _('Picon folder')  ,  config.plugins.chocholousekpicons.picon_folder ))
+        if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
+            self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.picon_folder_user ))
+        self.list.append(getConfigListEntry( _('Picon update method') , config.plugins.chocholousekpicons.method  ))
+        self.list.append(getConfigListEntry( _('Satellite positions') , NoSave(ConfigSelection(default = ' '.join([sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value]), choices = config.plugins.chocholousekpicons.sats.keys()))  ))   # only display of selected satellites (without object configuration effect)
+        self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution ))
         self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
         
         self['config'].list = self.list
-        self['config'].setList(self.list)           # self['config'].setList(self.list)
+        self['config'].setList(self.list)
         
         self.showPreviewImage()
 
@@ -494,8 +503,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
         by user selected configuration
         (by user configuration in the plugin MENU)
         '''
-        config.plugins.chocholousekpicons.background = ConfigSelection( default = None ,   # default = config.plugins.chocholousekpicons.background.value  ,
-          choices = [ (s, s) for s in self.getAllBckByUserCfg( config.plugins.chocholousekpicons.usersats.value, config.plugins.chocholousekpicons.resolution.value ) ]    )     # !!!! ( _(s),s ) biela/white nenajde subor s pikonami v slovencine:)
+        config.plugins.chocholousekpicons.background = ConfigSelection(
+                default = None,
+                choices = [(s, s) for s in self.getAllBckByUserCfg( [sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value] , config.plugins.chocholousekpicons.resolution.value )]
+                )    
     
     def contentByUserCfgSatRes(self, satellites, resolution):
         result = []
@@ -538,6 +549,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
 ###########################################################################
 ###########################################################################
+###########################################################################
 
 
 
@@ -562,10 +574,10 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             <widget render="Label" source="txt_green"        position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
 
-    def __init__(self, session, satList):
+    def __init__(self, session, allSat):
 
-        self.allSat = satList
-
+        self.allSat = allSat
+        
         Screen.__init__(self, session)
 
         self.onChangedEntry = []
@@ -582,10 +594,10 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         {
             'left'  : self['config'].pageUp,
             'right' : self['config'].pageDown,
-            'green' : self.keyToExit,
-            'ok'    : self.keyToOk
+            'ok'    : self.keyToOk,
+            'green' : self.keyToExit
         }, -2)
-
+        
         if newOE():
             i = satellitesConfigScreen.skin.index('font')
             self.skin = satellitesConfigScreen.skin[ : i ] + satellitesConfigScreen.skin[ i+34 : ]
@@ -599,12 +611,9 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.changedEntry()
     
     def switchSelectedSat(self):
-        selected = self['config'].getCurrent()[0]                               # value example:   '23.5E'
-        if selected in config.plugins.chocholousekpicons.usersats.value:        # list example:    ['19.2E', '23.5E']
-            config.plugins.chocholousekpicons.usersats.value.remove(selected)   # remove the cursor selected satellite position from user satellites list
-        else:
-            config.plugins.chocholousekpicons.usersats.value.append(selected)   # append the cursor selected satellite position to user satellites list
-
+        sel = self['config'].getCurrent()[0]        # example value:  '23.5E'
+        config.plugins.chocholousekpicons.sats[sel].setValue(  not config.plugins.chocholousekpicons.sats[sel].getValue()  )        # to invert the boolean value
+    
     def changedEntry(self):
         for x in self.onChangedEntry:
             x()
@@ -613,23 +622,25 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
     def rebuildConfigList(self):
         self.list = []
-        for sat in self.allSat:
-            if sat in config.plugins.chocholousekpicons.usersats.value:
-                self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=True)  ) )
-            else:
-                self.list.append(  getConfigListEntry( sat, ConfigYesNo(default=False) ) )
+        for x in self.allSat:
+            self.list.append(getConfigListEntry(x, config.plugins.chocholousekpicons.sats[x]))
         self['config'].list = self.list
-        self['config'].setList(self.list)           # self['config'].setList(self.list)
-
+        self['config'].setList(self.list)
+    
     def keyToExit(self):
-        self.s = self['txt_green'].getText()
-        if self.s[-1:] == '*':                      # plugin configuration changed...?
+        #for x in self['config'].list:
+        #    x[1].save()
+        #configfile.save()
+        
+        s = self['txt_green'].getText()
+        if s[-1:] == '*':                      # plugin configuration changed ... ?
             self.close(True)
         else:
             self.close(False)
 
 
 
+###########################################################################
 ###########################################################################
 ###########################################################################
 
@@ -661,24 +672,40 @@ class piconsUpdateJobScreen(Screen):
             }, -1)
         
         self.piconCounters = {'added' : 0, 'changed' : 0, 'removed' : 0}
+        self.piconUpdateReturn = 'NOOP', MessageBox.TYPE_ERROR  # error boolean, error message
         self.startTime = datetime.now()
         
-        self.th = threading.Thread(target = self.threadProcess)
+        self.th = threading.Thread(target = self.thProcess)
         self.th.daemon = True
-        self.th.start()             # start thread process
-        self.onClose.append(self.th.join)
+        self.th.start()
         
-        #self.onLayoutFinish.append(self.mainFunc)
-        #self.onShown.append(self.mainFunc)
-        #self.onClose.append(self.nazov_funkcie)
+        self.thCheckingTimer = eTimer()
+        if newOE():
+            self.thCheckingTimer_conn = self.thCheckingTimer.timeout.connect(self.thChecking)   # eTimer for newer versions (OE2.5)
+        else:
+            self.thCheckingTimer.callback.append(self.thChecking)                               # eTimer for older versions (OE2.0)
+        self.thCheckingTimer.start(1000, False)
         
-    def threadProcess(self):
-        
+        #self.onShown.append(self.func_name)
+        #self.onLayoutFinish.append(self.func_name)
+        #self.onClose.append(self.func_name)
+    
+    def thChecking(self):
+        if not self.th.is_alive():
+            self.thCheckingTimer.stop()
+            self.th.join()                                      # close the finished "th" thread
+            msg, type = self.piconUpdateReturn
+            self.writeLog(msg)
+            sleep(3)
+            self['logWindow'].hide()                            # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
+            self.session.open(MessageBox, msg, type)            
+            self.close()
+    
+    def thProcess(self):
         boo, msg = self.mainFunc()
-        # boo = True ------ close the class Screen with some error
-        # boo = False ----- close the class Screen without error
-        # msg = <string> -- warning/sucessful message for MessageBox()
-        
+        # boo = True ----------- picons updating function was ended with some error
+        # boo = False ---------- picons updating function was ended without error
+        # msg = <type 'str'> --- warning or sucessful return message (for MessageBox)
         if boo:
             type = MessageBox.TYPE_ERROR
             if not msg:
@@ -687,16 +714,9 @@ class piconsUpdateJobScreen(Screen):
             type = MessageBox.TYPE_INFO
             if not msg:
                 msg = _('Done !') + '\n' + _('(%s added / %s changed / %s removed)') % (self.piconCounters['added'] , self.piconCounters['changed'] , self.piconCounters['removed'])
-        self.writeLog(msg)
-        sleep(3)
-        
-        self.session.open(MessageBox, msg, type)
-        
-        self['logWindow'].hide()                    # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
-        self.close()
+        self.piconUpdateReturn = msg, type
     
-    def mainFunc(self):
-        
+    def mainFunc(self):        
         # 1) Ocheckuje sa internetové pripojenie
         if os_system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr enigma image
             return True, _("Internet connection is not available !")
@@ -714,12 +734,12 @@ class piconsUpdateJobScreen(Screen):
             return True, _('No userbouquet files found !\nPlease check the folder /etc/enigma2 for the userbouquet files.')
 
         # 3) Skontroluje sa existencia zložky s pikonami na lokalnom disku (ak zložka neexistuje, vytvorí sa nová)
-        if config.plugins.chocholousekpicons.piconFolder.value == 'user_defined':
-            self.piconDIR = config.plugins.chocholousekpicons.piconFolderUser.value.strip()
+        if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
+            self.piconDIR = config.plugins.chocholousekpicons.picon_folder_user.value.strip()
             if self.piconDIR.endswith('/'):
                 self.piconDIR = self.piconDIR[:-1]
         else:
-            self.piconDIR = config.plugins.chocholousekpicons.piconFolder.value
+            self.piconDIR = config.plugins.chocholousekpicons.picon_folder.value
         if not os_path.exists(self.piconDIR):
             os_makedirs(self.piconDIR)
         
@@ -757,8 +777,8 @@ class piconsUpdateJobScreen(Screen):
         
         # 7) Pripraví sa zoznam názvov všetkých súborov .7z na sťahovanie z internetu - podľa konfigurácie pluginu
         self.filesForDownload = []
-        for sat in config.plugins.chocholousekpicons.usersats.value:            # example:  ['19.2E','23.5E']
-            self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , sat)   )
+        for SAT in [sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value]:       # example:  ['19.2E', '23.5E']
+            self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , SAT)   )
         
         # 8) Ďalej sa v cykle stiahnú z internetu a spracujú sa všetky používateľom zafajknuté archívy s piconami - spracuvávajú sa po jednom (pre viac družíc - postupne každý jeden archív sa stiahne a spracuje)
         self.writeLog(_('The process started...') + ' ' + _('(downloading and extracting all necessary picons)')  )
@@ -778,7 +798,7 @@ class piconsUpdateJobScreen(Screen):
         return False, message
     
     def proceedArchiveFile(self, search_filename):
-
+        
         # 1. Vyhľadanie google.drive ID - kódu v "chochoContent", pre konkrétny súbor (pre potrebu jeho následovného stiahnutia)
         found = []
         for line in self.chochoContent.splitlines():
@@ -836,6 +856,7 @@ class piconsUpdateJobScreen(Screen):
             if self.SRC_to_Extract:
                 self.extractCertainPiconsFromArchive('/tmp/' + dwn_filename , self.SRC_to_Extract)
             self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_to_Extract))
+        
         os_remove('/tmp/' + dwn_filename)
 
     def getPiconListFromArchive(self, archiveFile = ''):
