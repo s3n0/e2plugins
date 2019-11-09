@@ -18,11 +18,9 @@ from Components.Sources.StaticText import StaticText
 ###########################################################################
 #from Components.MenuList import MenuList
 from Components.ConfigList import ConfigList, ConfigListScreen
-from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSubList, ConfigSubDict, ConfigSelection, ConfigYesNo, ConfigText, NoSave, KEY_OK
+from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSubList, ConfigSubDict, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK
 ###########################################################################
-import urllib2
-import cookielib
-import ssl
+import urllib2, ssl, cookielib
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
@@ -170,6 +168,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 choices = [ ('/usr/share/enigma2/picon','/usr/share/enigma2/picon'),
                             ('/media/hdd/picon','/media/hdd/picon'),
                             ('/media/usb/picon','/media/usb/picon'),
+                            ('/media/sdcard/picon','(Dreambox)  /media/sdcard/picon'),
+                            ('/data/picon','(Dreambox)  /data/picon'),
                             ('/picon','/picon'),
                             ('/usr/share/enigma2/XPicons/picon','/usr/share/enigma2/XPicons/picon'),
                             ('/usr/share/enigma2/ZZPicons/picon','/usr/share/enigma2/ZZPicons/picon'),
@@ -209,6 +209,22 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.downloadPreviewPicons()
         self.rebuildConfigList()
 
+    def rebuildConfigList(self):
+        self.list = []
+        
+        self.list.append(getConfigListEntry( _('Picon folder')  ,  config.plugins.chocholousekpicons.picon_folder ))
+        if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
+            self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.picon_folder_user ))
+        self.list.append(getConfigListEntry( _('Picon update method') , config.plugins.chocholousekpicons.method  ))
+        self.list.append(getConfigListEntry( _('Satellite positions') , ConfigSelection(default = ' '.join([sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value]) , choices = config.plugins.chocholousekpicons.sats.keys() )  ))   # only display of selected satellites (without object configuration effect)
+        self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution ))
+        self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
+        
+        self['config'].list = self.list
+        self['config'].setList(self.list)
+        
+        self.showPreviewImage()
+    
     def getCursorTitle(self):
         return self["config"].getCurrent()[0]
 
@@ -296,21 +312,6 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if self.getCursorTitle() != _('User defined folder'):
             self.rebuildConfigList()                        # config list rebuild - is allowed only if the cursor is not at ConfigText (picon folder configuration by user input), because left/arrow RCU buttons are neccessary to move the cursor inside ConfigText
 
-    def rebuildConfigList(self):
-        self.list = []
-        self.list.append(getConfigListEntry( _('Picon folder')  ,  config.plugins.chocholousekpicons.picon_folder ))
-        if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
-            self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.picon_folder_user ))
-        self.list.append(getConfigListEntry( _('Picon update method') , config.plugins.chocholousekpicons.method  ))
-        self.list.append(getConfigListEntry( _('Satellite positions') , NoSave(ConfigSelection(default = ' '.join([sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value]), choices = config.plugins.chocholousekpicons.sats.keys()))  ))   # only display of selected satellites (without object configuration effect)
-        self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution ))
-        self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
-        
-        self['config'].list = self.list
-        self['config'].setList(self.list)
-        
-        self.showPreviewImage()
-
     def restartEnigmaOrCloseScreen(self, answer = None):
         if answer:
             self.session.open(TryQuitMainloop, 3)   # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
@@ -367,11 +368,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 
                 # check the status error and clean the archive file (will be filled with a short note)
                 if status == 0:
-                    print('MYDEBUGLOGLINE - Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % localfilenamefull[-10:-4] )
+                    print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % localfilenamefull[-10:-4] )
                     with open(localfilenamefull, 'w') as f:
                         f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
                 elif status == 32512:
-                    print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
+                    print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
                     self.deleteFile(localfilenamefull)
                 elif status == 512:
                     print('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, localfilenamefull) )
@@ -386,9 +387,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
             for file in lst:
                 os_remove(file)
 
+    ###########################################################################
+    
     def check7zip(self):
         if not self.find7zip():
-            message = _('The 7-zip archiver was not found on your system.\nThere is possible to update the 7-zip archiver now in two steps:\n\n(1) try to install via package manager "opkg install p7zip"\n...or...\n(2) try to download the binary file "7za" (standalone archiver) from the internet\n\nDo you want to try it now?')
+            message = _('The 7-zip archiver was not found on your system.\nThere is possible to update the 7-zip archiver now in two steps:\n\n(1) try to install via the Enigma package manager\n...or...\n(2) try to download the binary file "7za" (standalone archiver) from the internet\n\nDo you want to try it now?')
             self.session.openWithCallback(self.download7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
 
     def find7zip(self):
@@ -404,8 +407,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def download7zip(self, result):
         if result:
-            os_system('opkg update > /dev/null 2>&1')
-            if not os_system('opkg list | grep p7zip > /dev/null 2>&1'):   # if no error received from opkg manager, then...
+            if not newOE() and not os_system('dpkg -l p7zip > /dev/null 2>&1'):                 # if no error received from package manager, then...
+                os_system('dpkg -i p7zip')
+                self.message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
+            elif newOE() and not os_system('opkg list | grep p7zip > /dev/null 2>&1'):          # if no error received from package manager, then...
                 os_system('opkg install p7zip')
                 self.message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             else:
@@ -437,7 +442,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         detecting chipset architecture
         mips32el, armv7l, armv7a-neon, armv7ahf, armv7ahf-neon, cortexa9hf-neon, cortexa15hf-neon-vfpv4, aarch64, sh4, sh_4
         '''
-        status, out = getstatusoutput('opkg print-architecture | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        manager = 'dpkg --print-architecture' if newOE() else 'opkg print-architecture'
+        status,out = getstatusoutput(manager + ' | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             return out.replace('arch ','').replace('\n',' ')        # return architectures by OPKG manager, such as:  'mips32el 16 mipsel 46'
 
@@ -445,7 +451,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if t:
             return t[0]                                             # return list type converted to a string value, like as:  'mips1 mips2 mips32r1'
 
-        status, out = getstatusoutput('uname -m')
+        status,out = getstatusoutput('uname -m')
         if status == 0:
             return out                                              # return architectures from system, like as:  'mips'
 
@@ -558,7 +564,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     if sizemaxX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="config"    position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
+            <widget name="config"    position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
             <widget name="title_txt" position="center,40"  size="350,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
@@ -567,7 +573,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     else:                   # HD-ready or lower
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="350,600" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="config"    position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" transparent="0" backgroundColor="#22000000" />
+            <widget name="config"    position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#22000000" />
             <widget name="title_txt" position="center,20" size="300,40"  font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
@@ -580,6 +586,12 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         Screen.__init__(self, session)
 
+        if newOE():
+            i = satellitesConfigScreen.skin.index('font')
+            self.skin = satellitesConfigScreen.skin[ : i ] + satellitesConfigScreen.skin[ i+34 : ]          # remove font="" itemHeight="" from skin, if the version of OE is 2.5 (due to differ Screen layer in OpenDreambox)
+        else:
+            self.skin = satellitesConfigScreen.skin
+        
         self.onChangedEntry = []
         self.list = []
 
@@ -597,13 +609,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             'ok'    : self.keyToOk,
             'green' : self.keyToExit
         }, -2)
-        
-        if newOE():
-            i = satellitesConfigScreen.skin.index('font')
-            self.skin = satellitesConfigScreen.skin[ : i ] + satellitesConfigScreen.skin[ i+34 : ]
-        else:
-            self.skin = satellitesConfigScreen.skin
-        
+                
         self.onShown.append(self.rebuildConfigList)
 
     def keyToOk(self):
@@ -611,7 +617,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.changedEntry()
     
     def switchSelectedSat(self):
-        sel = self['config'].getCurrent()[0]        # example value:  '23.5E'
+        sel = self['config'].getCurrent()[0]    # example value: '23.5E'
         config.plugins.chocholousekpicons.sats[sel].setValue(  not config.plugins.chocholousekpicons.sats[sel].getValue()  )        # to invert the boolean value
     
     def changedEntry(self):
@@ -628,12 +634,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self['config'].setList(self.list)
     
     def keyToExit(self):
-        #for x in self['config'].list:
-        #    x[1].save()
-        #configfile.save()
-        
         s = self['txt_green'].getText()
-        if s[-1:] == '*':                      # plugin configuration changed ... ?
+        if s[-1:] == '*':                       # plugin configuration changed ... ?
             self.close(True)
         else:
             self.close(False)
@@ -672,7 +674,7 @@ class piconsUpdateJobScreen(Screen):
             }, -1)
         
         self.piconCounters = {'added' : 0, 'changed' : 0, 'removed' : 0}
-        self.piconUpdateReturn = 'NOOP', MessageBox.TYPE_ERROR  # error boolean, error message
+        self.piconUpdateReturn = _('NOOP'), MessageBox.TYPE_ERROR                               # error boolean, error message
         self.startTime = datetime.now()
         
         self.th = threading.Thread(target = self.thProcess)
@@ -715,6 +717,7 @@ class piconsUpdateJobScreen(Screen):
             if not msg:
                 msg = _('Done !') + '\n' + _('(%s added / %s changed / %s removed)') % (self.piconCounters['added'] , self.piconCounters['changed'] , self.piconCounters['removed'])
         self.piconUpdateReturn = msg, type
+        # end of the thread process
     
     def mainFunc(self):        
         # 1) Ocheckuje sa internetové pripojenie
@@ -725,14 +728,16 @@ class piconsUpdateJobScreen(Screen):
 
         # 2) Vytvorí sa zoznam dostupných userbouquets súborov "/etc/enigma2/userbouquet.*.tv"
         #    prípadne aj "/etc/enigma2/userbouquet.*.radio" súborov    
-        self.bouqet_list = []
+        self.bouquet_files = []
         if config.plugins.chocholousekpicons.method.value == 'sync_tv':
-            self.bouqet_list = glob.glob('/etc/enigma2/userbouquet.*.tv')
+            self.bouquet_files = glob.glob('/etc/enigma2/userbouquet.*.tv')
         if config.plugins.chocholousekpicons.method.value == 'sync_tv_radio':
-            self.bouqet_list.extend(glob.glob('/etc/enigma2/userbouquet.*.radio'))
-        if config.plugins.chocholousekpicons.method.value != 'all' and not self.bouqet_list:
+            self.bouquet_files = glob.glob('/etc/enigma2/userbouquet.*.tv')
+            self.bouquet_files.extend(glob.glob('/etc/enigma2/userbouquet.*.radio'))
+        if config.plugins.chocholousekpicons.method.value != 'all' and not self.bouquet_files:
             return True, _('No userbouquet files found !\nPlease check the folder /etc/enigma2 for the userbouquet files.')
-
+        #self.storeVarInFile('bouquet_files', self.bouquet_files)
+        
         # 3) Skontroluje sa existencia zložky s pikonami na lokalnom disku (ak zložka neexistuje, vytvorí sa nová)
         if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
             self.piconDIR = config.plugins.chocholousekpicons.picon_folder_user.value.strip()
@@ -743,11 +748,11 @@ class piconsUpdateJobScreen(Screen):
         if not os_path.exists(self.piconDIR):
             os_makedirs(self.piconDIR)
         
-        # 4.A) Vytvorí sa zoznam serv.ref.kódov nájdených vo všetkych userbouquet súboroch v set-top boxe (vytiahnem z nich len servisné referenčné kódy)        
+        # 4.A) Vytvorí sa zoznam serv.ref.kódov nájdených vo všetkych userbouquet súboroch v set-top boxe (vytiahnem z nich servisné referenčné kódy)        
         if 'sync' in config.plugins.chocholousekpicons.method.value:
             self.writeLog(_('Preparing a list of picons from userbouquet files.'))
             self.SRC_in_Bouquets = ''
-            for bq_file in self.bouqet_list:
+            for bq_file in self.bouquet_files:
                 self.SRC_in_Bouquets += open(bq_file,'r').read()
                 #with open(bq_file) as f:
                 #    self.SRC_in_Bouquets += f.read()
@@ -757,6 +762,7 @@ class piconsUpdateJobScreen(Screen):
         # 4.B) Vytvorí sa fiktívny t.j. prázdny zoznam SRC kódov z userbouquet zoznamov, aby v ďalšiom kroku boli všetky aktuálne pikony na lokálnom disku vymazané (metóda bez synchronizácie pikon s userbouquets)
         else:
             self.SRC_in_Bouquets = []
+        #self.storeVarInFile('SRC_in_bouquets', self.SRC_in_Bouquets)
         
         # 5) Vytvorí sa zoznam picon uložených na lokalnom disku (na internom flash-disku alebo na externom USB či HDD) - včetne veľkostí týchto súborov !
         self.writeLog(_('Preparing a list of picons from the picon directory on the local disk.'))
@@ -765,6 +771,7 @@ class piconsUpdateJobScreen(Screen):
         if dir_list:
             for path_N_file in dir_list:
                 self.SRC_in_HDD.update( { path_N_file.split("/")[-1].split(".")[0]  :   int(os_path.getsize(path_N_file))  } )     # os.stat.st_time('/etc/enigma2/'+filename)
+        #self.storeVarInFile('SRC_in_HDD', self.SRC_in_HDD)
 
         # 6) Vymažú sa neexistujúce picon-súbory na lokalnom disku (v set-top boxe), ktoré sú zbytočné, nakoľko neexistujú tiež v žiadnom userbouquet súbore a teda na disku budú iba zavadziať
         self.writeLog(_('Deleting unneccessary picons from local disk...'))
@@ -774,11 +781,13 @@ class piconsUpdateJobScreen(Screen):
             #os_remove(self.piconDIR + src + '.png')            # v OpenPLi dostavam v adresaroch aj znak lomitka naviac, takze ho tu netreba pridavat
             self.piconCounters['removed'] += 1
         self.writeLog(_('...%s picons deleted.') % self.piconCounters['removed'])
+        #self.storeVarInFile('SRC_to_Delete', self.SRC_to_Delete)
         
         # 7) Pripraví sa zoznam názvov všetkých súborov .7z na sťahovanie z internetu - podľa konfigurácie pluginu
         self.filesForDownload = []
         for SAT in [sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value]:       # example:  ['19.2E', '23.5E']
             self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , SAT)   )
+        #self.storeVarInFile('filesForDownload', self.filesForDownload)
         
         # 8) Ďalej sa v cykle stiahnú z internetu a spracujú sa všetky používateľom zafajknuté archívy s piconami - spracuvávajú sa po jednom (pre viac družíc - postupne každý jeden archív sa stiahne a spracuje)
         self.writeLog(_('The process started...') + ' ' + _('(downloading and extracting all necessary picons)')  )
@@ -790,7 +799,7 @@ class piconsUpdateJobScreen(Screen):
         self.writeLog('#' * 40)
         self.writeLog(_('...the process is complete.') + ' ' + _('(downloading and extracting all necessary picons)')  )
         
-        # 9) Nakoniec sa zobrazí výsledok celého procesu do konzoly a zavolá sa "ukončovacia procedúra" (metóda) pod aktuálnou triedou, určenou na updatovanie pikon
+        # 9) Nakoniec sa zobrazí výsledok celého procesu
         if self.piconCounters['added'] or self.piconCounters['changed']:
             message = _('After updating the picons you may need to restart the Enigma (GUI).') + '\n' + _('(%s added / %s changed / %s removed)') % (self.piconCounters['added'] , self.piconCounters['changed'] , self.piconCounters['removed'])
         else:
@@ -814,7 +823,7 @@ class piconsUpdateJobScreen(Screen):
         # 2. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
         self.writeLog(_('Trying download the file archive... %s') % dwn_filename)
         if not downloadFile(url_link, '/tmp/' + dwn_filename):
-            self.writeLog(_('...file download failed !'))
+            self.writeLog(_('...file download failed !!!'))
             return
         else:
             self.writeLog(_('...file download successful.'))
@@ -825,6 +834,7 @@ class piconsUpdateJobScreen(Screen):
         if not self.SRC_in_Archive:
             self.writeLog(_('Error! No picons found in the downloaded archive file!'))
             return          # navratenie vykonavania kodu z tohto podprogramu pre spracovanie dalsieho archivu/suboru s piconami v poradi
+        #self.storeVarInFile('SRC_in_Archive--%s' % dwn_filename, self.SRC_in_Archive)
 
         # 4. Rozbalenie pikon zo stiahnutého archívu
         self.writeLog(_('Extracting files from the archive...'))
@@ -856,12 +866,10 @@ class piconsUpdateJobScreen(Screen):
             if self.SRC_to_Extract:
                 self.extractCertainPiconsFromArchive('/tmp/' + dwn_filename , self.SRC_to_Extract)
             self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_to_Extract))
-        
+        #self.storeVarInFile('SRC_to_Extract--%s' % dwn_filename, self.SRC_to_Extract)
         os_remove('/tmp/' + dwn_filename)
 
     def getPiconListFromArchive(self, archiveFile = ''):
-        #t = subprocess.Popen([self.bin7zip, 'l', archiveFile], stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
-        #status, out = t.returncode, t.communicate()[0]
         status, out = getstatusoutput('%s l %s' % (self.bin7zip, archiveFile) )     # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
@@ -876,12 +884,8 @@ class piconsUpdateJobScreen(Screen):
                     tmp.update({  fpath.split('/')[-1].split('.')[0]  :  int(fsize)  })            # { "service_reference_code_<as_a_string-dictionary_key>"  :  file_size_<as_a_integer> }
                 i -= 1
             return tmp
-        elif status == 32512:
-            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
-        elif status == 512:
-            self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
         else:
-            self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out) )
+            self.extractionErrors(status, archiveFile, out)
         return ''         # return the empty string on any errors !
     
     def extractCertainPiconsFromArchive(self, archiveFile, SRC_list):
@@ -891,30 +895,34 @@ class piconsUpdateJobScreen(Screen):
         os_remove('/tmp/picons-to-extraction.txt')
         if status == 0:
             return True
-        elif status == 32512:
-            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
-        elif status == 512:
-            self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
         else:
-            self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
+            self.extractionErrors(status, archiveFile, out)
         return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
         status, out = getstatusoutput('%s e -y -o%s %s' % (self.bin7zip, self.piconDIR, archiveFile) )
         if status == 0:
             return True
-        elif status == 32512:
-            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package:  opkg update && opkg install p7zip\n' % status)
+        else:
+            self.extractionErrors(status, archiveFile, out)
+        return False
+
+    def extractionErrors(self, status, archiveFile, out):
+        if status == 32512:
+            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
         elif status == 512:
             self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
         else:
             self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
-        return False
-
+    
     def writeLog(self, msg = ''):
         print(msg)
         self['logWindow'].appendText('\n[' + str(( datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6] + '] ' + msg)
         self['logWindow'].lastPage()
+
+    #def storeVarInFile(self, fname, data):
+    #    with open('/tmp/__%s.log' % fname, 'w') as f:
+    #        f.write('\n'.join(data))
 
 
 
@@ -954,11 +962,15 @@ def pluginUpdateDo():
     url_host = findHostnameAndNewPlugin()
     if url_host:
         url_host = url_host + 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + '_all.ipk'
-        dwn_file = '/tmp/' + url_host.split('/')[-1]
+        dwn_file = '/tmp/' + url_host.split('/')[-1] + ('.deb' if newOE() else '')
         if downloadFile(url_host, dwn_file):
-            os_system("opkg install --force-reinstall %s > /dev/null 2>&1" % dwn_file)
+            if newOE():
+                os_system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
+            else:
+                os_system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
+            os_remove(dwn_file)
             print('New plugin version was installed ! old ver.:%s , new ver.:%s' % (plugin_version_local, plugin_version_online)  )
-            plugin_version_local = plugin_version_online
+            plugin_version_local = plugin_version_online            
             return True
         else:
             return False
@@ -975,33 +987,30 @@ def pluginUpdateDo():
 
 def downloadFile(url, targetfile):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+    
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    
     cookie_jar = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
     urllib2.install_opener(opener)
+    
     try:
         req = urllib2.Request(url, data=None, headers=headers)
-        handler = urllib2.urlopen(req)
+        handler = urllib2.urlopen(req, context=ctx)
         if 'drive.google' in url:
             for c in cookie_jar:
                 if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
                     url = url.replace('&id=','&confirm=%s&id=' % c.value)    # and then it's necessary to add a parameter with confirmation of the warning message
                     req = urllib2.Request(url, data=None, headers=headers)
-                    handler = urllib2.urlopen(req)
+                    handler = urllib2.urlopen(req, context=ctx)
                     break
         data = handler.read()
         with open(targetfile, 'wb') as f:
             f.write(data)
-    except urllib2.HTTPError as e:
-        print("HTTP Error: %s, URL: %s" % (e.code, url))
-        return False
-    except urllib2.URLError as e:
-        print("URL Error: %s, URL: %s" % (e.reason, url))
-        return False
-    except IOError as e:
-        print("I/O Error: %s, File: %s" % (e.reason, targetfile))
-        return False
     except Exception as e:
-        print("File download error: %s, URL: %s" % (e.message, url))
+        print('File download error: %s, URL: %s, targetfile: %s' % (e.message, url, targetfile) )
         return False
     return True
 
