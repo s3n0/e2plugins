@@ -939,14 +939,14 @@ def findHostnameAndNewPlugin():
     '''
     global plugin_version_local, plugin_version_online
     url_lnk = ''
-    url_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/', 'http://aion.webz.cz/ChocholousekPicons/']  # it is important to keep the slash character at the end of the directory paths
+    url_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/', 'http://aion.webz.cz/ChocholousekPicons/']    # it is important to keep the slash character at the end of the directory paths
     for hostname in url_list:
         try:
             url_handle = urllib2.urlopen(hostname + 'version.txt')
         except urllib2.URLError as err:
-            print('Error %s when reading from URL %s' % (err.reason, hostname + 'version.txt')  )
-        except Exception:
-            print('Error when reading URL %s' % hostname + 'version.txt')
+            print('Error: %s , while trying to fetch URL: %s' % (err.reason, hostname + 'version.txt')  )
+        except Exception as err:
+            print('Error: %s , while trying to fetch URL: %s' % (str(err), hostname + 'version.txt')  )
         else:
             plugin_version_online = url_handle.read().strip()
             if plugin_version_online > plugin_version_local:
@@ -962,16 +962,17 @@ def pluginUpdateDo():
     global plugin_version_local, plugin_version_online
     url_host = findHostnameAndNewPlugin()
     if url_host:
-        url_host = url_host + 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + '_all.ipk'
-        dwn_file = '/tmp/' + url_host.split('/')[-1] + ('.deb' if newOE() else '')
-        if downloadFile(url_host, dwn_file):
+        pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + '_all.ipk'
+        dwn_url   =  url_host + pckg_name
+        dwn_file  = '/tmp/' + ( pckg_name.replace('.ipk', '.deb') if newOE() else pckg_name )
+        if downloadFile(dwn_url, dwn_file):
             if newOE():
                 os_system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
             else:
                 os_system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
-            os_remove(dwn_file)
             print('New plugin version was installed ! old ver.:%s , new ver.:%s' % (plugin_version_local, plugin_version_online)  )
             plugin_version_local = plugin_version_online            
+            os_remove(dwn_file)
             return True
         else:
             return False
