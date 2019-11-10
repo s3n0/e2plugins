@@ -189,3 +189,6 @@ msgstr "Došlo k chybám !"
 
 msgid "Done !"
 msgstr "Hotovo !"
+
+msgid "No operation ! Picon update failed !"
+msgstr "Žiadna operácia ! Aktualizácia pikon zlyhala !"
