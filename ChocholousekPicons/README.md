@@ -14,3 +14,25 @@
    >
    >    1) With opkg manager `opkg update && opkg install p7zip` (ie attempt to install 7-zip from your Enigma feed server)
    >    2) Attempt to download a standalone `7za` binary file
+
++ **ChocholousekPicons - how to un/install**
+
+   >- For OE2.0 based Enigma (ATV, PLi, VTi, etc.) use the *.ipk* installation package
+   ```shell
+   opkg install <package_name>     # to install package
+   opkg remove <package_name>      # to uninstall package
+   ```
+   >- For OE2.5 based Enigma (OpenDreambox) use the *.deb* installation package
+   ```shell
+   dpkg -i <package_name>          # to install package
+   dpkg -r <package_name>          # to uninstall package
+   ```
+   
+   >- the *<package_name>* can also be the name of the file on the disk or the online URL:
+   ```
+   https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_<VERSION>_all.ipk   # (.deb)
+   
+   # example:
+   opkg remove enigma2-plugin-extensions-chocholousek-picons
+   opkg install https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.191111_all.ipk
+   ```
