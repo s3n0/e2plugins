@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+
 ###########################################################################
 #  Enigma2 plugin, ChocholousekPicons, written by s3n0, 2018-2019
 ###########################################################################
+
 
 ###########################################################################
 from Plugins.Plugin import PluginDescriptor
@@ -18,7 +20,7 @@ from Components.Sources.StaticText import StaticText
 ###########################################################################
 #from Components.MenuList import MenuList
 from Components.ConfigList import ConfigList, ConfigListScreen
-from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSubList, ConfigSubDict, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK
+from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSubList, ConfigSubDict, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK, NoSave
 ###########################################################################
 import urllib2, ssl, cookielib
 try:
@@ -44,6 +46,54 @@ sizemaxY = getDesktop(0).size().height()
 sizemaxX = getDesktop(0).size().width()
 ###########################################################################
 from Plugins.Extensions.ChocholousekPicons import _, PLUGIN_PATH            # from . import _, PLUGIN_PATH
+###########################################################################
+
+config.plugins.chocholousekpicons = ConfigSubsection()
+
+config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
+        default = '/usr/share/enigma2/picon',
+        choices = [ ('/usr/share/enigma2/picon','/usr/share/enigma2/picon'),
+                    ('/media/hdd/picon','/media/hdd/picon'),
+                    ('/media/usb/picon','/media/usb/picon'),
+                    ('/media/sdcard/picon','(Dreambox)  /media/sdcard/picon'),
+                    ('/data/picon','(Dreambox)  /data/picon'),
+                    ('/picon','/picon'),
+                    ('/usr/share/enigma2/XPicons/picon','/usr/share/enigma2/XPicons/picon'),
+                    ('/usr/share/enigma2/ZZPicons/picon','/usr/share/enigma2/ZZPicons/picon'),
+                    ('user_defined' , _('(user defined)')   )
+                  ]
+                )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
+
+config.plugins.chocholousekpicons.picon_folder_user = ConfigText(default = '/', fixed_size = False)
+
+#if config.plugins.chocholousekpicons.picon_folder.value != 'user_defined':
+#    for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
+#        if glob.glob(picdir[0] + '/*.png'):
+#            config.plugins.chocholousekpicons.picon_folder.default = picdir[0]      # change the default picon directory + select this found entry, if some .png files will found in some folder
+#            config.plugins.chocholousekpicons.picon_folder.setValue(picdir[0])
+#            break
+
+config.plugins.chocholousekpicons.method = ConfigSelection(
+        default = 'sync_tv', 
+        choices = [ ('all', _('copy all picons (no sync)')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]
+        )
+
+config.plugins.chocholousekpicons.sats = ConfigText(default = '19.2E 23.5E', fixed_size = False)            # ConfigSubList()  /  ConfigSubDict()  /  ConfigDictionarySet()
+
+config.plugins.chocholousekpicons.resolution = ConfigSelection(
+        default = '220x132',
+        choices = [ ('50x30','50x30'), ('100x60','100x60'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]
+        )
+
+config.plugins.chocholousekpicons.background = ConfigSelection(
+        default = None,
+        choices = [( 'no_satellites_was_selected', _('first select the satellites') )]
+        )
+
+
+
+###########################################################################
+###########################################################################
 ###########################################################################
 
 
@@ -148,80 +198,33 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if newOE():
             i = mainConfigScreen.skin.index('font=')
             self.skin = mainConfigScreen.skin[ : i ] + mainConfigScreen.skin[ i+34 : ]
-            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for newer versions (OE2.5)
+            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for newer versions of Enigma standard (OE2.5)
         else:
             self.skin = mainConfigScreen.skin
-            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions (OE2.0)        
+            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions of Enigma standard (OE2.0)
         self.layoutFinishTimer.start(200, True)
         
         #self.onShown.append(self.rebuildConfigList)
         #self.onLayoutFinish.append(self.layoutFinished)
 
     def prepareSetup(self):
-
         self.loadChochoContent()
-
-        config.plugins.chocholousekpicons = ConfigSubsection()
-        
-        config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
-                default = '/usr/share/enigma2/picon',
-                choices = [ ('/usr/share/enigma2/picon','/usr/share/enigma2/picon'),
-                            ('/media/hdd/picon','/media/hdd/picon'),
-                            ('/media/usb/picon','/media/usb/picon'),
-                            ('/media/sdcard/picon','(Dreambox)  /media/sdcard/picon'),
-                            ('/data/picon','(Dreambox)  /data/picon'),
-                            ('/picon','/picon'),
-                            ('/usr/share/enigma2/XPicons/picon','/usr/share/enigma2/XPicons/picon'),
-                            ('/usr/share/enigma2/ZZPicons/picon','/usr/share/enigma2/ZZPicons/picon'),
-                            ('user_defined' , _('(user defined)')   )
-                          ]
-                        )     # --- all folders are from source code, here:   https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
-        
-        config.plugins.chocholousekpicons.picon_folder_user = ConfigText( default = '/', fixed_size = False )
-        
-        if config.plugins.chocholousekpicons.picon_folder.value != 'user_defined':
-            for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
-                if glob.glob(picdir[0] + '/*.png'):
-                    config.plugins.chocholousekpicons.picon_folder.default = picdir[0]      # change the default picon directory + select this found entry, if some .png files will found in some folder
-                    config.plugins.chocholousekpicons.picon_folder.setValue(picdir[0])
-                    break
-        
-        config.plugins.chocholousekpicons.method = ConfigSelection(
-                default = 'sync_tv', 
-                choices = [ ('all', _('copy all picons (no sync)')), ('sync_tv', _('sync with TV userbouquets')), ('sync_tv_radio', _('sync with TV+RADIO userbouquets')) ]
-                )
-        
-        config.plugins.chocholousekpicons.sats = ConfigSubDict()        # ConfigSubList()  /  ConfigSubDict()  /  ConfigDictionarySet()
-        for sat in self.getAllSat():
-            config.plugins.chocholousekpicons.sats[sat] = ConfigYesNo(default = False)
-        config.plugins.chocholousekpicons.sats['23.5E'] = ConfigYesNo(default = True)     # setting at least one value as default
-        
-        config.plugins.chocholousekpicons.resolution = ConfigSelection(
-                default = '220x132',
-                choices = [ ('50x30','50x30'), ('100x60','100x60'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]
-                )
-        
-        config.plugins.chocholousekpicons.background = ConfigSelection(
-                default = 'black',
-                choices = [(s, s) for s in self.getAllBckByUserCfg( [sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value] , config.plugins.chocholousekpicons.resolution.value )]
-                )
-
         self.downloadPreviewPicons()
+        self.changeAvailableBackgrounds()
         self.rebuildConfigList()
 
     def rebuildConfigList(self):
         self.list = []
-        
         self.list.append(getConfigListEntry( _('Picon folder')  ,  config.plugins.chocholousekpicons.picon_folder ))
         if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
             self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.picon_folder_user ))
         self.list.append(getConfigListEntry( _('Picon update method') , config.plugins.chocholousekpicons.method  ))
-        self.list.append(getConfigListEntry( _('Satellite positions') , ConfigSelection(default = ' '.join([sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value]) , choices = config.plugins.chocholousekpicons.sats.keys() )  ))   # only display of selected satellites (without object configuration effect)
+        self.list.append(getConfigListEntry( _('Satellite positions') , NoSave(ConfigSelection(default = config.plugins.chocholousekpicons.sats.value, choices = [config.plugins.chocholousekpicons.sats.value])) ))  # only display of selected satellites (without object configuration effect)
         self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution ))
-        self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))
+        self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))        
         
         self['config'].list = self.list
-        self['config'].setList(self.list)
+        self['config'].setList(self.list)        
         
         self.showPreviewImage()
     
@@ -247,14 +250,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def keyToOk(self):
         k = self.getCursorTitle()
         if k == _('Satellite positions'):
-            self.session.openWithCallback(self.satellitesConfigScreenBack, satellitesConfigScreen, self.getAllSat() )
+            self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat() )
         elif k == _('User defined folder'):
             ConfigListScreen.keyOK(self)        # self['config'].handleKey(KEY_OK)          # self.keyOK()
 
-    def satellitesConfigScreenBack(self, retval):
+    def satellitesConfigScreenReturn(self, retval):
         if retval:
             #self.loadChochoContent()
-            self.reloadAvailableBackgrounds()   # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
+            self.changeAvailableBackgrounds()   # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
             self.changedEntry()
             self.rebuildConfigList()
 
@@ -305,7 +308,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self['txt_green'].setText(_('Save & Exit') + '*')
         k = self.getCursorTitle()
         if k == _('Picon resolution'):
-            self.reloadAvailableBackgrounds()               # reload all available backgrounds/styles for the new changed picon resolution
+            self.changeAvailableBackgrounds()               # reload all available backgrounds/styles for the new changed picon resolution
         #elif k == _('Picon background'):
         #    self.showPreviewImage()
         
@@ -323,7 +326,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self['previewImage'].instance.setScale(0)
 
     def getPreviewImagePath(self):
-        imgpath = PLUGIN_PATH + 'images/nova-cz-' + config.plugins.chocholousekpicons.background.value + '-' + config.plugins.chocholousekpicons.resolution.value + '.png'
+        imgpath = PLUGIN_PATH + 'images/filmbox-premium-' + config.plugins.chocholousekpicons.background.value + '-' + config.plugins.chocholousekpicons.resolution.value + '.png'
         if os_path.isfile(imgpath):
             return imgpath
         else:
@@ -334,19 +337,19 @@ class mainConfigScreen(Screen, ConfigListScreen):
         download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
         the online version will be detected from the http request header
         the  local version will be detected from the existing local file
-        archive filename example:         nova-cz-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
-        files inside the archive file:    nova-cz-transparent-220x132.png ; nova-cz-gray-400x240.png
+        archive filename example:         filmbox-premium-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
+        files inside the archive file:    filmbox-premium-transparent-220x132.png ; filmbox-premium-gray-400x240.png
         """
         self.check7zip()
         if not self.bin7zip:
             return
 
-        localfilenamefull = glob.glob(PLUGIN_PATH + 'nova-cz-*.7z')
+        localfilenamefull = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
         if localfilenamefull:
             localfilenamefull = localfilenamefull[0]                                                # simple converting the list type to string type
         else:
             localfilenamefull = '___(000000).7z'                                                    # version 000000 as very low version means to download a preview images from internet in next step
-        url = 'https://drive.google.com/uc?export=download&id=1wX6wwhTf2dJ30Pe2GWb20UuJ6d-HjERA'    # .7z archive with preview images (NOVA channel picons for all styles but not for all resolutions)
+        url = 'https://drive.google.com/uc?export=download&id=1wX6wwhTf2dJ30Pe2GWb20UuJ6d-HjERA'    # .7z archive with preview images (channel picons for the one and the same TV-channel)
         try:
             rq = urllib2.urlopen(url)
         except urllib2.URLError as e:
@@ -354,17 +357,19 @@ class mainConfigScreen(Screen, ConfigListScreen):
         except Exception as e:
             print('Error: %e, URL: %s' % (e, url))
         else:
-            onlinefilename = rq.headers['Content-Disposition'].split('"')[1].replace('(','_').replace(')','_')      # get file name from html header and replace the parentheses by underline characters
+            onlinefilename = rq.headers['Content-Disposition'].split('"')[1].replace('(','_').replace(')','_')    # get file name from html header and replace the parentheses by underline characters
             if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                                  # comparsion, for example as the following:   '191125' > '191013'
                 self.deleteFile(localfilenamefull)
                 localfilenamefull = PLUGIN_PATH + onlinefilename
                 data = rq.read()
                 with open(localfilenamefull, 'w') as f:
                     f.write(data)
-
+                
                 # extracting .7z archive (picon preview images):
-                self.deleteFile(PLUGIN_PATH + 'images/nova-cz-*.png')
-                status, out = getstatusoutput('%s e -y -o%s %s nova-cz-*.png' % (self.bin7zip, PLUGIN_PATH + 'images', localfilenamefull) )
+                self.deleteFile(PLUGIN_PATH + 'images/nova-cz-*.png')                               # !!!!!!!!!!!! REMOVE THE LINE IN THE FUTURE -- IN A NEWER PLUGIN VERSIONS !
+                self.deleteFile(PLUGIN_PATH + 'images/filmbox-premium-*.png')
+                
+                status, out = getstatusoutput('%s e -y -o%s %s filmbox-premium-*.png' % (self.bin7zip, PLUGIN_PATH + 'images', localfilenamefull) )
                 
                 # check the status error and clean the archive file (will be filled with a short note)
                 if status == 0:
@@ -386,6 +391,97 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if lst:
             for file in lst:
                 os_remove(file)
+
+    ###########################################################################
+
+    def loadChochoContent(self):
+        self.downloadChochoFile()
+        path = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
+        if path:
+            with open(path[0],'r') as f:            # full path-name as the string from list index 0
+                txt = f.read()
+        else:
+            txt = ''
+            print('MYDEBUGLOGLINE - Warning! The file %s was not found on the internet but also on the internal disk.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
+        self.chochoContent = txt
+
+    def downloadChochoFile(self):
+        '''
+        checking new online version, download if neccessary and load the content from file with the list of all IDs for google.drive download
+        the online version will be detected from the http request header
+        the  local version will be detected from the existing local file
+        file name example:   id_for_permalinks191017.log
+        example entry from inside the file:   1xmITO0SouVDTrATgh0JauEpIS7IfIQuB              piconblack-220x132-13.0E_by_chocholousek_(191016).7z                              bin   16.3 MB    2018-09-07 19:40:54
+        '''
+        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'    # id_for_permalinks191017.log -- means the chochoFile for the chochoContent value :)
+
+        pathlist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
+        if pathlist:
+            localfilenamefull = pathlist[0]                                             # string converted as from list[0]
+        else:
+            localfilenamefull = PLUGIN_PATH + 'id_for_permalinks000000.log'             # low version, to force update the file (as the first download)
+
+        try:
+            rq = urllib2.urlopen(url)
+        except urllib2.URLError as err:
+            print('Error %s when reading from URL: %s' % (err.reason, url)  )
+        except Exception:
+            print('Error when reading URL: %s' % url)
+        else:
+            onlinefilename = rq.headers['Content-Disposition'].split('"')[1]            # get filename from html header
+            if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                      # comparsion, for example as the following:   '191125' > '191013'
+                txt = rq.read()
+                with open(PLUGIN_PATH + onlinefilename, 'w') as f:
+                    f.write(txt)
+                if os_path.exists(localfilenamefull):
+                    os_remove(localfilenamefull)
+                print('MYDEBUGLOGLINE - file id_for_permalinks*.log was updated to new version: %s' % onlinefilename)
+
+    def changeAvailableBackgrounds(self):
+        '''
+        reload all available picon-backgrounds (picon-styles)
+        by user selected configuration
+        (by user configuration in the plugin MENU)
+        '''
+        lst = self.getAllBckByUserCfg( config.plugins.chocholousekpicons.sats.value.split() , config.plugins.chocholousekpicons.resolution.value )
+        config.plugins.chocholousekpicons.background = ConfigSelection( default = lst[0], choices = [(s, s) for s in lst] )
+    
+    def contentByUserCfgSatRes(self, satellites, resolution):
+        result = []
+        for line in self.chochoContent.splitlines():
+            if resolution in line:
+                for sat in satellites:
+                    if sat in line:
+                        result.append(line)
+                        continue
+        return '\n'.join(result)            # return = a very long string with "\n" newlines
+
+    def getAllBckByUserCfg(self, sats, res):
+        userdata = self.contentByUserCfgSatRes(sats, res)
+        return sorted(list(set(  re.findall('.*picon(.*)-%s-.*' % (res), userdata)  )))    # using the set() to remove duplicites and the sorted() to sort the list by ASCII
+
+    def getAllSat(self): # Satellites
+        lst = re.findall('.*piconblack-220x132-(.*)_by_chocholousek_.*\n+', self.chochoContent)
+        lst.sort(key = self.fnSort)
+        #print('MYDEBUGLOGLINE - getAllSat = %s' % lst)
+        return lst
+
+    def fnSort(self, s):
+        if s[0].isdigit():
+            if s.endswith('E'):
+                return float(s[:-1]) + 500
+            if s.endswith('W'):
+                return float(s[:-1]) + 1000
+        else:
+            return 0
+
+    #def getAllRes(self):       # all picon resolutions
+    #    tmp = list(set(re.findall('.*picon.*-([0-9]+x[0-9]+)-23\.5.*\n+', self.chochoContent)))
+    #    tmp = [int(x) for x in tmp]     # simple sort method for numeric strings (better as the .sort() method)
+    #    return tmp
+
+    #def getAllBck(self):       # all picon backgrounds (styles)
+    #    return re.findall('.*picon(.*)-220x132-23\.5.*\n+', self.chochoContent)
 
     ###########################################################################
     
@@ -458,99 +554,6 @@ class mainConfigScreen(Screen, ConfigListScreen):
         print('MYDEBUGLOGLINE - Error! Could not get information about chipset-architecture! Returning an empty string!')
         return ''
 
-    ###########################################################################
-
-    def loadChochoContent(self):
-        self.downloadChochoFile()
-        path = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
-        if path:
-            with open(path[0],'r') as f:            # full path-name as the string from list index 0
-                txt = f.read()
-        else:
-            txt = ''
-            print('MYDEBUGLOGLINE - Warning! The file %s was not found on the internet but also on the internal disk.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
-        self.chochoContent = txt
-
-    def downloadChochoFile(self):
-        '''
-        checking new online version, download if neccessary and load the content from file with the list of all IDs for google.drive download
-        the online version will be detected from the http request header
-        the  local version will be detected from the existing local file
-        file name example:   id_for_permalinks191017.log
-        example entry from inside the file:   1xmITO0SouVDTrATgh0JauEpIS7IfIQuB              piconblack-220x132-13.0E_by_chocholousek_(191016).7z                              bin   16.3 MB    2018-09-07 19:40:54
-        '''
-        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'    # id_for_permalinks191017.log -- means the chochoFile for the chochoContent value :)
-
-        pathlist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
-        if pathlist:
-            localfilenamefull = pathlist[0]                                             # string converted as from list[0]
-        else:
-            localfilenamefull = PLUGIN_PATH + 'id_for_permalinks000000.log'             # low version, to force update the file (as the first download)
-
-        try:
-            rq = urllib2.urlopen(url)
-        except urllib2.URLError as err:
-            print('Error %s when reading from URL: %s' % (err.reason, url)  )
-        except Exception:
-            print('Error when reading URL: %s' % url)
-        else:
-            onlinefilename = rq.headers['Content-Disposition'].split('"')[1]            # get filename from html header
-            if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                      # comparsion, for example as the following:   '191125' > '191013'
-                txt = rq.read()
-                with open(PLUGIN_PATH + onlinefilename, 'w') as f:
-                    f.write(txt)
-                if os_path.exists(localfilenamefull):
-                    os_remove(localfilenamefull)
-                print('MYDEBUGLOGLINE - file id_for_permalinks*.log was updated to new version: %s' % onlinefilename)
-
-    def reloadAvailableBackgrounds(self):
-        '''
-        reload all available picon-backgrounds (picon-styles)
-        by user selected configuration
-        (by user configuration in the plugin MENU)
-        '''
-        config.plugins.chocholousekpicons.background = ConfigSelection(
-                default = None,
-                choices = [(s, s) for s in self.getAllBckByUserCfg( [sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value] , config.plugins.chocholousekpicons.resolution.value )]
-                )    
-    
-    def contentByUserCfgSatRes(self, satellites, resolution):
-        result = []
-        for line in self.chochoContent.splitlines():
-            if resolution in line:
-                for sat in satellites:
-                    if sat in line:
-                        result.append(line)
-                        continue
-        return '\n'.join(result)            # return = a very long string with "\n" newlines
-
-    def getAllBckByUserCfg(self, sats, res):
-        userdata = self.contentByUserCfgSatRes(sats, res)
-        return sorted(list(set(  re.findall('.*picon(.*)-%s-.*' % (res), userdata)  )))    # using the set() to remove duplicites and the sorted() to sort the list by ASCII
-
-    def getAllSat(self): # Satellites
-        lst = re.findall('.*piconblack-220x132-(.*)_by_chocholousek_.*\n+', self.chochoContent)
-        lst.sort(key = self.fnSort)
-        #print('MYDEBUGLOGLINE - getAllSat = %s' % lst)
-        return lst
-
-    def fnSort(self, s):
-        if s[0].isdigit():
-            if s.endswith('E'):
-                return float(s[:-1]) + 500
-            if s.endswith('W'):
-                return float(s[:-1]) + 1000
-        else:
-            return 0
-
-    #def getAllRes(self):       # all picon resolutions
-    #    tmp = list(set(re.findall('.*picon.*-([0-9]+x[0-9]+)-23\.5.*\n+', self.chochoContent)))
-    #    tmp = [int(x) for x in tmp]     # simple sort method for numeric strings (better as the .sort() method)
-    #    return tmp
-
-    #def getAllBck(self):       # all picon backgrounds (styles)
-    #    return re.findall('.*picon(.*)-220x132-23\.5.*\n+', self.chochoContent)
-
 
 
 ###########################################################################
@@ -611,14 +614,16 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         }, -2)
                 
         self.onShown.append(self.rebuildConfigList)
-
+    
     def keyToOk(self):
         self.switchSelectedSat()
         self.changedEntry()
     
     def switchSelectedSat(self):
-        sel = self['config'].getCurrent()[0]    # example value: '23.5E'
-        config.plugins.chocholousekpicons.sats[sel].setValue(  not config.plugins.chocholousekpicons.sats[sel].getValue()  )        # to invert the boolean value
+        sel = self['config'].getCurrent()[0]                                # example:  '23.5E 19.2E 13.0E'            ...another example:   '13.0E'
+        sats = config.plugins.chocholousekpicons.sats.getValue().split()    # example:  ['23.5E', '19.2E', '13.0E']    ...another example:   ['13.0E']
+        sats.remove(sel) if sel in sats else sats.append(sel)
+        config.plugins.chocholousekpicons.sats.setValue(' '.join(sats))     # set the new value as the string (converted from a list variable)
     
     def changedEntry(self):
         for x in self.onChangedEntry:
@@ -628,8 +633,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
     def rebuildConfigList(self):
         self.list = []
-        for x in self.allSat:
-            self.list.append(getConfigListEntry(x, config.plugins.chocholousekpicons.sats[x]))
+        for sat in self.allSat:
+            self.list.append(getConfigListEntry(sat, NoSave(ConfigYesNo( default = sat in config.plugins.chocholousekpicons.sats.getValue().split() ))))
         self['config'].list = self.list
         self['config'].setList(self.list)
     
@@ -674,7 +679,7 @@ class piconsUpdateJobScreen(Screen):
             }, -1)
         
         self.piconCounters = {'added' : 0, 'changed' : 0, 'removed' : 0}
-        self.piconUpdateReturn = _('NOOP'), MessageBox.TYPE_ERROR                               # error boolean, error message
+        self.piconUpdateReturn = _('No operation ! Picon update failed !'), MessageBox.TYPE_ERROR   # error boolean, error message
         self.startTime = datetime.now()
         
         self.th = threading.Thread(target = self.thProcess)
@@ -785,7 +790,7 @@ class piconsUpdateJobScreen(Screen):
         
         # 7) Pripraví sa zoznam názvov všetkých súborov .7z na sťahovanie z internetu - podľa konfigurácie pluginu
         self.filesForDownload = []
-        for SAT in [sat for sat,boo in config.plugins.chocholousekpicons.sats.items() if boo.value]:       # example:  ['19.2E', '23.5E']
+        for SAT in config.plugins.chocholousekpicons.sats.getValue().split():           # example:   ['13.0E', '19.2E', '23.5E']
             self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , SAT)   )
         #self.storeVarInFile('filesForDownload', self.filesForDownload)
         
@@ -962,11 +967,11 @@ def pluginUpdateDo():
     global plugin_version_local, plugin_version_online
     url_host = findHostnameAndNewPlugin()
     if url_host:
-        pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + '_all.ipk'
+        pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + ('_all.deb' if newOE() else '_all.ipk')
         dwn_url   =  url_host + pckg_name
-        dwn_file  = '/tmp/' + ( pckg_name.replace('.ipk', '.deb') if newOE() else pckg_name )
+        dwn_file  = '/tmp/' + pckg_name
         if downloadFile(dwn_url, dwn_file):
-            if newOE():
+            if pckg_name.endswith('.deb'):
                 os_system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
             else:
                 os_system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
