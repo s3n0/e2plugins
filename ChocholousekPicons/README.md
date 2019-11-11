@@ -21,9 +21,8 @@
    ```shell
    opkg install <package_name>     # to install package
    opkg remove <package_name>      # to uninstall package
-   ```
-   >- Example:
-   ```shell
+   
+   # Example:
    opkg remove enigma2-plugin-extensions-chocholousek-picons
    wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.191111_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.191111_all.ipk
    opkg install /tmp/*.ipk
@@ -33,9 +32,8 @@
    ```shell
    dpkg -i <package_name>          # to install package
    dpkg -r <package_name>          # to uninstall package
-   ```
-   >- Example:
-   ```shell
+
+   # Example:
    wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.191111_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.191111_all.deb
    dpkg -r enigma2-plugin-extensions-chocholousek-picons
    dpkg -i /tmp/*.deb
