@@ -52,15 +52,15 @@ config.plugins.chocholousekpicons = ConfigSubsection()
 
 config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
         default = '/usr/share/enigma2/picon',
-        choices = [ ('/usr/share/enigma2/picon','/usr/share/enigma2/picon'),
-                    ('/media/hdd/picon','/media/hdd/picon'),
-                    ('/media/usb/picon','/media/usb/picon'),
-                    ('/media/sdcard/picon','(Dreambox)  /media/sdcard/picon'),
-                    ('/data/picon','(Dreambox)  /data/picon'),
-                    ('/picon','/picon'),
-                    ('/usr/share/enigma2/XPicons/picon','/usr/share/enigma2/XPicons/picon'),
+        choices = [ ('/usr/share/enigma2/picon' ,        '/usr/share/enigma2/picon'),
+                    ('/media/hdd/picon' ,                '/media/hdd/picon'),
+                    ('/media/usb/picon' ,                '/media/usb/picon'),
+                    ('/media/sdcard/picon' , '(Dreambox)  /media/sdcard/picon'),
+                    ('/data/picon' ,         '(Dreambox)  /data/picon'),
+                    ('/picon'      ,                     '/picon'),
+                    ('/usr/share/enigma2/XPicons/picon', '/usr/share/enigma2/XPicons/picon'),
                     ('/usr/share/enigma2/ZZPicons/picon','/usr/share/enigma2/ZZPicons/picon'),
-                    ('user_defined' , _('(user defined)')   )
+                    ('user_defined',                     _('(user defined)')   )
                   ]
                 )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
 
@@ -82,8 +82,15 @@ config.plugins.chocholousekpicons.sats = ConfigText(default = '19.2E 23.5E', fix
 
 config.plugins.chocholousekpicons.resolution = ConfigSelection(
         default = '220x132',
-        choices = [ ('50x30','50x30'), ('100x60','100x60'), ('150x90','150x90'), ('220x132','220x132'), ('400x170','(ZZPicons) 400x170'), ('400x240','400x240'), ('500x300','500x300') ]
-        )
+        choices = [   ('50x30' ,    '"MiniPicons"   50x30'),
+                     ('100x60' , '"InfobarPicons"   100x60'),
+                     ('150x90' ,       '"HDGLASS"   150x90'),
+                    ('220x132' ,       '"XPicons"   220x132'),
+                    ('400x170' ,      '"ZZPicons"   400x170'),
+                    ('400x240' ,     '"ZZZPicons"   400x240'),
+                    ('500x300' ,                   '500x300') 
+                  ]
+                )
 
 config.plugins.chocholousekpicons.background = ConfigSelection(
         default = None,
@@ -129,10 +136,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="470,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="775,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="65,755"  size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="240,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="510,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_blue"   position="815,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_red"    position="65,755"  size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"  position="240,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_yellow" position="510,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_blue"   position="815,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
@@ -150,10 +157,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="370,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="605,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="55,560"  size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_green"  position="200,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_yellow" position="405,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
-            <widget render="Label" source="txt_blue"   position="640,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" />
+            <widget render="Label" source="txt_red"    position="55,560"  size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"  position="200,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_yellow" position="405,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_blue"   position="640,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
 
     def __init__(self, session):
@@ -179,16 +186,16 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self['version_txt']  = Label('Chocholousek picons - plugin ver.%s' % plugin_version_local)
         self['author_txt']   = Label('(https://github.com/s3n0)')
 
-        self['actions'] = ActionMap( ['SetupActions', 'ColorActions'],
+        self['actions'] = ActionMap( ['ColorActions', 'DirectionActions', 'OkCancelActions'] ,
         {
-            'left'  : self.keyToLeft,
-            'right' : self.keyToRight,
-            'ok'    : self.keyToOk,
-            'yellow': self.keyToPluginUpdate,
-            'blue'  : self.keyToPiconsUpdate,
-            'green' : self.exitWithSave,
-            'red'   : self.exitWithoutSave,
-            'cancel': self.keyToExit
+                'left'  : self.keyToLeft,
+                'right' : self.keyToRight,
+                'ok'    : self.keyToOk,
+                'yellow': self.keyToPluginUpdate,
+                'blue'  : self.keyToPiconsUpdate,
+                'green' : self.exitWithSave,
+                'red'   : self.exitWithoutSave,
+                'cancel': self.keyToExit
         }, -2)
 
         self.bin7zip = None             # path to directory with '7z' or '7za' executable binary file
@@ -333,13 +340,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
             return PLUGIN_PATH + 'images/image_not_found.png'
 
     def downloadPreviewPicons(self):
-        """
+        '''
         download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
         the online version will be detected from the http request header
         the  local version will be detected from the existing local file
         archive filename example:         filmbox-premium-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
         files inside the archive file:    filmbox-premium-transparent-220x132.png ; filmbox-premium-gray-400x240.png
-        """
+        '''
         self.check7zip()
         if not self.bin7zip:
             return
@@ -541,15 +548,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
         manager = 'dpkg --print-architecture' if newOE() else 'opkg print-architecture'
         status,out = getstatusoutput(manager + ' | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
-            return out.replace('arch ','').replace('\n',' ')        # return architectures by OPKG manager, such as:  'mips32el 16 mipsel 46'
+            return out.replace('arch ','').replace('\n',' ')        # return architectures by the Enigma package manager, like as:   'mips32el 16 mipsel 46'
 
         t = re.findall('isa\s*:\s*(.*)\n+', open('/proc/cpuinfo','r').read() )
         if t:
-            return t[0]                                             # return list type converted to a string value, like as:  'mips1 mips2 mips32r1'
+            return t[0]                                             # return list type converted to a string value, like as:   'mips1 mips2 mips32r1'
 
         status,out = getstatusoutput('uname -m')
         if status == 0:
-            return out                                              # return architectures from system, like as:  'mips'
+            return out                                              # return architectures from system, like as:   'mips'
 
         print('MYDEBUGLOGLINE - Error! Could not get information about chipset-architecture! Returning an empty string!')
         return ''
@@ -571,7 +578,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             <widget name="title_txt" position="center,40"  size="350,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <widget render="Label" source="txt_green"        position="65,854" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_green"       position="65,854" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
@@ -580,37 +587,50 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             <widget name="title_txt" position="center,20" size="300,40"  font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <widget render="Label" source="txt_green"        position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_green"       position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
 
     def __init__(self, session, allSat):
-
+        
         self.allSat = allSat
         
         Screen.__init__(self, session)
-
+        
         if newOE():
-            i = satellitesConfigScreen.skin.index('font')
-            self.skin = satellitesConfigScreen.skin[ : i ] + satellitesConfigScreen.skin[ i+34 : ]          # remove font="" itemHeight="" from skin, if the version of OE is 2.5 (due to differ Screen layer in OpenDreambox)
+            ### remove first found item "font=....itemHeght=...." from the "config" widget (for differences in the Screen layer of the OpenDreambox Enigma - OE2.5)
+            s = satellitesConfigScreen.skin
+            i = s.index('font')
+            s = s[:i] + s[i+34:]
+            ### increase width of the Screen layer + width of the "config" widget (for differences in the Screen layer of the OpenDreambox Enigma - OE2.5)
+            i = s.index('size')                     # first match is the size of main Screen frame
+            y = s[i+10 : i+13]
+            s = s[:i] + 'size="' + y + s[i+9:]
+            i = s.index('size', i+20)               # second match is the size of widget "config"
+            y = s[i+10 : i+13]
+            s = s[:i] + 'size="' + y + s[i+9:]
+            #i = s.index('size', i+20)              # third match is the size of my own title for window Screen
+            #y = s[i+10 : i+13]
+            #s = s[:i] + 'size="' + y + s[i+9:]
+            self.skin = s
         else:
             self.skin = satellitesConfigScreen.skin
         
         self.onChangedEntry = []
         self.list = []
-
+        
         ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
-
+        
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
 
         self['title_txt'] = Label(_('Select satellites:'))
-        self['txt_green'] = StaticText(_('Done'))
+        self['txt_green'] = StaticText(_('Apply'))
 
-        self["actions"] = ActionMap( ["SetupActions", "ColorActions"],
+        self['actions'] = ActionMap( ['ColorActions', 'DirectionActions', 'OkCancelActions'] ,
         {
-            'left'  : self['config'].pageUp,
-            'right' : self['config'].pageDown,
-            'ok'    : self.keyToOk,
-            'green' : self.keyToExit
+                'left'  : self.keyToPageUp,
+                'right' : self.keyToPageDown,
+                'ok'    : self.keyToOk,
+                'green' : self.keyToExit
         }, -2)
                 
         self.onShown.append(self.rebuildConfigList)
@@ -618,6 +638,12 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     def keyToOk(self):
         self.switchSelectedSat()
         self.changedEntry()
+    
+    def keyToPageUp(self):
+        self['config'].pageUp()                             # self["config"].pageUp (.pageDown) cannot be called directly from ["actions"] because the BlackHole Enigma does not allow this, so there is another function on the left/right buttons to call .pageUp / .pageDown
+        
+    def keyToPageDown(self):
+        self['config'].pageDown()                           # self["config"].pageUp (.pageDown) cannot be called directly from ["actions"] because the BlackHole Enigma does not allow this, so there is another function on the left/right buttons to call .pageUp / .pageDown
     
     def switchSelectedSat(self):
         sel = self['config'].getCurrent()[0]                                # example:  '23.5E 19.2E 13.0E'            ...another example:   '13.0E'
@@ -628,7 +654,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     def changedEntry(self):
         for x in self.onChangedEntry:
             x()
-        self['txt_green'].setText(_('Done') + '*')
+        self['txt_green'].setText(_('Apply') + '*')
         self.rebuildConfigList()
 
     def rebuildConfigList(self):
@@ -671,15 +697,16 @@ class piconsUpdateJobScreen(Screen):
         self['logWindow'] = ScrollLabel('LOG:\n')
         self['logWindow'].scrollbarmode = "showOnDemand"
         
-        self['actions'] = ActionMap( ['SetupActions','DirectionActions'], {
-            "up"    :  self["logWindow"].pageUp,
-            "left"  :  self["logWindow"].pageUp,
-            "down"  :  self["logWindow"].pageDown,
-            "right" :  self["logWindow"].pageDown
-            }, -1)
+        self['actions'] = ActionMap( ['DirectionActions'] ,
+        {
+                'up'    :  self['logWindow'].pageUp,
+                'left'  :  self['logWindow'].pageUp,
+                'down'  :  self['logWindow'].pageDown,
+                'right' :  self['logWindow'].pageDown
+        }, -1)
         
         self.piconCounters = {'added' : 0, 'changed' : 0, 'removed' : 0}
-        self.piconUpdateReturn = _('No operation ! Picon update failed !'), MessageBox.TYPE_ERROR   # error boolean, error message
+        self.piconUpdateReturn = _('No operation ! Picon update failed !'), MessageBox.TYPE_ERROR           # error boolean, error message
         self.startTime = datetime.now()
         
         self.th = threading.Thread(target = self.thProcess)
@@ -996,9 +1023,9 @@ def pluginUpdateDo():
 def downloadFile(url, targetfile):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0'}      # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
     
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    #ctx = ssl.create_default_context()
+    #ctx.check_hostname = False
+    #ctx.verify_mode = ssl.CERT_NONE
     
     cookie_jar = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
@@ -1006,13 +1033,13 @@ def downloadFile(url, targetfile):
     
     try:
         req = urllib2.Request(url, data=None, headers=headers)
-        handler = urllib2.urlopen(req, context=ctx, timeout=15)
+        handler = urllib2.urlopen(req, timeout=15)
         if 'drive.google' in url:
             for c in cookie_jar:
                 if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
                     url = url.replace('&id=', '&confirm=%s&id=' % c.value)   # and then it's necessary to add a parameter with confirmation of the warning message
                     req = urllib2.Request(url, data=None, headers=headers)
-                    handler = urllib2.urlopen(req, context=ctx, timeout=15)
+                    handler = urllib2.urlopen(req, timeout=15)
                     break
         data = handler.read()
         with open(targetfile, 'wb') as f:
