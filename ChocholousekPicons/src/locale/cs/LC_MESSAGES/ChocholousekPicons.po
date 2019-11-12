@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-25 19:26+0200\n"
-"PO-Revision-Date: 2019-10-27 18:45+0100\n"
+"PO-Revision-Date: 2019-11-11 17:50+0100\n"
 "Last-Translator: Chocholousek <https://www.linuxsat-support.com/cms/user/25586-chocholousek/>\n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -189,6 +189,9 @@ msgstr "Došlo k chybám!"
 
 msgid "Done !"
 msgstr "Konec!"
+
+msgid "Apply"
+msgstr "Aplikovat"
 
 msgid "No operation ! Picon update failed !"
 msgstr "Žádná operace ! Aktualizace picon se nezdařila !"
