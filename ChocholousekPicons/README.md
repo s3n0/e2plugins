@@ -20,19 +20,19 @@
 
    >- For OE2.0 based Enigma (ATV, PLi, VTi, etc.) use the *.ipk* installation package:
    ```shell
-   opkg install <package_name>     # to install package
    opkg remove <package_name>      # to uninstall package
+   opkg install <package_name>     # to install package
    
    # Example:
-   opkg remove enigma2-plugin-extensions-chocholousek-picons
    wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.191115_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.191115_all.ipk
+   opkg remove enigma2-plugin-extensions-chocholousek-picons
    opkg install /tmp/*.ipk
    ```
    
    >- For OE2.5+ based Enigma (OpenDreambox) use the *.deb* installation package:
    ```shell
-   dpkg -i <package_name>          # to install package
    dpkg -r <package_name>          # to uninstall package
+   dpkg -i <package_name>          # to install package
 
    # Example:
    wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.191115_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.191115_all.deb
