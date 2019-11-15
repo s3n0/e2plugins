@@ -31,8 +31,11 @@ msgstr "Zložka definovaná užívateľom"
 msgid "Picon update method"
 msgstr "Metóda aktualizovania pikon"
 
-msgid "copy all picons (no sync)"
-msgstr "skopírovať všetky pikony (bez synch.)"
+msgid "copy all: current will deleted"
+msgstr "skopírovať všetky: aktuálne budú zmazané"
+
+msgid "copy all: incremental update"
+msgstr "skopírovať všetky: prírastková aktualizácia"
 
 msgid "sync with TV userbouquets"
 msgstr "synchronizovať so zoznamami TV kanálov"
@@ -118,13 +121,13 @@ msgstr ""
 msgid "Preparing a list of picons from the picon directory on the local disk."
 msgstr "Príprava zoznamu picon zo zložky na lokálnom disku."
 
-msgid "Preparing a list of picons from userbouquet files."
-msgstr "Príprava zoznamu picon z \"userbouquets\"."
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Príprava zoznamu picon z \"userbouquet\" súborov..."
 
 msgid "...done."
 msgstr "...hotovo."
 
-msgid "Deleting unneccessary picons from local disk..."
+msgid "Deleting unnecessary picons from local disk..."
 msgstr "Odstraňovanie nepotrebných picon z lokálneho disku..."
 
 msgid "...%s picons deleted."
