@@ -13,8 +13,8 @@
    
    >- If the archiver is not found on the system, it will be attempted to install it in two steps:
    >
-   >    1) With opkg manager `opkg update && opkg install p7zip` (ie attempt to install 7-zip from your Enigma feed server)
-   >    2) Attempt to download a standalone `7za` binary file
+   >    1. Download and install 7-zip via the package manager (i.e. attempt to install 7-zip from your Enigma feed server)
+   >    2. Attempt to download a standalone `7za` binary file from the internet
 
 + **ChocholousekPicons - how to un/install**
 
