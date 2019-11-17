@@ -64,15 +64,12 @@ config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
                     ('user_defined',                     _('(user defined)')   )
                   ]
                 )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
+for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
+    if glob.glob(picdir[0] + '/*.png'):
+        config.plugins.chocholousekpicons.picon_folder.default = picdir[0]      # change the default picon directory (on the first plugin start) if some picons (.PNG files) was found in some folder
+        break
 
 config.plugins.chocholousekpicons.picon_folder_user = ConfigText(default = '/', fixed_size = False)
-
-#if config.plugins.chocholousekpicons.picon_folder.value != 'user_defined':
-#    for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
-#        if glob.glob(picdir[0] + '/*.png'):
-#            config.plugins.chocholousekpicons.picon_folder.default = picdir[0]      # change the default picon directory + select this found entry, if some .png files will found in some folder
-#            config.plugins.chocholousekpicons.picon_folder.setValue(picdir[0])
-#            break
 
 config.plugins.chocholousekpicons.method = ConfigSelection(
         default = 'sync_tv',
@@ -86,16 +83,18 @@ config.plugins.chocholousekpicons.method = ConfigSelection(
 
 config.plugins.chocholousekpicons.sats = ConfigText(default = '19.2E 23.5E', fixed_size = False)            # ConfigSubList()  /  ConfigSubDict()  /  ConfigDictionarySet()
 
+limitedRes = [ 
+                ('50x30'   ,      '"MiniPicons"   50x30'),
+                ('100x60'  ,  '"InfobarPicons"   100x60'),
+                ('150x90'  ,        '"HDGLASS"   150x90'),
+                ('220x132' ,       '"XPicons"   220x132'),
+                ('400x170' ,      '"ZZPicons"   400x170'),
+                ('400x240' ,     '"ZZZPicons"   400x240'),
+                ('500x300' ,                   '500x300') 
+             ]
 config.plugins.chocholousekpicons.resolution = ConfigSelection(
         default = '220x132',
-        choices = [   ('50x30' ,    '"MiniPicons"   50x30'),
-                     ('100x60' , '"InfobarPicons"   100x60'),
-                     ('150x90' ,       '"HDGLASS"   150x90'),
-                    ('220x132' ,       '"XPicons"   220x132'),
-                    ('400x170' ,      '"ZZPicons"   400x170'),
-                    ('400x240' ,     '"ZZZPicons"   400x240'),
-                    ('500x300' ,                   '500x300') 
-                  ]
+        choices = limitedRes
         )
 
 config.plugins.chocholousekpicons.background = ConfigSelection(
@@ -284,7 +283,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def keyToPiconsUpdate(self):
         if self.bin7zip:
-            self.session.open(piconsUpdateJobScreen, self.chochoContent, self.bin7zip)
+            if config.plugins.chocholousekpicons.background.value != 'no_picons':
+                self.session.open(piconsUpdateJobScreen, self.chochoContent, self.bin7zip)
         else:
             self.check7zip()
 
@@ -365,18 +365,19 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if not self.bin7zip:
             return
 
-        localfilenamefull = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
-        if localfilenamefull:
-            localfilenamefull = localfilenamefull[0]                                                # simple converting the list type to string type
+        flist = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
+        if flist:
+            localfilenamefull = flist[0]                                                            # simple converting the list type to string type
         else:
-            localfilenamefull = '___(000000).7z'                                                    # version 000000 as very low version means to download a preview images from internet in next step
+            localfilenamefull = '___(000000).7z'                                                    # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
+        
         url = 'https://drive.google.com/uc?export=download&id=1wX6wwhTf2dJ30Pe2GWb20UuJ6d-HjERA'    # .7z archive with preview images (channel picons for the one and the same TV-channel)
         try:
             handler = urllib2.urlopen(url)
         except urllib2.URLError as e:
-            print('Error %s when reading from URL: %s' % (e.reason, url))
+            print('Error %s when reading from URL %s' % (e.reason, url))
         except Exception as e:
-            print('Error: %e, URL: %s' % (e, url))
+            print('Error %s when reading URL %s' % (str(e), url))
         else:
             onlinefilename = handler.headers['Content-Disposition'].split('"')[1].replace('(','_').replace(')','_')    # get file name from html header and replace the parentheses by underline characters
             if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                                  # comparsion, for example as the following:   '191125' > '191013'
@@ -434,54 +435,58 @@ class mainConfigScreen(Screen, ConfigListScreen):
         the  local version will be detected from the existing local file
         file name example:   id_for_permalinks191017.log
         example entry from inside the file:   1xmITO0SouVDTrATgh0JauEpIS7IfIQuB              piconblack-220x132-13.0E_by_chocholousek_(191016).7z                              bin   16.3 MB    2018-09-07 19:40:54
-        '''
-        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'    # id_for_permalinks191017.log -- means the chochoFile for the chochoContent value :)
-
-        pathlist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
-        if pathlist:
-            localfilenamefull = pathlist[0]                                             # string converted as from list[0]
+        '''        
+        flist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
+        if flist:
+            localfilenamefull = flist[0]                                                # string converted as from list[0]
         else:
-            localfilenamefull = PLUGIN_PATH + 'id_for_permalinks000000.log'             # low version, to force update the file (as the first download)
+            localfilenamefull = PLUGIN_PATH + 'id_for_permalinks000000.log'             # low version, to force update the file (the first download at all, if the file does not exists !)
 
+        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'    # id_for_permalinks191017.log -- means the chochoFile for the chochoContent value :)
         try:
             rq = urllib2.urlopen(url)
-        except urllib2.URLError as err:
-            print('Error %s when reading from URL: %s' % (err.reason, url)  )
-        except Exception:
-            print('Error when reading URL: %s' % url)
+        except urllib2.URLError as e:
+            print('Error %s when reading from URL %s' % (e.reason, url))
+        except Exception as e:
+            print('Error %s when reading URL %s' % (str(e), url))
         else:
             onlinefilename = rq.headers['Content-Disposition'].split('"')[1]            # get filename from html header
             if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                      # comparsion, for example as the following:   '191125' > '191013'
-                txt = rq.read()
-                with open(PLUGIN_PATH + onlinefilename, 'w') as f:
-                    f.write(txt)
-                if os_path.exists(localfilenamefull):
-                    os_remove(localfilenamefull)
-                print('MYDEBUGLOGLINE - file id_for_permalinks*.log was updated to new version: %s' % onlinefilename)
+                self.deleteFile(localfilenamefull)
+                localfilenamefull = PLUGIN_PATH + onlinefilename
+                downloadFile(url, localfilenamefull)
+                print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" was updated to new version: %s' % onlinefilename)
 
     def changeAvailableBackgrounds(self):
         '''
-        reload all available picon-backgrounds (picon-styles)
-        by user selected configuration
-        (by user configuration in the plugin MENU)
+        change all available picon-backgrounds (picon-styles)
+        by the user selected configuration (in the plugin config-menu)
         '''
-        lst = self.getAllBckByUserCfg( config.plugins.chocholousekpicons.sats.value.split() , config.plugins.chocholousekpicons.resolution.value )
-        config.plugins.chocholousekpicons.background = ConfigSelection( default = lst[0], choices = [(s, s) for s in lst] )
+        bckg_list = self.backgroundsByUserCfg( config.plugins.chocholousekpicons.sats.getValue().split() , config.plugins.chocholousekpicons.resolution.getValue() )
+        if bckg_list:
+            config.plugins.chocholousekpicons.background = ConfigSelection( default = bckg_list[0], choices = [(s, s) for s in bckg_list] )
+        else:
+            config.plugins.chocholousekpicons.background = ConfigSelection( default = 'no_picons', choices = [('no_picons', _('No picons found for selected resolution and satellites !') )]  )
     
-    def contentByUserCfgSatRes(self, satellites, resolution):
+    def backgroundsByUserCfg(self, sats, res):
+        usrcontent = self.contentByUserCfg(sats, res)        
+        backgrounds = sorted(list(set(  re.findall('.*picon(.*)-%s-.*' % (res), usrcontent)  )))          # using the set() to remove duplicites and the sorted() to sort the list by ASCII
+        for b in backgrounds:
+            for s in sats:
+                if not 'picon{}-{}-{}_'.format(b, res, s) in usrcontent:
+                    backgrounds.remove(b)             # check if all satellites from usrcontent contains also all backgrounds, if not, then delete the background from the available list of backgrounds
+                    break
+        return backgrounds
+
+    def contentByUserCfg(self, satellites, resolution):
         result = []
         for line in self.chochoContent.splitlines():
             if resolution in line:
                 for sat in satellites:
-                    if sat in line:
+                    if '-{}_'.format(sat) in line:
                         result.append(line)
-                        continue
-        return '\n'.join(result)            # return = a very long string with "\n" newlines
-
-    def getAllBckByUserCfg(self, sats, res):
-        userdata = self.contentByUserCfgSatRes(sats, res)
-        return sorted(list(set(  re.findall('.*picon(.*)-%s-.*' % (res), userdata)  )))    # using the set() to remove duplicites and the sorted() to sort the list by ASCII
-
+        return '\n'.join(result)
+    
     def getAllSat(self): # Satellites
         lst = re.findall('.*piconblack-220x132-(.*)_by_chocholousek_.*\n+', self.chochoContent)
         lst.sort(key = self.fnSort)
@@ -1136,26 +1141,16 @@ def pluginMenu(session, **kwargs):              # starts when the plugin is open
     plugin_version_local = open(PLUGIN_PATH + 'version.txt','r').read().strip()
     session.open(mainConfigScreen)
 
-def sessionStart(reason, session):              # starts after the Enigma2 (the session) booting
-    if reason == 0:
-        print('PLUGINSTARTDEBUGLOG - sessionStart executed, reason == 0')
-        #session = kwargs['session']
-    if reason == 1:
-        print('PLUGINSTARTDEBUGLOG - sessionStart executed, reason == 1')
-        session = None
-
 def Plugins(**kwargs):
-    return [
-        PluginDescriptor(
-            where = PluginDescriptor.WHERE_SESSIONSTART,
-            needsRestart = False,
-            fnc = sessionStart),
-        PluginDescriptor(
-            where = PluginDescriptor.WHERE_PLUGINMENU,
-            name = "Chocholousek picons",
-            description = "Download and update Chocholousek picons",
-            icon = "images/plugin.png",
-            needsRestart = False,
-            fnc = pluginMenu)
-        ]
+    if sizemaxX > 1900:
+        logo_img = 'images/plugin_fhd.png'
+    else:
+        logo_img = 'images/plugin.png'
+    return [ PluginDescriptor(
+                where = PluginDescriptor.WHERE_PLUGINMENU,
+                name = 'Chocholousek picons',
+                description = 'Download and update Chocholousek picons',
+                icon = logo_img,
+                needsRestart = False,
+                fnc = pluginMenu)  ]
 
