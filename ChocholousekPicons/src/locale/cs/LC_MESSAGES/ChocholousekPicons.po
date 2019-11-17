@@ -198,3 +198,6 @@ msgstr "Aplikovat"
 
 msgid "No operation ! Picon update failed !"
 msgstr "Žádná operace ! Aktualizace picon se nezdařila !"
+
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Nebyly nalezeny žádné picony pro vybrané rozlišení a satelity!"
