@@ -1043,6 +1043,7 @@ def pluginUpdateDo():
         dwn_file  = '/tmp/' + pckg_name
         if downloadFile(dwn_url, dwn_file):
             if pckg_name.endswith('.deb'):
+                os_system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
                 os_system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
             else:
                 os_system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
