@@ -137,14 +137,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget name="previewImage" position="100,390" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="200,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="190,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="470,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="775,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="65,755"  size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_green"  position="240,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_yellow" position="510,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_blue"   position="815,755" size="280,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_red"    position="65,755"  size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"  position="230,755" size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_yellow" position="510,755" size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_blue"   position="815,755" size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
@@ -530,10 +530,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def download7zip(self, result):
         if result:
-            if not newOE() and not os_system('dpkg -l p7zip > /dev/null 2>&1'):                 # if no error received from package manager, then...
+            if newOE() and not os_system('dpkg -l p7zip > /dev/null 2>&1'):                                 # if no error received from os_system (package manager), then...
                 os_system('dpkg -i p7zip')
                 self.message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
-            elif newOE() and not os_system('opkg list | grep p7zip > /dev/null 2>&1'):          # if no error received from package manager, then...
+            elif not newOE() and not os_system('opkg update && opkg list | grep p7zip > /dev/null 2>&1'):   # if no error received from os_system (package manager), then...
                 os_system('opkg install p7zip')
                 self.message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             else:
@@ -551,8 +551,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 #if not os_system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % filename):  # if no error received from os_system, then...
                 if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s' % filename , '/usr/bin/7za'):
                     os_system('chmod 755 /usr/bin/7za')
-                    if os_system('/usr/bin/7za'):                   # let's try to execute the binary file cleanly    # if some error number was received from the 7za executed binary file, then...
-                        os_remove('/usr/bin/7za')                   # remove the binary file on error - because of a incorect binary file for the chipset architecture !!!
+                    if os_system('/usr/bin/7za'):                   # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
+                        os_remove('/usr/bin/7za')                   # remove the binary file (because of an incorect binary file for the chipset architecture !)
                     else:
                         self.message = _('Installation of standalone "7za" (7-zip) archiver was successful.')
             if self.find7zip():
@@ -598,7 +598,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             <widget name="title_txt" position="center,40"  size="350,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <widget  render="Label" source="txt_green"       position="65,854" size="250,46" halign="left" valign="center" font="Regular;28" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_green"       position="65,854" size="250,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
@@ -712,7 +712,7 @@ class piconsUpdateJobScreen(Screen):
 
     skin = '''
         <screen name="piconsUpdateJobScreen" position="center,center" size="''' + str(sizemaxX - 80) + ',' + str(sizemaxY - 80) + '''" title="picons update in progress" flags="wfNoBorder" backgroundColor="#22000000">
-            <widget name="logWindow" position="center,center" size="''' + str(sizemaxX - 180) + ',' + str(sizemaxY - 180) + '''" font="Regular;''' + (str(26) if sizemaxX > 1900 else str(18)) + '''" transparent="0" foregroundColor="white" backgroundColor="#11330000" zPosition="1" />
+            <widget name="logWindow" position="center,center" size="''' + str(sizemaxX - 180) + ',' + str(sizemaxY - 180) + '''" font="Regular;''' + (str(28) if sizemaxX > 1900 else str(20)) + '''" transparent="0" foregroundColor="white" backgroundColor="#11330000" zPosition="1" />
         </screen>'''
 
     def __init__(self, session, chochoContent, bin7zip):
@@ -1113,8 +1113,8 @@ def getstatusoutput(cmd):
 
 def newOE():
     '''
-    return True --- if Enigma is a newer OE version (OE2.5 - OpenDreambox, ... and others)
-    return False -- if Enigma is a older OE version (OE2.0 - OpenATV, OpenPLi, VTi, ... and others)
+    return True --- if Enigma is a newer OE version (OE2.5 - OpenDreambox, Dream Elite 6, Merlin 4, ... and others)
+    return False -- if Enigma is a older OE version (OE2.0 - OpenATV 6, OpenPLi 7, VTi 13, ... and others)
     '''
     ####return os_path.exists('/etc/dpkg')
     try:
