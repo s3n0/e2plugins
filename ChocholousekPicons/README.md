@@ -6,8 +6,8 @@
    
    >- In the new version of the plugin you can choose the method of updating the picons:   
    >
-   >    - Copy all picons: Delete all current as first
-   >    - Copy all picons: Incremental update
+   >    - Copy all picons: Delete all current picons as first
+   >    - Copy all picons: Incremental update (copy only new picons or changed picons)
    >    - Sync with TV channel lists (userbouquets)
    >    - Sync with TV+RADIO channel lists (userbouquets)   
    
