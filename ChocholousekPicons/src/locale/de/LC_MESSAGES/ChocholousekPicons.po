@@ -1,0 +1,213 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ChocholousekPicons\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-12-08 18:00+0100\n"
+"PO-Revision-Date: 2019-12-08 23:08+0100\n"
+"Last-Translator: Timeshock <http://www.ab-forum.info/memberlist.php?mode=viewprofile&u=22374>\n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 2.2.4\n"
+
+msgid "Save & Exit"
+msgstr "Speichern & Beenden"
+
+msgid "Update plugin"
+msgstr "Update-Plugin"
+
+msgid "Update picons"
+msgstr "Picon herunterladen"
+
+msgid "Picon folder"
+msgstr "Ordner für Picons"
+
+msgid "User defined folder"
+msgstr "Benutzerdefinierter Ordner"
+
+msgid "Picon update method"
+msgstr "Picon-Aktualisierungsmethode"
+
+msgid "copy all: current will deleted"
+msgstr "kopieren Sie alle: Aktuell wird gelöscht"
+
+msgid "copy all: incremental update"
+msgstr "kopieren Sie alle: inkrementelle Aktualisierung"
+
+msgid "sync with TV userbouquets"
+msgstr "synchronisieren mit TV-Kanallisten"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "synchronisieren mit TV+RADIO-Kanallisten"
+
+msgid "Satellite positions"
+msgstr "Satellitenposition"
+
+msgid "Select satellites:"
+msgstr "Auswahl der Satelliten:"
+
+msgid "Picon resolution"
+msgstr "Picon Größe"
+
+msgid "Picon background"
+msgstr "Hintergrund picon"
+
+msgid "(user defined)"
+msgstr "(Benutzerdefinierter)"
+
+msgid ""
+"Plugin version is up to date.\n"
+"\n"
+"Installed version: %s"
+msgstr ""
+"Das Plugin ist auf dem neuesten Stand\n"
+"\n"
+"Installierte Version: %s"
+
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Plugin wurde auf eine neue Version aktualisiert.\n"
+"Ein schneller Neustart ist erforderlich.\n"
+"Führen Sie jetzt einen schnellen Neustart durch ?"
+
+msgid ""
+"You have changed the plugin configuration.\n"
+"Do you want to save all changes now ?"
+msgstr ""
+"Sie haben die Plugin-Konfiguration geändert.\n"
+"Möchten Sie Ihre Änderungen speichern?"
+
+msgid ""
+"The 7-zip archiver was not found on your system.\n"
+"There is possible to update the 7-zip archiver now in two steps:\n"
+"\n"
+"(1) try to install via the Enigma package manager\n"
+"...or...\n"
+"(2) try to download the binary file \"7za\" (standalone archiver) from the internet\n"
+"\n"
+"Do you want to try it now?"
+msgstr ""
+"Es wurde kein 7-Zip-Archivierer gefunden.\n"
+"Sie können versuchen, 7-zip in zwei Schritten zu installieren:\n"
+"\n"
+"(1) Installieren Sie das 7-zip-Paket aus den Repositorys\n"
+"...oder...\n"
+"(2) Laden Sie die Binärdatei \"7za\" aus dem Internet herunter\n"
+"\n"
+"Versuchen Sie, 7-zip jetzt zu installieren?"
+
+msgid ""
+"The installation of the 7-zip archiver from the Enigma2\n"
+"feed server was successful."
+msgstr ""
+"Installieren eines 7-Zip-Archivers von Enigma2\n"
+"Feed erfolgreich ist."
+
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr "Die Installation eines separaten Archivars \"7za\" (7-zip) war erfolgreich."
+
+msgid "Installation of 7-zip archiver failed!"
+msgstr "Installation des 7-Zip-Archivierungsprogramms fehlgeschlagen!"
+
+msgid "Internet connection is not available !"
+msgstr "Internetverbindung ist nicht verfügbar !"
+
+msgid "Internet connection is OK."
+msgstr "Die Internetverbindung ist in Ordnung."
+
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Keine userbouquet Dateien gefunden!\n"
+"Überprüfen Sie den Ordner /etc/enigma2, um festzustellen, ob er Userbouquet-Dateien enthält."
+
+msgid "Preparing a list of picons from the picon directory on the local disk."
+msgstr "Die Picon-Liste aus dem Picon-Verzeichnis auf der lokalen Festplatte wird vorbereitet..."
+
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Eine Liste der Picons aus userbouquet-Dateien wird vorbereitet..."
+
+msgid "...done."
+msgstr "...fertig."
+
+msgid "Deleting unnecessary picons from local disk..."
+msgstr "Unnötige Picons werden vom lokalen Laufwerk gelöscht..."
+
+msgid "...%s picons deleted."
+msgstr "...%s Picons gelöscht."
+
+msgid "The process started..."
+msgstr "Der Prozess hat begonnen..."
+
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(Herunterladen und Extrahieren aller notwendigen Picons)"
+
+msgid "...the process is complete."
+msgstr "...prozess ist vorbei."
+
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Nach der Aktualisierung der Picons müssen Sie möglicherweise Enigma (GUI) neu starten."
+
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(%s hinzugefügt / %s geändert / %s gelöscht)"
+
+msgid "No picons added or changed"
+msgstr "Es wurden keine Picons hinzugefügt oder geändert"
+
+msgid "Download ID for file %s was not found!"
+msgstr "ID-Download %s nicht gefunden!"
+
+msgid "Trying download the file archive... %s"
+msgstr "Archiv wird heruntergeladen... %s"
+
+msgid "...file download failed !!!"
+msgstr "...datei konnte nicht heruntergeladen werden !!!"
+
+msgid ""
+"Download failed!\n"
+"File: %s\n"
+"URL: %s"
+msgstr ""
+"Download-Fehler!\n"
+"Datei: %s\n"
+"URL: %s"
+
+msgid "...file download successful."
+msgstr "...datei heruntergeladen wird."
+
+msgid "Browse the contents of the downloaded archive file."
+msgstr "Ich gehe durch den Inhalt des heruntergeladenen Picon-Archivs."
+
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Fehler! Das Archiv enthält keine Picons!"
+
+msgid "Preparing picon list for extracting (missing files and files of different sizes)."
+msgstr "Ich bereite eine Liste von Picons zum Extrahieren (neu oder geändert) vor."
+
+msgid "...%s picons was extracted from the archive."
+msgstr "...%s picon wurde mit dem Archiv ausgepackt."
+
+msgid "Extracting files from the archive..."
+msgstr "Dateien werden aus dem Archiv extrahiert..."
+
+msgid "Some errors has occurred !"
+msgstr "Es gab Fehler !"
+
+msgid "Done !"
+msgstr "Ende !"
+
+msgid "Apply"
+msgstr "Anwenden"
+
+msgid "No operation ! Picon update failed !"
+msgstr "Keine Operation ! Picon-Update fehlgeschlagen !"
+
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Es wurden keine Picons für ausgewählte Auflösung und Satelliten gefunden!"
