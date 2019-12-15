@@ -127,33 +127,33 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     if sizemaxX > 1900:    # Full-HD or higher
         skin = '''
-        <screen name="mainConfigScreen" position="center,center" size="1100,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
+        <screen name="mainConfigScreen" position="center,center" size="1200,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
-            <widget name="config"      position="center,100" size="1000,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#22000000" enableWrapAround="1" />
-            
-            <widget name="version_txt" position="0,0" size="1100,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="author_txt"  position="0,60" size="1100,40" font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="config"       position="center,100"    size="1100,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
-            <widget name="previewImage" position="100,390" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="version_txt"  position="0,0"           size="1200,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="author_txt"   position="0,60"          size="1200,40" font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+
+            <widget name="previewImage" position="100,390"       size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="190,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/yellow.png" position="470,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/blue.png"   position="775,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="200,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/yellow.png" position="500,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/blue.png"   position="840,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="65,755"  size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_green"  position="230,755" size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_yellow" position="510,755" size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_blue"   position="815,755" size="280,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_red"           position="65,755"  size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"         position="240,755" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_yellow"        position="540,755" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_blue"          position="880,755" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="850,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
-            <widget name="config"      position="center,70" size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#22000000" enableWrapAround="1" />
-            
-            <widget name="version_txt" position="0,0"  size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="author_txt"  position="0,40" size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="config"       position="center,70"     size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+
+            <widget name="version_txt"  position="0,0"           size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="author_txt"   position="0,40"          size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
             <widget name="previewImage" position="70,225" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
@@ -162,10 +162,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="370,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="605,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"    position="55,560"  size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_green"  position="200,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_yellow" position="405,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_blue"   position="640,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_red"           position="55,560"  size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"         position="200,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_yellow"        position="405,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_blue"          position="640,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
 
     def __init__(self, session):
@@ -210,8 +210,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.layoutFinishTimer = eTimer()
         if newOE():
             i = mainConfigScreen.skin.index('font=')
-            self.skin = mainConfigScreen.skin[:i] + mainConfigScreen.skin[i+34:]                        # ConfigListScreen / ConfigScreen under OE2.5 - unfortunately the font is configured with another method and the original font attribute is considered an error
-            
+            self.skin = mainConfigScreen.skin[:i] + mainConfigScreen.skin[i+34:]                        # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
             self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for newer versions of Enigma standard (OE2.5)
         else:
             self.skin = mainConfigScreen.skin
@@ -594,7 +593,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     if sizemaxX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="config"    position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#22000000" enableWrapAround="1" />
+            <widget name="config"    position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             <widget name="title_txt" position="center,40"  size="350,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
@@ -603,7 +602,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     else:                   # HD-ready or lower
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="350,600" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="config"    position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#22000000" enableWrapAround="1" />
+            <widget name="config"    position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             <widget name="title_txt" position="center,20" size="300,40"  font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
@@ -618,7 +617,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         if newOE():
             ### remove first found item "font=....itemHeght=...." from the widget "config"
-            ### ConfigListScreen / ConfigScreen under OE2.5 - unfortunately the font is configured with another method and the original font attribute is considered an error
+            ### # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
             s = satellitesConfigScreen.skin
             i = s.index('font')
             s = s[:i] + s[i+34:]
