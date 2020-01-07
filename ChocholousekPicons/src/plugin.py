@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ###########################################################################
-#  Enigma2 plugin, ChocholousekPicons, written by s3n0, 2018-2019
+#  Enigma2 plugin, ChocholousekPicons, written by s3n0, 2018-2020
 ###########################################################################
 
 
@@ -53,15 +53,15 @@ config.plugins.chocholousekpicons = ConfigSubsection()
 
 config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
         default = '/usr/share/enigma2/picon',
-        choices = [ ('/usr/share/enigma2/picon' ,        '/usr/share/enigma2/picon'),
-                    ('/media/hdd/picon' ,                '/media/hdd/picon'),
-                    ('/media/usb/picon' ,                '/media/usb/picon'),
-                    ('/media/sdcard/picon' , '(Dreambox)  /media/sdcard/picon'),
-                    ('/data/picon' ,         '(Dreambox)  /data/picon'),
-                    ('/picon'      ,                     '/picon'),
-                    ('/usr/share/enigma2/XPicons/picon', '/usr/share/enigma2/XPicons/picon'),
-                    ('/usr/share/enigma2/ZZPicons/picon','/usr/share/enigma2/ZZPicons/picon'),
-                    ('user_defined',                     _('(user defined)')   )
+        choices = [ ('/usr/share/enigma2/picon' ,         '/usr/share/enigma2/picon'),
+                    ('/media/hdd/picon'   ,               '/media/hdd/picon'),
+                    ('/media/usb/picon'   ,               '/media/usb/picon'),
+                    ('/media/sdcard/picon',   '(Dreambox)  /media/sdcard/picon'),
+                    ('/data/picon'  ,         '(Dreambox)  /data/picon'),
+                    ('/picon'       ,                     '/picon'),
+                    ('/usr/share/enigma2/XPicons/picon',  '/usr/share/enigma2/XPicons/picon'),
+                    ('/usr/share/enigma2/ZZPicons/picon', '/usr/share/enigma2/ZZPicons/picon'),
+                    ('user_defined' ,                   _('(user defined)')    )
                   ]
                 )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
 for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
@@ -132,9 +132,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget name="config"       position="center,100"    size="1100,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
             <widget name="version_txt"  position="0,0"           size="1200,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="author_txt"   position="0,60"          size="1200,40" font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="author_txt"   position="0,60"          size="1200,40"  font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
-            <widget name="previewImage" position="100,390"       size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="previewImage" position="100,390"       size="500,300"  zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="200,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
@@ -614,27 +614,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.allSat = allSat
         
         Screen.__init__(self, session)
-        
-        if newOE():
-            ### remove first found item "font=....itemHeght=...." from the widget "config"
-            ### # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
-            s = satellitesConfigScreen.skin
-            i = s.index('font')
-            s = s[:i] + s[i+34:]
-            ### increase width of the Screen layer + width of the "config" widget (for differences in the Screen layer of the OpenDreambox Enigma - OE2.5)
-            i = s.index('size')                     # first match is the size of main Screen frame
-            y = s[i+10 : i+13]
-            s = s[:i] + 'size="' + y + s[i+9:]
-            i = s.index('size', i+20)               # second match is the size of widget "config"
-            y = s[i+10 : i+13]
-            s = s[:i] + 'size="' + y + s[i+9:]
-            #i = s.index('size', i+20)              # third match is the size of my own title for window Screen
-            #y = s[i+10 : i+13]
-            #s = s[:i] + 'size="' + y + s[i+9:]
-            self.skin = s
-        else:
-            self.skin = satellitesConfigScreen.skin
-        
+                
         self.onChangedEntry = []
         self.list = []
         
@@ -655,6 +635,26 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         }, -2)
                 
         self.onShown.append(self.rebuildConfigList)
+        
+        if newOE():
+            ### remove first found item "font=....itemHeght=...." from the widget "config"
+            ### # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
+            s = satellitesConfigScreen.skin
+            i = s.index('font')
+            s = s[:i] + s[i+34:]
+            ### increase width of the Screen layer and width of the "config" widget (for differences in the Screen layer of the OpenDreambox Enigma - OE2.5)
+            i = s.index('size')                     # first match is the size of main Screen frame
+            y = s[i+10 : i+13]
+            s = s[:i] + 'size="' + y + s[i+9:]
+            i = s.index('size', i+20)               # second match is the size of widget "config"
+            y = s[i+10 : i+13]
+            s = s[:i] + 'size="' + y + s[i+9:]
+            #i = s.index('size', i+20)              # third match is the size of my own title for window Screen
+            #y = s[i+10 : i+13]
+            #s = s[:i] + 'size="' + y + s[i+9:]
+            self.skin = s
+        else:
+            self.skin = satellitesConfigScreen.skin
     
     def keyToOk(self):
         self.switchSelectedSat()
