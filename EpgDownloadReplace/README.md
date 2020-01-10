@@ -8,10 +8,8 @@
       folder="/usr/lib/enigma2/python/Plugins/Extensions/EpgDownloadReplace"
       url="https://github.com/s3n0/e2plugins/raw/master/EpgDownloadReplace/src"
       mkdir -p $folder $folder/images
-      for f in plugin.py __init__.py; do
-         wget -O $folder/$f --no-check-certificate $url/$f; done
-      for f in plugin.png btn_red.png btn_green.png btn_yellow.png btn_blue.png; do
-         wget -O $folder/images/$f --no-check-certificate $url/images/$f; done
+      for f in plugin.py __init__.py; do wget -O $folder/$f --no-check-certificate $url/$f; done
+      for f in plugin.png btn_red.png btn_green.png btn_yellow.png btn_blue.png; do wget -O $folder/images/$f --no-check-certificate $url/images/$f; done
       init 4 && sleep 5 && init 3
       ```
    - How-To remove the plugin EpgDownloadReplace:
