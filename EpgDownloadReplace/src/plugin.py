@@ -28,7 +28,7 @@ config.plugins.epgdownloadreplace  =  ConfigSubsection()
 config.plugins.epgdownloadreplace.enabled       = ConfigYesNo(default=False)
 config.plugins.epgdownloadreplace.scheduledtime = ConfigClock(default=0)         # the output value is a list, for example: [17, 59] - it means [hour, min]
 config.plugins.epgdownloadreplace.scheduleddays = ConfigInteger(default=3, limits=(1, 15))
-config.plugins.epgdownloadreplace.epgonlinefile = ConfigText(default='http://examples.com/dvb/epg.dat')
+config.plugins.epgdownloadreplace.epgonlinefile = ConfigText(default='http://examples.com/dvb/epg.dat', fixed_size=False)
 
 # https://github.com/openatv/enigma2/blob/69bc3dfbf28d95aff4198924a944bf80367aa750/data/menu.xml
 # https://github.com/openatv/enigma2/blob/c38f72b1379438489c82031ace100a137bd44c74/lib/python/Components/EpgLoadSave.py
