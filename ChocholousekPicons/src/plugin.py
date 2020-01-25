@@ -52,18 +52,24 @@ from Plugins.Extensions.ChocholousekPicons import _, PLUGIN_PATH            # fr
 config.plugins.chocholousekpicons = ConfigSubsection()
 
 config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
-        default = '/usr/share/enigma2/picon',
-        choices = [ ('/usr/share/enigma2/picon' ,         '/usr/share/enigma2/picon'),
-                    ('/media/hdd/picon'   ,               '/media/hdd/picon'),
-                    ('/media/usb/picon'   ,               '/media/usb/picon'),
-                    ('/media/sdcard/picon',   '(Dreambox)  /media/sdcard/picon'),
-                    ('/data/picon'  ,         '(Dreambox)  /data/picon'),
-                    ('/picon'       ,                     '/picon'),
-                    ('/usr/share/enigma2/XPicons/picon',  '/usr/share/enigma2/XPicons/picon'),
-                    ('/usr/share/enigma2/ZZPicons/picon', '/usr/share/enigma2/ZZPicons/picon'),
-                    ('user_defined' ,                   _('(user defined)')    )
-                  ]
-                )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
+        default = '/usr/share/enigma2/picon' ,
+        choices = [ 
+            ('/usr/share/enigma2/picon'         , '/usr/share/enigma2/picon'),
+            ('/usr/share/enigma2/XPicons/picon' , '/usr/share/enigma2/XPicons/picon'),
+            ('/usr/share/enigma2/ZZPicons/picon', '/usr/share/enigma2/ZZPicons/picon'),
+            ('/media/hdd/picon'                 , '/media/hdd/picon'),
+            ('/media/hdd/XPicon/picon'          , '/media/hdd/XPicon/picon'),
+            ('/media/hdd/ZZPicon/picon'         , '/media/hdd/ZZPicon/picon'),
+            ('/media/usb/picon'                 , '/media/usb/picon'),
+            ('/media/usb/XPpicon/picon'         , '/media/usb/XPpicon/picon'),
+            ('/media/usb/ZZPicon/picon'         , '/media/usb/ZZPicon/picon'),
+            ('/media/sdcard/picon'              , '/media/sdcard/picon'),
+            ('/media/mmc/picon'                 , '/media/mmc/picon'),
+            ('/data/picon'                      , '/data/picon'),
+            ('/picon'                           , '/picon'),
+            ('user_defined'                     ,_('(user defined)')  )
+          ]
+        )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
 for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
     if glob.glob(picdir[0] + '/*.png'):
         config.plugins.chocholousekpicons.picon_folder.default = picdir[0]      # change the default picon directory (on the first plugin start) if some picons (.PNG files) was found in some folder
@@ -124,7 +130,7 @@ plugin_version_online = '0.0.000000'
 
 
 class mainConfigScreen(Screen, ConfigListScreen):
-
+    
     if sizemaxX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="1200,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
@@ -167,31 +173,31 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget render="Label" source="txt_yellow"        position="405,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
             <widget render="Label" source="txt_blue"          position="640,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
-
+    
     def __init__(self, session):
-
+        
         Screen.__init__(self, session)
         #self.session = session          # this is not necessary, this is done already during class initialization - Screen.__init__
-
+        
         self.onChangedEntry = []
         self.list = []
-
+        
         ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
-
+        
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (1 = enable auto-correction ; 0 = disable auto-correction)
         self.lineheight = 1
 
         self['previewImage'] = Pixmap()
-
+        
         self['txt_red']      = StaticText(_('Exit'))
         self['txt_green']    = StaticText(_('Save & Exit'))
         self['txt_yellow']   = StaticText(_('Update plugin'))
         self['txt_blue']     = StaticText(_('Update picons'))
-
+        
         global plugin_version_local
         self['version_txt']  = Label('Chocholousek picons - plugin ver.%s' % plugin_version_local)
         self['author_txt']   = Label('(https://github.com/s3n0)')
-
+        
         self['actions'] = ActionMap( ['ColorActions', 'DirectionActions', 'OkCancelActions'] ,
         {
                 'left'  : self.keyToLeft,
@@ -203,10 +209,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 'red'   : self.exitWithoutSave,
                 'cancel': self.keyToExit
         }, -2)
-
+        
         self.bin7zip = None             # path to directory with '7z' or '7za' executable binary file
         self.chochoContent = None       # content of the file "id_for_permalinks*.log" - downloaded from google.drive
-
+        
         self.layoutFinishTimer = eTimer()
         if newOE():
             i = mainConfigScreen.skin.index('font=')
@@ -220,13 +226,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         #self.onShown.append(self.rebuildConfigList)
         #self.onLayoutFinish.append(self.layoutFinished)
-
+    
     def prepareSetup(self):
-        self.loadChochoContent()
-        self.downloadPreviewPicons()
+        self.loadChochoContent()        
+        self.check7zip()
+        if self.bin7zip:
+            self.downloadPreviewPicons()            
         self.changeAvailableBackgrounds()
         self.rebuildConfigList()
-
+    
     def rebuildConfigList(self):
         self.list = []
         self.list.append(getConfigListEntry( _('Picon folder')  ,  config.plugins.chocholousekpicons.picon_folder ))
@@ -249,44 +257,44 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     def getCursorTitle(self):
         return self["config"].getCurrent()[0]
-
+    
     def getCursorObject(self):
         return self["config"].getCurrent()[1]
-        
+    
     def getCursorObjectAsText(self):
         return str(self["config"].getCurrent()[1].getText())
-
+    
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
         #if self.getCursorTitle() != _('User defined folder'):
         #    self.rebuildConfigList()
-
+    
     def keyToRight(self):
         ConfigListScreen.keyRight(self)
         #if self.getCursorTitle() != _('User defined folder'):
         #    self.rebuildConfigList()
-
+    
     def keyToOk(self):
         k = self.getCursorTitle()
         if k == _('Satellite positions'):
             self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat() )
         elif k == _('User defined folder'):
             ConfigListScreen.keyOK(self)        # self['config'].handleKey(KEY_OK)          # self.keyOK()
-
+    
     def satellitesConfigScreenReturn(self, retval):
         if retval:
             #self.loadChochoContent()
             self.changeAvailableBackgrounds()   # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
             self.changedEntry()
             self.rebuildConfigList()
-
+    
     def keyToPiconsUpdate(self):
         if self.bin7zip:
             if config.plugins.chocholousekpicons.background.value != 'no_picons':
                 self.session.open(piconsUpdateJobScreen, self.chochoContent, self.bin7zip)
         else:
             self.check7zip()
-
+    
     def keyToPluginUpdate(self):
         global pluginUpdateDo, plugin_version_local
         if pluginUpdateDo():
@@ -296,20 +304,20 @@ class mainConfigScreen(Screen, ConfigListScreen):
             message = _("Plugin version is up to date.\n\n"
                         "Installed version: %s") % (plugin_version_local)
             self.session.open(MessageBox, message, type = MessageBox.TYPE_INFO, timeout = 10)
-
+    
     def exitWithSave(self):
         self.exitWithConditionalSave(True)
-
+    
     def exitWithoutSave(self):
         self.exitWithConditionalSave(False)
-
+    
     def keyToExit(self):
         if self['txt_green'].getText().endswith('*'):           # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
             message = _("You have changed the plugin configuration.\nDo you want to save all changes now ?")
             self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
         else:
             self.exitWithConditionalSave(False)
-
+    
     def exitWithConditionalSave(self, condition=True):          # save or cancel changes made to the plugin's user configuration, default=True -> to save the configuration
         if condition:
             for x in self['config'].list:
@@ -320,7 +328,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             for x in self['config'].list:
                 x[1].cancel()
         self.close()
-
+    
     def changedEntry(self):
         for x in self.onChangedEntry:
             x()
@@ -334,24 +342,24 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         if self.getCursorTitle() != _('User defined folder'):
             self.rebuildConfigList()                        # config list rebuild - is allowed only if the cursor is not at ConfigText (picon folder configuration by user input), because left/arrow RCU buttons are neccessary to move the cursor inside ConfigText
-
+    
     def restartEnigmaOrCloseScreen(self, answer = None):
         if answer:
             self.session.open(TryQuitMainloop, 3)   # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
         else:
             self.close()
-
+    
     def showPreviewImage(self):
         self['previewImage'].instance.setPixmapFromFile(self.getPreviewImagePath())
         self['previewImage'].instance.setScale(0)
-
+    
     def getPreviewImagePath(self):
         imgpath = PLUGIN_PATH + 'images/filmbox-premium-' + config.plugins.chocholousekpicons.background.value + '-' + config.plugins.chocholousekpicons.resolution.value + '.png'
         if os_path.isfile(imgpath):
             return imgpath
         else:
             return PLUGIN_PATH + 'images/image_not_found.png'
-
+    
     def downloadPreviewPicons(self):
         '''
         download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
@@ -360,10 +368,6 @@ class mainConfigScreen(Screen, ConfigListScreen):
         archive filename example:         filmbox-premium-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
         files inside the archive file:    filmbox-premium-transparent-220x132.png ; filmbox-premium-gray-400x240.png
         '''
-        self.check7zip()
-        if not self.bin7zip:
-            return
-
         flist = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
         if flist:
             localfilenamefull = flist[0]                                                            # simple converting the list type to string type
@@ -379,12 +383,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
             print('Error %s when reading URL %s' % (str(e), url))
         else:
             onlinefilename = handler.headers['Content-Disposition'].split('"')[1].replace('(','_').replace(')','_')    # get file name from html header and replace the parentheses by underline characters
-            if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                                  # comparsion, for example as the following:   '191125' > '191013'
+            
+            if onlinefilename[-10:-4] > localfilenamefull[-10:-4] :                                 # comparsion, for example as the following:   '191125' > '191013'
+                
                 self.deleteFile(localfilenamefull)
                 localfilenamefull = PLUGIN_PATH + onlinefilename
-                #data = handler.read()
-                #with open(localfilenamefull, 'w') as f:
-                #    f.write(data)
                 downloadFile(url, localfilenamefull)
                 
                 # extracting .7z archive (picon preview images):
@@ -407,15 +410,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 else:
                     print('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
                     self.deleteFile(localfilenamefull)
-
+    
     def deleteFile(self, directorymask):
         lst = glob.glob(directorymask)
         if lst:
             for file in lst:
                 os_remove(file)
-
+    
     ###########################################################################
-
+    
     def loadChochoContent(self):
         self.downloadChochoFile()
         path = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
@@ -426,7 +429,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             txt = ''
             print('MYDEBUGLOGLINE - Warning! The file %s was not found on the internet but also on the internal disk.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
         self.chochoContent = txt
-
+    
     def downloadChochoFile(self):
         '''
         checking new online version, download if neccessary and load the content from file with the list of all IDs for google.drive download
@@ -455,7 +458,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 localfilenamefull = PLUGIN_PATH + onlinefilename
                 downloadFile(url, localfilenamefull)
                 print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" was updated to new version: %s' % onlinefilename)
-
+    
     def changeAvailableBackgrounds(self):
         '''
         change all available picon-backgrounds (picon-styles)
@@ -476,7 +479,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     backgrounds.remove(b)             # check if all satellites from usrcontent contains also all backgrounds, if not, then delete the background from the available list of backgrounds
                     break
         return backgrounds
-
+    
     def contentByUserCfg(self, satellites, resolution):
         result = []
         for line in self.chochoContent.splitlines():
@@ -491,7 +494,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         lst.sort(key = self.fnSort)
         #print('MYDEBUGLOGLINE - getAllSat = %s' % lst)
         return lst
-
+    
     def fnSort(self, s):
         if s[0].isdigit():
             if s.endswith('E'):
@@ -500,21 +503,21 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 return float(s[:-1]) + 1000
         else:
             return 0
-
+    
     #def getAllRes(self):       # all picon resolutions
     #    tmp = list(set(re.findall('.*picon.*-([0-9]+x[0-9]+)-23\.5.*\n+', self.chochoContent)))
     #    tmp = [int(x) for x in tmp]     # simple sort method for numeric strings (better as the .sort() method)
     #    return tmp
-
+    
     #def getAllBck(self):       # all picon backgrounds (styles)
     #    return re.findall('.*picon(.*)-220x132-23\.5.*\n+', self.chochoContent)
-
+    
     ###########################################################################
     
     def check7zip(self):
         if not self.find7zip():
             message = _('The 7-zip archiver was not found on your system.\nThere is possible to update the 7-zip archiver now in two steps:\n\n(1) try to install via the Enigma package manager\n...or...\n(2) try to download the binary file "7za" (standalone archiver) from the internet\n\nDo you want to try it now?')
-            self.session.openWithCallback(self.download7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
+            self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
 
     def find7zip(self):
         if os_path.isfile('/usr/bin/7za'):
@@ -527,8 +530,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.bin7zip = ''
             return False
 
-    def download7zip(self, result):
-        if result:
+    def downNinst7zip(self, result):
+        if result:            
             if newOE() and not os_system('dpkg -l p7zip > /dev/null 2>&1'):                                 # if no error received from os_system (package manager), then...
                 os_system('dpkg -i p7zip')
                 self.message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
@@ -554,7 +557,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
                         os_remove('/usr/bin/7za')                   # remove the binary file (because of an incorect binary file for the chipset architecture !)
                     else:
                         self.message = _('Installation of standalone "7za" (7-zip) archiver was successful.')
+            
             if self.find7zip():
+                self.downloadPreviewPicons()                        # !!!!! if the installation of the 7-zip archiver was successful, I will try again to download the preview picons (.7z file from the internet), because at the beginning of the class it wasn't possible to download the preview picons - because of the non-existent 7-zip archiver
+                self.showPreviewImage()                             # the Screen layer is already up, so, I may show the image into the screen widget
                 self.session.open(MessageBox, self.message, type = MessageBox.TYPE_INFO)        # MessageBox with message about successful installation - either a standalone binary file or an ipk package
             else:
                 self.session.open(MessageBox, _('Installation of 7-zip archiver failed!'), type = MessageBox.TYPE_ERROR)
@@ -771,7 +777,7 @@ class piconsUpdateJobScreen(Screen):
         boo, msg = self.mainFunc()
         # boo = True ----------- picons updating function was ended with some error
         # boo = False ---------- picons updating function was ended without error
-        # msg = <type 'str'> --- warning or sucessful return message (for MessageBox)
+        # msg = <type 'str'> --- returned string - as the result of the process, as warning / sucessful text (for the MessageBox purpose)
         if boo:
             type = MessageBox.TYPE_ERROR
             if not msg:
