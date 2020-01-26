@@ -828,7 +828,7 @@ class piconsUpdateJobScreen(Screen):
         dir_list = glob.glob(self.piconDIR + '/*.png')
         if dir_list:
             for path_N_file in dir_list:
-                self.SRC_in_HDD.update( { path_N_file.split("/")[-1].split(".")[0]  :   int(os_path.getsize(path_N_file))  } )     # os.stat.st_time('/etc/enigma2/'+filename)
+                self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os_path.getsize(path_N_file))  } )        # os.stat.st_time('/etc/enigma2/'+filename)
         #self.storeVarInFile('SRC_in_HDD', self.SRC_in_HDD)
         
         # 5.A) Vytvorí sa zoznam serv.ref.kódov z patričných userbouquet súborov (podľa predvytvoreného zoznamu *.tv alebo aj *.radio) - sú poterbné pre synchronizáciu picon
@@ -848,12 +848,13 @@ class piconsUpdateJobScreen(Screen):
         
         # 6) Vymažú sa neexistujúce a nepotrebné picon-súbory na lokálnom disku (v set-top boxe) pre synchronizáciu (pri použití metód 'sync_tv' a 'sync_tv_radio')
         #    alebo sa vymažú všetky súbory na lokálnom disku (v prípade metódy 'all' bude obsahom SRC_in_Bouquets prázdny list, takže sa vymažú všetky picony na HDD)
+        #    avšak v prípade metódy "all_inc" (increment update) bude celá následovná funkcia zmazovania súborov z disku ignorovaná
         if not 'all_inc' in config.plugins.chocholousekpicons.method.value:
             self.writeLog(_('Deleting unnecessary picons from local disk...'))
             self.SRC_to_Delete = list(  set(self.SRC_in_HDD.keys()) - set(self.SRC_in_Bouquets)  )            
             for src in self.SRC_to_Delete:
                 os_remove(self.piconDIR + '/' + src + '.png')
-                del self.SRC_in_HDD[src]
+                del self.SRC_in_HDD[src]                                        # po vymazaní súbory z HDD samozrejme ihneď aktualizujem tiež výpis súborov na HDD (obsah premennej SRC_in_HDD)
                 self.piconCounters['removed'] += 1
             self.writeLog(_('...%s picons deleted.') % self.piconCounters['removed'])
         #self.storeVarInFile('SRC_to_Delete', self.SRC_to_Delete)
