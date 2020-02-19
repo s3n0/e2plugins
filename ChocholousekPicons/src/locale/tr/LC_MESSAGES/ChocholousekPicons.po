@@ -1,0 +1,213 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ChocholousekPicons\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-12-08 18:00+0100\n"
+"PO-Revision-Date: 2020-02-19 10:35+0300\n"
+"Last-Translator: audi06_19 <info@dreamosat-forum.com>\n"
+"Language-Team: Tukish\n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 2.2.1\n"
+
+msgid "Save & Exit"
+msgstr "Kaydet ve Çık"
+
+msgid "Update plugin"
+msgstr "Eklentiyi Güncelle"
+
+msgid "Update picons"
+msgstr "Piconları Güncelle"
+
+msgid "Picon folder"
+msgstr "Picon klasörü"
+
+msgid "User defined folder"
+msgstr "Kullanıcı tanımlı klasör"
+
+msgid "Picon update method"
+msgstr "Picon güncelleme yöntemi"
+
+msgid "copy all: current will deleted"
+msgstr "tümünü kopyala: eskiler silinecek"
+
+msgid "copy all: incremental update"
+msgstr "tümünü kopyala: artımlı güncelleme"
+
+msgid "sync with TV userbouquets"
+msgstr "TV kullanıcı buketleriyle senkronize et"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "TV+RADIO kullanıcı buketleri ile senkronize et"
+
+msgid "Satellite positions"
+msgstr "Uydu konumları"
+
+msgid "Select satellites:"
+msgstr "Uyduları seç:"
+
+msgid "Picon resolution"
+msgstr "Picon çözünürlüğü"
+
+msgid "Picon background"
+msgstr "Picon arka plan"
+
+msgid "(user defined)"
+msgstr "(kullanıcı tanımlı)"
+
+msgid ""
+"Plugin version is up to date.\n"
+"\n"
+"Installed version: %s"
+msgstr ""
+"Eklenti sürümü güncel.\n"
+"\n"
+"Yüklü sürüm: %s"
+
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Eklenti yeni sürüme güncellendi.\n"
+"Hızlı bir yeniden başlatma gerekiyor.\n"
+"Hemen yeniden başlat?"
+
+msgid ""
+"You have changed the plugin configuration.\n"
+"Do you want to save all changes now ?"
+msgstr ""
+"Eklenti yapılandırmasını değiştirdiniz.\n"
+"Tüm değişiklikleri şimdi kaydetmek istiyor musunuz?"
+
+msgid ""
+"The 7-zip archiver was not found on your system.\n"
+"There is possible to update the 7-zip archiver now in two steps:\n"
+"\n"
+"(1) try to install via the Enigma package manager\n"
+"...or...\n"
+"(2) try to download the binary file \"7za\" (standalone archiver) from the internet\n"
+"\n"
+"Do you want to try it now?"
+msgstr ""
+"7-zip arşivleyici sisteminizde bulunamadı.\n"
+"7-zip arşivleyiciyi şimdi iki adımda güncellemek mümkün:\n"
+"\n"
+"(1) Enigma paket yöneticisi aracılığıyla yüklemeyi deneyin\n"
+"... ya da ...\n"
+"(2) \"7za\" (bağımsız arşivleyici) ikili dosyasını internetten indirmeyi deneyin\n"
+"\n"
+"Şimdi denemek ister misin?"
+
+msgid ""
+"The installation of the 7-zip archiver from the Enigma2\n"
+"feed server was successful."
+msgstr ""
+"7-zip arşivleyicinin Enigma2'den kurulumu\n"
+"feed sunucusu başarılı oldu."
+
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr "Tek başına \"7za\" (7-zip) arşivleyicinin kurulumu başarılı oldu."
+
+msgid "Installation of 7-zip archiver failed!"
+msgstr "7-zip arşivleyicinin kurulumu başarısız!"
+
+msgid "Internet connection is not available !"
+msgstr "İnternet bağlantısı mevcut değil!"
+
+msgid "Internet connection is OK."
+msgstr "İnternet bağlantısı iyi."
+
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Userbouquet dosyası bulunamadı!\n"
+"Lütfen userbouquet dosyaları için /etc/enigma2 klasörünü kontrol edin."
+
+msgid "Preparing a list of picons from the picon directory on the local disk."
+msgstr "Yerel diskteki picon dizininden bir piknik listesi hazırlama."
+
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "userbouquet dosyalarından bir piknik listesi hazırlanıyor ..."
+
+msgid "...done."
+msgstr "... bitti."
+
+msgid "Deleting unnecessary picons from local disk..."
+msgstr "Yerel diskten gereksiz piconlar siliniyor ..."
+
+msgid "...%s picons deleted."
+msgstr "...%s piconlar silindi."
+
+msgid "The process started..."
+msgstr "İşlem başladı ..."
+
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(gerekli tüm piconları indirin ve çıkarın)"
+
+msgid "...the process is complete."
+msgstr "... işlem tamamlandı."
+
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Piconları güncelledikten sonra Enigma'yı (GUI) yeniden başlatmanız gerekebilir."
+
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(%s eklendi / %s değişti / %s silindi)"
+
+msgid "No picons added or changed"
+msgstr "Hiçbir piknik eklenmedi veya değiştirilmedi"
+
+msgid "Download ID for file %s was not found!"
+msgstr "%s dosyası için indirme kimliği bulunamadı!"
+
+msgid "Trying download the file archive... %s"
+msgstr "%s dosya arşivini indirmeye çalışıyorum..."
+
+msgid "...file download failed !!!"
+msgstr "...dosya indirilemedi !!!"
+
+msgid ""
+"Download failed!\n"
+"File: %s\n"
+"URL: %s"
+msgstr ""
+"İndirme başarısız!\n"
+"Dosya: %s\n"
+"URL: %s"
+
+msgid "...file download successful."
+msgstr "... dosya indirme başarılı."
+
+msgid "Browse the contents of the downloaded archive file."
+msgstr "İndirilen arşiv dosyasının içeriğine göz atın."
+
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Hata! İndirilen arşiv dosyasında piknik bulunamadı!"
+
+msgid "Preparing picon list for extracting (missing files and files of different sizes)."
+msgstr "Picon listesini ayıklamak için hazırlama (eksik dosyalar ve farklı boyutlardaki dosyalar)"
+
+msgid "...%s picons was extracted from the archive."
+msgstr "...%s piconları arşivden çıkarıldı."
+
+msgid "Extracting files from the archive..."
+msgstr "Arşivden dosyalar ayıklanıyor ..."
+
+msgid "Some errors has occurred !"
+msgstr "Bazı hatalar oluştu!"
+
+msgid "Done !"
+msgstr "Bitti !"
+
+msgid "Apply"
+msgstr "Uygula"
+
+msgid "No operation ! Picon update failed !"
+msgstr "İşlem yok! Picon güncellemesi başarısız!"
+
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Seçilen çözünürlük ve uydular için piknik bulunamadı !"
