@@ -10,9 +10,9 @@
    >- In the new version of the plugin you can choose the method of updating the picons:   
    >
    >    - Copy all picons: Delete all current picons as first
-   >    - Copy all picons: Incremental update (copy only new picons or changed picons)
-   >    - Sync with TV channel lists (userbouquets)
-   >    - Sync with TV+RADIO channel lists (userbouquets)   
+   >    - Copy all picons: Incremental update (copy only new picons or picons with different file size)
+   >    - Sync with TV channel lists (/etc/enigma2/userbouquets.\*.tv)
+   >    - Sync with TV+RADIO channel lists (/etc/enigma2/userbouquets.\*.radio)
    
    >- If the archiver is not found on the system, it will be attempted to install it in two steps:
    >
@@ -28,7 +28,7 @@
    
    # Example:
    opkg remove enigma2-plugin-extensions-chocholousek-picons   
-   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200127_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200127_all.ipk
+   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200221_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200221_all.ipk
    opkg install /tmp/*.ipk
    ```
    
@@ -39,6 +39,6 @@
 
    # Example:
    dpkg -r enigma2-plugin-extensions-chocholousek-picons
-   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200127_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200127_all.deb
+   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200221_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200221_all.deb
    dpkg -i /tmp/*.deb
    ```
