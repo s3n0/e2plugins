@@ -11,8 +11,8 @@
    >
    >    - Copy all picons: Delete all current picons as first
    >    - Copy all picons: Incremental update (copy only new picons or picons with different file size)
-   >    - Sync with TV channel lists (/etc/enigma2/userbouquets.\*.tv)
-   >    - Sync with TV+RADIO channel lists (/etc/enigma2/userbouquets.\*.radio)
+   >    - Sync with TV channel lists (userbouquet files)
+   >    - Sync with TV+RADIO channel lists (userbouquet files)
    
    >- If the archiver is not found on the system, it will be attempted to install it in two steps:
    >
