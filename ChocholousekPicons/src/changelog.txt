@@ -47,3 +47,6 @@ Not all unknown .png files have been deleted from the picon directory... after f
 
 2.0.200221
 Added Turkish language.
+
+2.0.200311
+Fixed problem with importing non-existent "subprocess" module in older versions of Python - that is, in older Enigma2 (OpenPLi-4 / DM800 HD). Thanks to @Hitman222.
