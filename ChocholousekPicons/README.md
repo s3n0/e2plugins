@@ -21,7 +21,7 @@
 
 ### **How to un/install:**
 
-   >- For OE 2.0 / OE Alliance-Core 4.x based Enigma (ATV, PLi, VTi, etc.) use the **.ipk** installation package:
+   >- For OE 2.0 / OE Alliance Core 4.x based Enigma (ATV, PLi, VTi, etc.) use the **.ipk** installation package:
    ```shell
    opkg remove <package_name>      # to uninstall package
    opkg install <package_name>     # to install package
