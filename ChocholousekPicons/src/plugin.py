@@ -26,7 +26,7 @@ import urllib2, ssl, cookielib
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
-    pass                                                                    # Legacy Python version (for example v2.7.2) that doesn't verify HTTPS certificates by default
+    pass                                                                    # Legacy Python versions (for example v2.7.2) that doesn't verify HTTPS certificates by default
 else:
     ssl._create_default_https_context = _create_unverified_https_context    # Handle target environment that doesn't support HTTPS verification --- https://www.python.org/dev/peps/pep-0476/
 ###########################################################################
@@ -36,9 +36,9 @@ import glob
 import random
 ###########################################################################
 from os import system as os_system, path as os_path, makedirs as os_makedirs, remove as os_remove, listdir as os_listdir
-#from commands import getstatusoutput                                       # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
-from subprocess import check_output, CalledProcessError
-from shlex import split as shlexSplit
+from commands import getstatusoutput                                        # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
+#from subprocess import check_output, CalledProcessError                     # unfortunately "subprocess" module is supported only in Python 2.4 or newer version ... some older Enigmas as example OpenPLi-4 contains only old Python (missing subprocess module)
+#from shlex import split as shlexSplit
 from datetime import datetime
 from time import sleep
 ###########################################################################
@@ -394,7 +394,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 self.deleteFile(PLUGIN_PATH + 'images/nova-cz-*.png')                               # !!!!!!!!!!!! REMOVE THE LINE IN THE FUTURE -- IN A NEWER PLUGIN VERSIONS !
                 self.deleteFile(PLUGIN_PATH + 'images/filmbox-premium-*.png')
                 
-                status, out = getstatusoutput('%s e -y -o%s %s filmbox-premium-*.png' % (self.bin7zip, PLUGIN_PATH + 'images', localfilenamefull) )
+                status, out = runShell('%s e -y -o%s %s filmbox-premium-*.png' % (self.bin7zip, PLUGIN_PATH + 'images', localfilenamefull) )
                 
                 # check the status error and clean the archive file (will be filled with a short note)
                 if status == 0:
@@ -534,10 +534,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if result:            
             if newOE() and not os_system('dpkg -l p7zip > /dev/null 2>&1'):                                 # if no error received from os_system (package manager), then...
                 os_system('dpkg -i p7zip')
-                self.message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
+                message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             elif not newOE() and not os_system('opkg update && opkg list | grep p7zip > /dev/null 2>&1'):   # if no error received from os_system (package manager), then...
                 os_system('opkg install p7zip')
-                self.message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
+                message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             else:
                 arch = self.getChipsetArch()
                 if 'mips' in arch:
@@ -556,12 +556,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     if os_system('/usr/bin/7za'):                   # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
                         os_remove('/usr/bin/7za')                   # remove the binary file (because of an incorect binary file for the chipset architecture !)
                     else:
-                        self.message = _('Installation of standalone "7za" (7-zip) archiver was successful.')
+                        message = _('Installation of standalone "7za" (7-zip) archiver was successful.')
             
             if self.find7zip():
                 self.downloadPreviewPicons()                        # !!!!! if the installation of the 7-zip archiver was successful, I will try again to download the preview picons (.7z file from the internet), because at the beginning of the class it wasn't possible to download the preview picons - because of the non-existent 7-zip archiver
                 self.showPreviewImage()                             # the Screen layer is already up, so, I may show the image into the screen widget
-                self.session.open(MessageBox, self.message, type = MessageBox.TYPE_INFO)        # MessageBox with message about successful installation - either a standalone binary file or an ipk package
+                self.session.open(MessageBox, message, type = MessageBox.TYPE_INFO)        # MessageBox with message about successful installation - either a standalone binary file or an ipk package
             else:
                 self.session.open(MessageBox, _('Installation of 7-zip archiver failed!'), type = MessageBox.TYPE_ERROR)
 
@@ -571,7 +571,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         mips32el, armv7l, armv7a-neon, armv7ahf, armv7ahf-neon, cortexa9hf-neon, cortexa15hf-neon-vfpv4, aarch64, sh4, sh_4
         '''
         manager = 'dpkg --print-architecture' if newOE() else 'opkg print-architecture'
-        status,out = getstatusoutput(manager + ' | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        status,out = runShell(manager + ' | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             return out.replace('arch ','').replace('\n',' ')        # return architectures by the Enigma package manager, like as:   'mips32el 16 mipsel 46'
 
@@ -579,7 +579,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if t:
             return t[0]                                             # return list type converted to a string value, like as:   'mips1 mips2 mips32r1'
 
-        status,out = getstatusoutput('uname -m')
+        status,out = runShell('uname -m')
         if status == 0:
             return out                                              # return architectures from system, like as:   'mips'
 
@@ -953,7 +953,7 @@ class piconsUpdateJobScreen(Screen):
     def extractCertainPiconsFromArchive(self, archiveFile, SRC_list):
         with open('/tmp/picons-to-extraction.txt', 'w') as f:
             f.write('.png\n'.join(SRC_list) + '.png\n')
-        status, out = getstatusoutput('%s e -y -o%s %s @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile)  )
+        status, out = runShell('%s e -y -o%s %s @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile)  )
         os_remove('/tmp/picons-to-extraction.txt')
         if status == 0:
             return True
@@ -962,7 +962,7 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
-        status, out = getstatusoutput('%s e %s -y -o%s *.png' % (self.bin7zip, archiveFile, self.piconDIR) )
+        status, out = runShell('%s e %s -y -o%s *.png' % (self.bin7zip, archiveFile, self.piconDIR) )
         if status == 0:
             return True
         else:
@@ -970,7 +970,7 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def getPiconListFromArchive(self, archiveFile):
-        status, out = getstatusoutput('%s l %s' % (self.bin7zip, archiveFile) )   # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        status, out = runShell('%s l %s' % (self.bin7zip, archiveFile) )   # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
             tmp = {}
@@ -1072,11 +1072,11 @@ def pluginUpdateDo():
 
 
 def downloadFile(url, storagepath):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:70.0) Gecko/20100101 Firefox/70.0'}      # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/74.0'}           # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
     
-    #ctx = ssl.create_default_context()
-    #ctx.check_hostname = False
-    #ctx.verify_mode = ssl.CERT_NONE
+    #ctx = ssl.create_default_context()                             # urllib2 does not verify server certificate by default - but this is not true anymore for Python 2.7.9 or newer versions !
+    #ctx.check_hostname = False                                     # create_default_context() - this method does not work in versions earlier than Python 2.6 ! has been added since Python 2.6 and later
+    #ctx.verify_mode = ssl.CERT_NONE                                # example of use:    handler = urllib2.urlopen(req, timeout=20, context=ctx)
     
     cookie_jar = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
@@ -1084,13 +1084,13 @@ def downloadFile(url, storagepath):
     
     try:
         req = urllib2.Request(url, data=None, headers=headers)
-        handler = urllib2.urlopen(req, timeout=15)
+        handler = urllib2.urlopen(req, timeout=20)
         if 'drive.google' in url:
             for c in cookie_jar:
                 if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
                     url = url.replace('&id=', '&confirm=%s&id=' % c.value)   # and then it's necessary to add a parameter with confirmation of the warning message
                     req = urllib2.Request(url, data=None, headers=headers)
-                    handler = urllib2.urlopen(req, timeout=15)
+                    handler = urllib2.urlopen(req, timeout=20)
                     break
         if not storagepath:
             if 'Content-Disposition' in handler.headers:
@@ -1103,14 +1103,22 @@ def downloadFile(url, storagepath):
     except Exception as e:
         print('File download error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
         return False
-
+    
     return True
 
-def getstatusoutput(cmd):
+#def runShell(cmd):
+#    try:
+#        t =  0 , check_output(shlexSplit(cmd))
+#    except CalledProcessError as e:
+#        t = e.returncode , e.message
+#    except Exception as e:
+#        t = -1 , e.message
+#    except:
+#        t = -1 , ''
+#    return t
+def runShell(cmd):
     try:
-        t =  0 , check_output(shlexSplit(cmd))
-    except CalledProcessError as e:
-        t = e.returncode , e.message
+        t = getstatusoutput(cmd)
     except Exception as e:
         t = -1 , e.message
     except:
