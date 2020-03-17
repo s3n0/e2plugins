@@ -217,11 +217,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if newOE():
             i = mainConfigScreen.skin.index('font=')
             self.skin = mainConfigScreen.skin[:i] + mainConfigScreen.skin[i+34:]                        # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
-            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for newer versions of Enigma standard (OE2.5)
+            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for commercial versions of Enigma2 core (OE 2.5+)
         else:
             self.skin = mainConfigScreen.skin
             
-            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for older versions of Enigma standard (OE2.0)
+            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for free-ware versions of Enigma2 core (OE-Alliance 4.?)
         self.layoutFinishTimer.start(200, True)
         
         #self.onShown.append(self.rebuildConfigList)
@@ -595,7 +595,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
 
 class satellitesConfigScreen(Screen, ConfigListScreen):
-
+    
     if sizemaxX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
@@ -614,13 +614,13 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <widget  render="Label" source="txt_green"       position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
-
+    
     def __init__(self, session, allSat):
         
         self.allSat = allSat
         
         Screen.__init__(self, session)
-                
+        
         self.onChangedEntry = []
         self.list = []
         
@@ -628,7 +628,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
         self.lineheight = 1
-
+        
         self['title_txt'] = Label(_('Select satellites:'))
         self['txt_green'] = StaticText(_('Apply'))
 
@@ -639,7 +639,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
                 'ok'    : self.keyToOk,
                 'green' : self.keyToExit
         }, -2)
-                
+        
         self.onShown.append(self.rebuildConfigList)
         
         if newOE():
@@ -749,9 +749,9 @@ class piconsUpdateJobScreen(Screen):
         
         self.thStopCheckingTimer = eTimer()
         if newOE():
-            self.thStopCheckingTimer_conn = self.thStopCheckingTimer.timeout.connect(self.thStopChecking)   # eTimer for newer versions (OE2.5)
+            self.thStopCheckingTimer_conn = self.thStopCheckingTimer.timeout.connect(self.thStopChecking)   # eTimer for commercial versions of Enigma2 core (OE 2.5+)
         else:
-            self.thStopCheckingTimer.callback.append(self.thStopChecking)                                   # eTimer for older versions (OE2.0)
+            self.thStopCheckingTimer.callback.append(self.thStopChecking)                                   # eTimer for free-ware versions of Enigma2 core (OE-Alliance 4.?)
         self.thStopCheckingTimer.start(1000, False)
         
         #self.onShown.append(self.func_name)
@@ -861,8 +861,13 @@ class piconsUpdateJobScreen(Screen):
         
         # 7) Pripraví sa zoznam názvov všetkých súborov .7z na sťahovanie z internetu - podľa konfigurácie pluginu
         self.filesForDownload = []
-        for SAT in config.plugins.chocholousekpicons.sats.getValue().split():           # example:   ['13.0E', '19.2E', '23.5E']
+        for SAT in config.plugins.chocholousekpicons.sats.getValue().split():   # example:   ['13.0E', '19.2E', '23.5E']
             self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , SAT)   )
+        # doplnenie zoznamu stahovania o doplnkove online zdroje pikon tretiej strany:
+        if os_path.isfile('/etc/enigma2/3rd_party_picons.ini'):                 # picon sources of the third party... the example of file-content: "http://example.com/iptv/my-picons.7z"
+            with open('/etc/enigma2/3rd_party_picons.ini', 'r') as f:
+                l = f.read().splitlines()
+            self.filesForDownload += [ s for s in l if s.strip() and not s.startswith('#') ]            # add a new created list to an existing list (nothing will be added if the new list remains empty)
         #self.storeVarInFile('filesForDownload', self.filesForDownload)
         
         # 8) Ďalej sa v cykle stiahnú z internetu a spracujú sa všetky používateľom zafajknuté archívy s piconami - spracuvávajú sa po jednom (pre viac družíc - postupne každý jeden archív sa stiahne a spracuje)
@@ -882,19 +887,25 @@ class piconsUpdateJobScreen(Screen):
             message = _('No picons added or changed.') + '\n' + _('(%s added / %s changed / %s removed)') % (self.piconCounters['added'] , self.piconCounters['changed'] , self.piconCounters['removed'])
         return False, message
     
-    def proceedArchiveFile(self, search_filename):
+    def proceedArchiveFile(self, url_id):
         
-        # 1. Vyhľadanie google.drive ID - kódu v "chochoContent", pre konkrétny súbor (pre potrebu jeho následovného stiahnutia)
-        found = []
-        for line in self.chochoContent.splitlines():
-            if search_filename in line:
-                found = line.split()
-                break
-        if not found:
-            self.writeLog(_('Download ID for file %s was not found!') % search_filename)
-            return
-        url_link = 'https://drive.google.com/uc?export=download&id=' + found[0]
-        dwn_filename = found[1].replace('(','_').replace(')','_')               # replace the filename mask by new original archive filename and replace the parentheses by underline characters
+        # 1. Príprava downloadovaciej URL adresy + názvu súboru pre uloženie na disk
+        if "://" in url_id:
+            # (a) - ak sa jedná o alternatívny zdroj s pikonami
+            url_link = url_id
+            dwn_filename = url_id.split('/')[-1]
+        else:
+            # (b) - vyhľadanie google.drive ID - kódu v "chochoContent", pre konkrétny súbor (pre potrebu jeho následovného stiahnutia)
+            found = []
+            for line in self.chochoContent.splitlines():
+                if url_id in line:
+                    found = line.split()
+                    break
+            if not found:
+                self.writeLog(_('Download ID for file %s was not found!') % url_id)
+                return
+            url_link = 'https://drive.google.com/uc?export=download&id=' + found[0]
+            dwn_filename = found[1].replace('(','_').replace(')','_')               # replace the filename mask by new original archive filename and replace the parentheses by underline characters
 
         # 2. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
         self.writeLog(_('Trying download the file archive... %s') % dwn_filename)
@@ -1103,6 +1114,8 @@ def downloadFile(url, storagepath):
     except Exception as e:
         print('File download error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
         return False
+    except:
+        return False
     
     return True
 
@@ -1127,17 +1140,17 @@ def runShell(cmd):
 
 def newOE():
     '''
-    return True --- if Enigma is a newer OE version (OE2.5 - OpenDreambox, Dream Elite 6, Merlin 4, ... and others)
-    return False -- if Enigma is a older OE version (OE2.0 - OpenATV 6, OpenPLi 7, VTi 13, ... and others)
+    return True --- eTimer for commercial versions of Enigma2 core (OE 2.5+) - OpenDreambox, Dream Elite, Merlin, ... etc.
+    return False -- eTimer for open-source versions of Enigma2 core (OE-Alliance 4.?, based on the original core OE 2.0) - OpenATV, OpenPLi, VTi, ... etc.
     '''
     ####return os_path.exists('/etc/dpkg')
     try:
         from enigma import PACKAGE_VERSION
         major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
         if major > 4 or major == 4 and minor >= 2:
-            retval = True                       # newer OE version (OpenDreambox / OE2.5, ...)
+            retval = True                       # newer OE version (OpenDreambox / Dream Elite, ...) ==== OE 2.5+ ============ (c)Dreambox
         else:
-            retval = False                      # older OE version (OpenATV, OpenPLi, VTi, ...)
+            retval = False                      # older OE version (OpenATV, OpenPLi, VTi, ...) ========= OE-Alliance 4.? ==== open-source
     except:
         retval = False
     return retval
