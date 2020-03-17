@@ -21,7 +21,7 @@ In this released version already assumes and discards the background, if they do
 Patch for the incorrect plugin installation under OE2.5 Enigma (.deb installation packages), during online plugin update.
 
 2.0.191125
-Fixed detection of OE2.0 / OE2.5 when trying to install "p7zip" package from the Enigma feed.
+Fixed detection of OE2.0 (OE-Alliance 4.?) vs OE2.5+ (Dreambox) when trying to install "p7zip" package from the Enigma feed.
 Move buttons and font size for FullHD SKIN buttons (only a slight distance).
 
 2.0.191126
@@ -50,3 +50,16 @@ Added Turkish language.
 
 2.0.200311
 Fixed problem with importing non-existent "subprocess" module in older versions of Python - that is, in older Enigma2 (OpenPLi-4 / DM800 HD). Thanks to @Hitman222.
+
+2.0.200317
+Added indirect support for downloading additional third-party picons (for example, for some IPTV services) from a third-party online source.
+The picons must be located inside the archive in the root folder - i.e. without folders inside the archive. The archive format must be 7-zip.
+The configuration file is located here: "/etc/enigma2/3rd_party_picons.ini". Comments in a file are allowed only after the # character at the beginning of a line.
+If the file does not exist or the resource list in the file remains empty, it will be ignored.
+
+Example of the file "/etc/enigma2/3rd_party_picons.ini":
+
+### Chocholousek picons, Enigma2 plugin, https://github.com/s3n0
+# http://example.com/files/picons.7z
+http://download.test.net/files/my_picons.7z
+
