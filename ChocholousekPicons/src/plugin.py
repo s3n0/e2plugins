@@ -383,19 +383,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
             print('Error %s when reading URL %s' % (str(e), url))
         else:
             onlinefilename = handler.headers['Content-Disposition'].split('"')[1].replace('(','_').replace(')','_')    # get file name from html header and replace the parentheses by underline characters
-            
             if onlinefilename[-10:-4] > localfilenamefull[-10:-4] :                                 # comparsion, for example as the following:   '191125' > '191013'
-                
                 self.deleteFile(localfilenamefull)
                 localfilenamefull = PLUGIN_PATH + onlinefilename
                 downloadFile(url, localfilenamefull)
-                
                 # extracting .7z archive (picon preview images):
-                self.deleteFile(PLUGIN_PATH + 'images/nova-cz-*.png')                               # !!!!!!!!!!!! REMOVE THE LINE IN THE FUTURE -- IN A NEWER PLUGIN VERSIONS !
                 self.deleteFile(PLUGIN_PATH + 'images/filmbox-premium-*.png')
-                
-                status, out = runShell('%s e -y -o%s %s filmbox-premium-*.png' % (self.bin7zip, PLUGIN_PATH + 'images', localfilenamefull) )
-                
+                status, out = runShell('%s e -y -o%s %s *.png' % (self.bin7zip, PLUGIN_PATH + 'images', localfilenamefull) )
                 # check the status error and clean the archive file (will be filled with a short note)
                 if status == 0:
                     print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % localfilenamefull[-10:-4] )
@@ -436,7 +430,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         the online version will be detected from the http request header
         the  local version will be detected from the existing local file
         file name example:   id_for_permalinks191017.log
-        example entry from inside the file:   1xmITO0SouVDTrATgh0JauEpIS7IfIQuB              piconblack-220x132-13.0E_by_chocholousek_(191016).7z                              bin   16.3 MB    2018-09-07 19:40:54
+        example entry from inside the file:     1xmITO0SouVDTrATgh0JauEpIS7IfIQuB        piconblack-220x132-13.0E_by_chocholousek_(191016).7z       bin      16.3 MB      2018-09-07 19:40:54
         '''        
         flist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
         if flist:
@@ -767,7 +761,7 @@ class piconsUpdateJobScreen(Screen):
             if type == MessageBox.TYPE_ERROR:
                 sleep(8)
             else:
-                sleep(3)
+                sleep(4)
             self['logWindow'].hide()                            # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
             self.session.open(MessageBox, msg, type)            
             self.close()
@@ -831,8 +825,9 @@ class piconsUpdateJobScreen(Screen):
                 self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os_path.getsize(path_N_file))  } )        # os.stat.st_time('/etc/enigma2/'+filename)
         #self.storeVarInFile('SRC_in_HDD', self.SRC_in_HDD)
         
-        # 5.A) Vytvorí sa zoznam serv.ref.kódov z patričných userbouquet súborov (podľa predvytvoreného zoznamu *.tv alebo aj *.radio) - sú poterbné pre synchronizáciu picon
+        # 5) Vytvorenie zoznamu SRC kódov z userbouquet súborov
         if 'sync' in config.plugins.chocholousekpicons.method.value:
+            # 5.A) Vytvorí sa zoznam serv.ref.kódov z patričných userbouquet súborov (podľa predvytvoreného zoznamu *.tv alebo aj *.radio) - sú poterbné pre synchronizáciu picon
             self.writeLog(_('Preparing a list of picons from userbouquet files...'))
             s = ''
             for bq_file in self.bouquet_files:
@@ -841,8 +836,8 @@ class piconsUpdateJobScreen(Screen):
             self.SRC_in_Bouquets = re.findall('.*#SERVICE\s([0-9a-fA-F]+_0_[0-9a-fA-F_]+0_0_0).*\n*', s.replace(":","_") )
             self.SRC_in_Bouquets = list(set(self.SRC_in_Bouquets))              # remove duplicate items ---- converting to <set> and then again back to the <list>
             self.writeLog(_('...done.'))
-        # 5.B) Vytvorí sa fiktívny t.j. prázdny zoznam SRC kódov z userbouquet zoznamov, aby v ďalšiom kroku boli všetky aktuálne pikony na lokálnom disku vymazané (metóda 'all' pre vymazanie všetkých aktuálnych picon a nakopírovanie nových picon)
         else:
+            # 5.B) Vytvorí sa fiktívny t.j. prázdny zoznam SRC kódov z userbouquet zoznamov, aby v ďalšiom kroku boli všetky aktuálne pikony na lokálnom disku vymazané (metóda 'all' pre vymazanie všetkých aktuálnych picon a nakopírovanie nových picon)
             self.SRC_in_Bouquets = []
         #self.storeVarInFile('SRC_in_bouquets', self.SRC_in_Bouquets)
         
@@ -861,7 +856,7 @@ class piconsUpdateJobScreen(Screen):
         
         # 7) Pripraví sa zoznam názvov všetkých súborov .7z na sťahovanie z internetu - podľa konfigurácie pluginu
         self.filesForDownload = []
-        for SAT in config.plugins.chocholousekpicons.sats.getValue().split():   # example:   ['13.0E', '19.2E', '23.5E']
+        for SAT in config.plugins.chocholousekpicons.sats.getValue().split():   #  =  ['13.0E', '19.2E', '23.5E']
             self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , SAT)   )
         # doplnenie zoznamu stahovania o doplnkove online zdroje pikon tretiej strany:
         if os_path.isfile('/etc/enigma2/3rd_party_picons.ini'):                 # picon sources of the third party... the example of file-content: "http://example.com/iptv/my-picons.7z"
@@ -925,14 +920,15 @@ class piconsUpdateJobScreen(Screen):
 
         # 4. Rozbalenie pikon zo stiahnutého archívu
         self.writeLog(_('Extracting files from the archive...'))
+        
         if 'all' == config.plugins.chocholousekpicons.method.value:
         #### Ak používateľ zvolil v plugin-konfigurácii metódu zmazania všetkých pikon a nahratia všetkých nových pikon (metóda 'all'), tak ...
             self.piconCounters['added'] += len(self.SRC_in_Archive)
             self.extractAllPiconsFromArchive('/tmp/' + dwn_filename)
-            self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_in_Archive))
+            self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_in_Archive))
+        
         else:
         #### V prípade metód synchronizačných / kontrolovaných t.j. 'sync_tv', 'sync_tv_radio' alebo 'all_inc' prebehne rozbalenie a prepísanie iba patričných picon (podľa predvytvoreneho zoznamu)
-            self.writeLog(_('Preparing picon list for extracting (missing files and files of different sizes).'))
             self.SRC_for_Extract = []
             # V prípade dvoch metód userbouquet synchronizácie t.j. 'sync_tv' a 'sync_tv_radio' sa zaujímam len o tie picony z archívu, ktoré sa nachádzajú zároveň v zozname SRC_in_Bouquets a zároveň v zozname SRC_in_Archive
             # Čiže vytvorím zoznam zhodných prvkov pomocou operácie s množinami:   set(A) & set(B)
@@ -950,14 +946,16 @@ class piconsUpdateJobScreen(Screen):
                 else:                                                       # ak sa pikona zo zoznamu "potrebnych" este nenachadza na HDD, tak...
                     self.SRC_for_Extract.append(src)                        # tiez musim tuto pikonu pridat na zoznam kopirovanych (zoznam pikon na extrahovanie)
                     self.piconCounters['added'] += 1
-            # Extrahovanie vybraných pikon (len v prípade, že existujú nejaké pikony pre extrahovanie)
+            
+            # Extrahovanie vybraných pikon (len v prípade, že sa našli nejaké pikony pre extrahovanie)
             if self.SRC_for_Extract:
                 self.extractCertainPiconsFromArchive('/tmp/' + dwn_filename , self.SRC_for_Extract)
                 # subory, ktore budu teraz pridane alebo prepisane z archivu do HDD, uz viac krat nebudem musiet kopirovat a zistovat v dalsich cykloch (v dalsich rozbalenych balickoch s pikonami),
                 # preto tieto subory aktualizujem aj v zozname SRC_in_HDD pre urychlenie procesu, aby sa v dalsich cykloch tieto subory ignorovali (budu vyrozumene ako existujuci subor na HDD so zhodnou velkostou)
                 for k in self.SRC_for_Extract:
-                    self.SRC_in_HDD[k] = self.SRC_in_Archive[k]          #self.SRC_in_Bouquets.remove(k)
-            self.writeLog(_('...%s picons was extracted from the archive.') % len(self.SRC_for_Extract))
+                    self.SRC_in_HDD[k] = self.SRC_in_Archive[k]             #self.SRC_in_Bouquets.remove(k)
+            self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_for_Extract))
+        
         #self.storeVarInFile('SRC_for_Extract--%s' % dwn_filename, self.SRC_for_Extract)
         os_remove('/tmp/' + dwn_filename)
     
@@ -987,13 +985,14 @@ class piconsUpdateJobScreen(Screen):
             tmp = {}
             i = -3
             while not "-----" in out[i]:
-                # extract data from Shell output, line by line:
-                # index: 0----------------19 20-25    26-----38               53-------------------------->
-                # out:   2018-07-14 14:48:53 ....A          797               CONTROL/postinst
-                fdatetime, fattr, fsize, fpath = out[i][0:19] , out[i][20:25] , out[i][26:38] , out[i][53:]
-                #if fattr[0] != 'D':         # retreive all files with a full path, but no individual directories !
-                if '.png' in fpath:          # retreive all files with a full path, but only if the file path contains '.png' string
-                    tmp.update({ fpath.split('/')[-1].split('.')[0] :  int(fsize) })            # { "service_reference_code_<as_a_string-dictionary_key>"  :  file_size_<as_a_integer> }
+                # processing files obtained at Shell output:
+                # column:  Date       Time      Attr   Size       Compressed  Name
+                # index:   0****************19  20*25  26*****38  39******52  53**********************************************>
+                # out:     2019-12-05 10:16:06  ....A      26824       57902  filmbox-premium-freezeframe-400x240.png
+                fsize, fpath = out[i][26:38].strip(), out[i][53:].strip()
+                #if fattr[0] != 'D':                    # retreive all files with a full path, but no individual directories !
+                if fpath.lower().endswith('.png'):      # retreive all files with a full path, but only if the file path contains '.png' string
+                    tmp.update( {fpath.split('/')[-1].split('.')[0]  :  int(fsize)} )        # {"service_reference_code" : file_size}
                 i -= 1
             return tmp
         else:
@@ -1082,16 +1081,17 @@ def pluginUpdateDo():
 
 
 
-def downloadFile(url, storagepath):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/74.0'}           # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
+def downloadFile(url, storagepath=None):
     
-    #ctx = ssl.create_default_context()                             # urllib2 does not verify server certificate by default - but this is not true anymore for Python 2.7.9 or newer versions !
-    #ctx.check_hostname = False                                     # create_default_context() - this method does not work in versions earlier than Python 2.6 ! has been added since Python 2.6 and later
-    #ctx.verify_mode = ssl.CERT_NONE                                # example of use:    handler = urllib2.urlopen(req, timeout=20, context=ctx)
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/74.0'}           # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
     
     cookie_jar = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
     urllib2.install_opener(opener)
+    
+    #ctx = ssl.create_default_context()                  # urllib2 does not verify server certificate by default - but this is not true anymore for Python 2.7.9 or newer versions !
+    #ctx.check_hostname = False                          # .create_default_context() method does not work in versions earlier than Python 2.6 ! has been added since Python 2.6 and later
+    #ctx.verify_mode = ssl.CERT_NONE                     # example of use:    handler = urllib2.urlopen(req, timeout=20, context=ctx)
     
     try:
         req = urllib2.Request(url, data=None, headers=headers)
@@ -1103,9 +1103,9 @@ def downloadFile(url, storagepath):
                     req = urllib2.Request(url, data=None, headers=headers)
                     handler = urllib2.urlopen(req, timeout=20)
                     break
-        if not storagepath:
+        if storagepath is None:
             if 'Content-Disposition' in handler.headers:
-                storagepath = handler.headers['Content-Disposition'].split('"')[1]          # get filename from html header
+                storagepath = '/tmp/' + handler.headers['Content-Disposition'].split('"')[1]          # get filename from html header
             else:
                 storagepath = '/tmp/unknown_filename_' + str(random.randint(111000,999000))
         data = handler.read()
@@ -1148,9 +1148,9 @@ def newOE():
         from enigma import PACKAGE_VERSION
         major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
         if major > 4 or major == 4 and minor >= 2:
-            retval = True                       # newer OE version (OpenDreambox / Dream Elite, ...) ==== OE 2.5+ ============ (c)Dreambox
+            retval = True                       # newer OE version (OpenDreambox / Dream Elite, ...) ==== OE 2.5+ ===================== (c)Dreambox
         else:
-            retval = False                      # older OE version (OpenATV, OpenPLi, VTi, ...) ========= OE-Alliance 4.? ==== open-source
+            retval = False                      # older OE version (OpenATV, OpenPLi, VTi, ...) ========= OE 2.0 / OE-Alliance 4.? ==== open-source
     except:
         retval = False
     return retval
