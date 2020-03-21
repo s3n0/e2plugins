@@ -39,11 +39,13 @@ Fixed bug with plugin crash in new DMM firmware after opening satellite configur
 Fixed the process when upgrading a plugin package under OE 2.5+ (adding a line in the CONTROL shell-script). Thanks to @fly.tox .
 
 2.0.200126
-If the installation of the 7-zip archiver was successful, I will try again to download the preview picons (.7z file from the internet), because at the beginning of the config screen entry it wasn't possible to download the preview picons - because of the non-existent 7-zip archiver.
+If the installation of the 7-zip archiver was successful, I will try again to download the preview picons (.7z file from the internet),
+because at the beginning of the config screen entry it wasn't possible to download the preview picons - because of the non-existent 7-zip archiver.
 
 2.0.200127
 Minor adjustment in unnecessary picons deletion algorithm - in case of method of synchronization of picons with userbouquet files (channel lists). Thanks to @chocholousek . 
-Not all unknown .png files have been deleted from the picon directory... after fixing the bug, all unknown files will be deleted correctly (for example as "sat.1.png"), since this is a method of synchronization and the algorithm only counts with png files named as SRC code.
+Not all unknown .png files have been deleted from the picon directory... after fixing the bug, all unknown files will be deleted correctly (for example as "sat.1.png"),
+since this is a method of synchronization and the algorithm only counts with png files named as SRC code.
 
 2.0.200221
 Added Turkish language.
@@ -55,11 +57,15 @@ Fixed problem with importing non-existent "subprocess" module in older versions 
 Added indirect support for downloading additional third-party picons (for example, for some IPTV services) from a third-party online source.
 The picons must be located inside the archive in the root folder - i.e. without folders inside the archive. The archive format must be 7-zip.
 The configuration file is located here: "/etc/enigma2/3rd_party_picons.ini". Comments in a file are allowed only after the # character at the beginning of a line.
-If the file does not exist or the resource list in the file remains empty, it will be ignored.
+If the file does not exist or the resource list in the file remains empty, it will be ignored. 
 
 Example of the file "/etc/enigma2/3rd_party_picons.ini":
 
 ### Chocholousek picons, Enigma2 plugin, https://github.com/s3n0
 # http://example.com/files/picons.7z
 http://download.test.net/files/my_picons.7z
+
+2.0.200321
+Removed informative text during picon update - using sync methods. This is misleading information about preparing files for unpacking, and the information previously mentions unpacking.
+Minor changes in the source code.
 
