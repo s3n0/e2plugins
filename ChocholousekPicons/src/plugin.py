@@ -35,7 +35,7 @@ import re
 import glob
 import random
 ###########################################################################
-from os import system as os_system, path as os_path, makedirs as os_makedirs, remove as os_remove, listdir as os_listdir
+import os
 from commands import getstatusoutput                                        # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
 #from subprocess import check_output, CalledProcessError                     # unfortunately "subprocess" module is supported only in Python 2.4 or newer version ... some older Enigmas as example OpenPLi-4 contains only old Python (missing subprocess module)
 #from shlex import split as shlexSplit
@@ -355,7 +355,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     def getPreviewImagePath(self):
         imgpath = PLUGIN_PATH + 'images/filmbox-premium-' + config.plugins.chocholousekpicons.background.value + '-' + config.plugins.chocholousekpicons.resolution.value + '.png'
-        if os_path.isfile(imgpath):
+        if os.path.isfile(imgpath):
             return imgpath
         else:
             return PLUGIN_PATH + 'images/image_not_found.png'
@@ -363,53 +363,48 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def downloadPreviewPicons(self):
         '''
         download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
-        the online version will be detected from the http request header
-        the  local version will be detected from the existing local file
+        the online file version will be detected from the current chochoContent (from the preloaded "id_for_permalinks*.log" file)
+        the  local file version will be detected from the existing local file
         archive filename example:         filmbox-premium-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
         files inside the archive file:    filmbox-premium-transparent-220x132.png ; filmbox-premium-gray-400x240.png
         '''
-        flist = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
-        if flist:
-            localfilenamefull = flist[0]                                                            # simple converting the list type to string type
-        else:
-            localfilenamefull = '___(000000).7z'                                                    # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
+        for line in self.chochoContent.splitlines():
+            if 'filmbox-premium-' in line:
+                t = line.split()
+                url, new_file = 'https://drive.google.com/uc?export=download&id=' + t[0], PLUGIN_PATH + t[1]
+                break
         
-        url = 'https://drive.google.com/uc?export=download&id=1wX6wwhTf2dJ30Pe2GWb20UuJ6d-HjERA'    # .7z archive with preview images (channel picons for the one and the same TV-channel)
-        try:
-            handler = urllib2.urlopen(url)
-        except urllib2.URLError as e:
-            print('Error %s when reading from URL %s' % (e.reason, url))
-        except Exception as e:
-            print('Error %s when reading URL %s' % (str(e), url))
-        else:
-            onlinefilename = handler.headers['Content-Disposition'].split('"')[1].replace('(','_').replace(')','_')    # get file name from html header and replace the parentheses by underline characters
-            if onlinefilename[-10:-4] > localfilenamefull[-10:-4] :                                 # comparsion, for example as the following:   '191125' > '191013'
-                self.deleteFile(localfilenamefull)
-                localfilenamefull = PLUGIN_PATH + onlinefilename
-                downloadFile(url, localfilenamefull)
-                # extracting .7z archive (picon preview images):
-                self.deleteFile(PLUGIN_PATH + 'images/filmbox-premium-*.png')
-                status, out = runShell('%s e -y -o%s %s *.png' % (self.bin7zip, PLUGIN_PATH + 'images', localfilenamefull) )
-                # check the status error and clean the archive file (will be filled with a short note)
-                if status == 0:
-                    print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % localfilenamefull[-10:-4] )
-                    with open(localfilenamefull, 'w') as f:
-                        f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
-                elif status == 32512:
-                    print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
-                    self.deleteFile(localfilenamefull)
-                elif status == 512:
-                    print('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, localfilenamefull) )
-                    self.deleteFile(localfilenamefull)
-                else:
-                    print('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
-                    self.deleteFile(localfilenamefull)
+        lst = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
+        current_file = lst[0] if lst else PLUGIN_PATH + 'foo-bar(000000).7z'        # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
+        
+        if new_file[-10:-4] > current_file[-10:-4] :                                # comparsion, for example as the following:  '191125' > '191013'
+            if not downloadFile(url, new_file):                                     # .7z archive with preview images (channel picons for the one and the same TV-channel)
+                print('Picons preview file download failed ! (URL = %s)' % url)
+                return
+            self.deleteFiles(current_file)
+            self.deleteFiles(PLUGIN_PATH + 'images/filmbox-premium-*.png')
+            # extracting .7z archive (picon preview images):
+            status, out = runShell('%s e -y -o%s "%s" *.png' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
+            # check the status error and clean the archive file (will be filled with a short note)
+            if status == 0:
+                print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % new_file[-10:-4] )
+                with open(new_file, 'w') as f:
+                    f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
+            elif status == 32512:
+                print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
+                self.deleteFiles(new_file)
+            elif status == 512:
+                print('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, new_file) )
+                self.deleteFiles(new_file)
+            else:
+                print('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
+                self.deleteFiles(new_file)
     
-    def deleteFile(self, directorymask):
-        lst = glob.glob(directorymask)
+    def deleteFiles(self, mask):
+        lst = glob.glob(mask)
         if lst:
             for file in lst:
-                os_remove(file)
+                os.remove(file)
     
     ###########################################################################
     
@@ -421,7 +416,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 txt = f.read()
         else:
             txt = ''
-            print('MYDEBUGLOGLINE - Warning! The file %s was not found on the internet but also on the internal disk.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
+            print('MYDEBUGLOGLINE - Warning! The file %s was not found on the internet but also not found on the internal disk!' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
         self.chochoContent = txt
     
     def downloadChochoFile(self):
@@ -448,7 +443,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         else:
             onlinefilename = rq.headers['Content-Disposition'].split('"')[1]            # get filename from html header
             if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                      # comparsion, for example as the following:   '191125' > '191013'
-                self.deleteFile(localfilenamefull)
+                self.deleteFiles(localfilenamefull)
                 localfilenamefull = PLUGIN_PATH + onlinefilename
                 downloadFile(url, localfilenamefull)
                 print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" was updated to new version: %s' % onlinefilename)
@@ -514,10 +509,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
 
     def find7zip(self):
-        if os_path.isfile('/usr/bin/7za'):
+        if os.path.isfile('/usr/bin/7za'):
             self.bin7zip = '/usr/bin/7za'
             return True
-        elif os_path.isfile('/usr/bin/7z'):
+        elif os.path.isfile('/usr/bin/7z'):
             self.bin7zip = '/usr/bin/7z'
             return True
         else:
@@ -526,11 +521,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
     def downNinst7zip(self, result):
         if result:            
-            if newOE() and not os_system('dpkg -l p7zip > /dev/null 2>&1'):                                 # if no error received from os_system (package manager), then...
-                os_system('dpkg -i p7zip')
+            if newOE() and not os.system('dpkg -l p7zip > /dev/null 2>&1'):                                 # if no error received from os.system (package manager), then...
+                os.system('dpkg -i p7zip')
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
-            elif not newOE() and not os_system('opkg update && opkg list | grep p7zip > /dev/null 2>&1'):   # if no error received from os_system (package manager), then...
-                os_system('opkg install p7zip')
+            elif not newOE() and not os.system('opkg update && opkg list | grep p7zip > /dev/null 2>&1'):   # if no error received from os.system (package manager), then...
+                os.system('opkg install p7zip')
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             else:
                 arch = self.getChipsetArch()
@@ -544,11 +539,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     filename = '7za_sh4'
                 else:
                     filename = 'ERROR_-_UNKNOWN_CHIPSET_ARCHITECTURE'
-                #if not os_system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % filename):  # if no error received from os_system, then...
+                #if not os.system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % filename):  # if no error received from os.system, then...
                 if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s' % filename , '/usr/bin/7za'):
-                    os_system('chmod 755 /usr/bin/7za')
-                    if os_system('/usr/bin/7za'):                   # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
-                        os_remove('/usr/bin/7za')                   # remove the binary file (because of an incorect binary file for the chipset architecture !)
+                    os.system('chmod 755 /usr/bin/7za')
+                    if os.system('/usr/bin/7za'):                   # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
+                        os.remove('/usr/bin/7za')                   # remove the binary file (because of an incorect binary file for the chipset architecture !)
                     else:
                         message = _('Installation of standalone "7za" (7-zip) archiver was successful.')
             
@@ -786,7 +781,7 @@ class piconsUpdateJobScreen(Screen):
     def mainFunc(self):        
         
         # 1) Ocheckuje sa internetové pripojenie
-        if os_system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr enigma image
+        if os.system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr enigma image
             return True, _("Internet connection is not available !")
         else:
             self.writeLog(_('Internet connection is OK.'))
@@ -798,9 +793,9 @@ class piconsUpdateJobScreen(Screen):
                 self.piconDIR = self.piconDIR[:-1]
         else:
             self.piconDIR = config.plugins.chocholousekpicons.picon_folder.value
-        if not os_path.exists(self.piconDIR):
+        if not os.path.exists(self.piconDIR):
             try:
-                os_makedirs(self.piconDIR)
+                os.makedirs(self.piconDIR)
             except OSError as e:
                 return True, _('Error creating directory %s:\n%s') % (self.piconDIR, str(e))
         
@@ -822,7 +817,7 @@ class piconsUpdateJobScreen(Screen):
         dir_list = glob.glob(self.piconDIR + '/*.png')
         if dir_list:
             for path_N_file in dir_list:
-                self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os_path.getsize(path_N_file))  } )        # os.stat.st_time('/etc/enigma2/'+filename)
+                self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os.path.getsize(path_N_file))  } )        # os.stat.st_time('/etc/enigma2/'+filename)
         #self.storeVarInFile('SRC_in_HDD', self.SRC_in_HDD)
         
         # 5) Vytvorenie zoznamu SRC kódov z userbouquet súborov
@@ -848,7 +843,7 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog(_('Deleting unnecessary picons from local disk...'))
             self.SRC_to_Delete = list(  set(self.SRC_in_HDD.keys()) - set(self.SRC_in_Bouquets)  )            
             for src in self.SRC_to_Delete:
-                os_remove(self.piconDIR + '/' + src + '.png')
+                os.remove(self.piconDIR + '/' + src + '.png')
                 del self.SRC_in_HDD[src]                                        # po vymazaní súbory z HDD samozrejme ihneď aktualizujem tiež výpis súborov na HDD (obsah premennej SRC_in_HDD)
                 self.piconCounters['removed'] += 1
             self.writeLog(_('...%s picons deleted.') % self.piconCounters['removed'])
@@ -859,7 +854,7 @@ class piconsUpdateJobScreen(Screen):
         for SAT in config.plugins.chocholousekpicons.sats.getValue().split():   #  =  ['13.0E', '19.2E', '23.5E']
             self.filesForDownload.append('picon%s-%s-%s_by_chocholousek' % (config.plugins.chocholousekpicons.background.value , config.plugins.chocholousekpicons.resolution.value , SAT)   )
         # doplnenie zoznamu stahovania o doplnkove online zdroje pikon tretiej strany:
-        if os_path.isfile('/etc/enigma2/3rd_party_picons.ini'):                 # picon sources of the third party... the example of file-content: "http://example.com/iptv/my-picons.7z"
+        if os.path.isfile('/etc/enigma2/3rd_party_picons.ini'):                 # picon sources of the third party... the example of file-content: "http://example.com/iptv/my-picons.7z"
             with open('/etc/enigma2/3rd_party_picons.ini', 'r') as f:
                 l = f.read().splitlines()
             self.filesForDownload += [ s for s in l if s.strip() and not s.startswith('#') ]            # add a new created list to an existing list (nothing will be added if the new list remains empty)
@@ -886,7 +881,7 @@ class piconsUpdateJobScreen(Screen):
         
         # 1. Príprava downloadovaciej URL adresy + názvu súboru pre uloženie na disk
         if "://" in url_id:
-            # (a) - ak sa jedná o alternatívny zdroj s pikonami
+            # (a) - ak sa jedná o alternatívny zdroj s pikonami a nie o ID kod pre Chocholousek - drive.google...
             url_link = url_id
             dwn_filename = url_id.split('/')[-1]
         else:
@@ -900,7 +895,7 @@ class piconsUpdateJobScreen(Screen):
                 self.writeLog(_('Download ID for file %s was not found!') % url_id)
                 return
             url_link = 'https://drive.google.com/uc?export=download&id=' + found[0]
-            dwn_filename = found[1].replace('(','_').replace(')','_')               # replace the filename mask by new original archive filename and replace the parentheses by underline characters
+            dwn_filename = found[1]     # .replace('(','_').replace(')','_')        # replace the filename mask by new original archive filename and replace the parentheses by underline characters
 
         # 2. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
         self.writeLog(_('Trying download the file archive... %s') % dwn_filename)
@@ -957,13 +952,13 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_for_Extract))
         
         #self.storeVarInFile('SRC_for_Extract--%s' % dwn_filename, self.SRC_for_Extract)
-        os_remove('/tmp/' + dwn_filename)
+        os.remove('/tmp/' + dwn_filename)
     
     def extractCertainPiconsFromArchive(self, archiveFile, SRC_list):
         with open('/tmp/picons-to-extraction.txt', 'w') as f:
             f.write('.png\n'.join(SRC_list) + '.png\n')
-        status, out = runShell('%s e -y -o%s %s @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile)  )
-        os_remove('/tmp/picons-to-extraction.txt')
+        status, out = runShell('%s e -y -o%s "%s" @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile)  )
+        os.remove('/tmp/picons-to-extraction.txt')
         if status == 0:
             return True
         else:
@@ -971,7 +966,7 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
-        status, out = runShell('%s e %s -y -o%s *.png' % (self.bin7zip, archiveFile, self.piconDIR) )
+        status, out = runShell('%s e "%s" -y -o%s *.png' % (self.bin7zip, archiveFile, self.piconDIR) )
         if status == 0:
             return True
         else:
@@ -979,7 +974,7 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def getPiconListFromArchive(self, archiveFile):
-        status, out = runShell('%s l %s' % (self.bin7zip, archiveFile) )   # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        status, out = runShell('%s l "%s"' % (self.bin7zip, archiveFile) )   # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
             tmp = {}
@@ -1059,13 +1054,13 @@ def pluginUpdateDo():
         dwn_file  = '/tmp/' + pckg_name
         if downloadFile(dwn_url, dwn_file):
             if pckg_name.endswith('.deb'):
-                os_system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
-                os_system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
+                os.system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
+                os.system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
             else:
-                os_system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
+                os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
             print('New plugin version was installed ! old ver.:%s , new ver.:%s' % (plugin_version_local, plugin_version_online)  )
             plugin_version_local = plugin_version_online            
-            os_remove(dwn_file)
+            os.remove(dwn_file)
             return True
         else:
             return False
@@ -1104,10 +1099,10 @@ def downloadFile(url, storagepath=None):
                     handler = urllib2.urlopen(req, timeout=20)
                     break
         if storagepath is None:
-            if 'Content-Disposition' in handler.headers:
-                storagepath = '/tmp/' + handler.headers['Content-Disposition'].split('"')[1]          # get filename from html header
+            if 'content-disposition' in handler.headers:
+                storagepath = '/tmp/' + handler.headers['content-disposition'].split('"')[1]        # get filename from html header
             else:
-                storagepath = '/tmp/unknown_filename_' + str(random.randint(111000,999000))
+                storagepath = '/tmp/unknown_file_{:0>6}____'.format(random.randint(0,150000))
         data = handler.read()
         with open(storagepath, 'wb') as f:
             f.write(data)
@@ -1143,7 +1138,7 @@ def newOE():
     return True --- eTimer for commercial versions of Enigma2 core (OE 2.5+) - OpenDreambox, Dream Elite, Merlin, ... etc.
     return False -- eTimer for open-source versions of Enigma2 core (OE-Alliance 4.?, based on the original core OE 2.0) - OpenATV, OpenPLi, VTi, ... etc.
     '''
-    ####return os_path.exists('/etc/dpkg')
+    ####return os.path.exists('/etc/dpkg')
     try:
         from enigma import PACKAGE_VERSION
         major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
