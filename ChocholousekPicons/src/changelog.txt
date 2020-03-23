@@ -69,3 +69,6 @@ http://download.test.net/files/my_picons.7z
 Removed informative text during picon update - using sync methods. This is misleading information about preparing files for unpacking, and the information previously mentions unpacking.
 Minor changes in the source code.
 
+2.0.200323
+Fixed problems updating / downloading preview picons. Thanks to @Hitman222.
+
