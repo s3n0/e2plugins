@@ -966,7 +966,7 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
-        status, out = runShell('%s e "%s" -y -o%s *.png' % (self.bin7zip, archiveFile, self.piconDIR) )
+        status, out = runShell('%s e -y -o%s "%s" *.png' % (self.bin7zip, self.piconDIR, archiveFile) )
         if status == 0:
             return True
         else:
