@@ -72,3 +72,5 @@ Minor changes in the source code.
 2.0.200323
 Fixed problems updating / downloading preview picons. Thanks to @Hitman222.
 
+2.0.200406
+Added Lithuanian language.
