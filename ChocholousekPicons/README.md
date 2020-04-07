@@ -28,7 +28,7 @@
    
    # Example:
    opkg remove enigma2-plugin-extensions-chocholousek-picons   
-   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200323_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200323_all.ipk
+   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200406_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200406_all.ipk
    opkg install /tmp/*.ipk
    ```
    
@@ -39,6 +39,6 @@
 
    # Example:
    dpkg -r enigma2-plugin-extensions-chocholousek-picons
-   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200323_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200323_all.deb
+   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200406_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200406_all.deb
    dpkg -i /tmp/*.deb
    ```
