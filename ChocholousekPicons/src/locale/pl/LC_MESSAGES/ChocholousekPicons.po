@@ -1,0 +1,211 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ChocholousekPicons\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-10-25 19:26+0100\n"
+"PO-Revision-Date: 2020-04-08 21:03+0200\n"
+"Last-Translator: PKTeam <sq9hhc@op.pl>\n"
+"Language-Team: \n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 2.3\n"
+
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(%s dodane / %s zmienione / %s usunięte)"
+
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(pobieranie i wypakowanie potrzebnych picon)"
+
+msgid "(user defined)"
+msgstr "(wybór użytkownika)"
+
+msgid "...%s picons deleted."
+msgstr "...%s picon usinieto."
+
+msgid "...%s picons were extracted from the archive."
+msgstr "...%s picon rozpakowano."
+
+msgid "...done."
+msgstr "...gotowe."
+
+msgid "...file download failed !!!"
+msgstr "...nie udało sie pobrać !!!"
+
+msgid "...file download successful."
+msgstr "...plik pobrany."
+
+msgid "...the process is complete."
+msgstr "...proces skończony."
+
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Po aktualizacji picon zrestartuj Enigma2 (GUI)."
+
+msgid "Apply"
+msgstr "Zapisz"
+
+msgid "Browse the contents of the downloaded archive file."
+msgstr "Sprawdzam pobrane archiwum picon."
+
+msgid "Deleting unnecessary picons from local disk..."
+msgstr "Usuwam nie potrzebne picon z dysku lokalnego..."
+
+msgid "Done !"
+msgstr "Koniec!"
+
+msgid "Download ID for file %s was not found!"
+msgstr "ID do pobrania %s nie znaleźione!"
+
+msgid ""
+"Download failed!\n"
+"File: %s\n"
+"URL: %s"
+msgstr ""
+"Błąd pobierania!\n"
+"Soubor: %s\n"
+"URL: %s"
+
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Błąd! Archiwum nie zawiera picon!"
+
+msgid "Extracting files from the archive..."
+msgstr "Wypakowywanie plików..."
+
+msgid "Installation of 7-zip archiver failed!"
+msgstr "Instalacja 7-zip nie udana!"
+
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr "Instalacja samodzielnego archivátoru „7za“ (7-zip) byla úspěšná."
+
+msgid "Internet connection is OK."
+msgstr "Dobre połączenie z internetem."
+
+msgid "Internet connection is not available !"
+msgstr "Brak połączenia z internetem!"
+
+msgid "No operation ! Picon update failed !"
+msgstr "Nic nie wykonano ! Aktualizacja picon nie udana !"
+
+msgid "No picons added or changed"
+msgstr "Žádné picony nebyly přidány nebo změněny"
+
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Nie znaleźiono picon dla wybranej pozycji SAT!"
+
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Nie znaleziono userbouquet!\n"
+"Sprawdź /etc/enigma2, czy są pliki userbouquet."
+
+msgid "Picon background"
+msgstr "Tło picon"
+
+msgid "Picon folder"
+msgstr "Folder picon"
+
+msgid "Picon resolution"
+msgstr "Wielkość picon"
+
+msgid "Picon update method"
+msgstr "Metoda aktualizacji picon"
+
+msgid ""
+"Plugin version is up to date.\n"
+"\n"
+"Installed version: %s"
+msgstr ""
+"Plugin jest aktualny\n"
+"\n"
+"Zainstalowana wersja: %s"
+
+msgid "Preparing a list of picons from the picon directory on the local disk."
+msgstr "Przygotowuje liste picon z folderu dysku lokalnego..."
+
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Przygotowuje listę picon z plików userbouquet..."
+
+msgid "Satellite positions"
+msgstr "Pozycja SAT"
+
+msgid "Save & Exit"
+msgstr "Uložit & ukončit"
+
+msgid "Select satellites:"
+msgstr "Wybór pozycji SAT:"
+
+msgid "Some errors has occurred !"
+msgstr "Wystąpiły błedy!"
+
+msgid ""
+"The 7-zip archiver was not found on your system.\n"
+"There is possible to update the 7-zip archiver now in two steps:\n"
+"\n"
+"(1) try to install via the Enigma package manager\n"
+"...or...\n"
+"(2) try to download the binary file \"7za\" (standalone archiver) from the "
+"internet\n"
+"\n"
+"Do you want to try it now?"
+msgstr ""
+"Nie znalexiono 7-zip.\n"
+"Można zainstalować 7-zip w dwóch krokach:\n"
+"\n"
+"(1) instalacja 7-zip pakietu z opkg\n"
+"...nebo...\n"
+"(2) pobranie binarki \"7za\" z internetu\n"
+"\n"
+"Spróbować zainstalować 7-zip teraz ?"
+
+msgid ""
+"The installation of the 7-zip archiver from the Enigma2\n"
+"feed server was successful."
+msgstr ""
+"Instalacja 7-zip z Enigma2\n"
+"feed pomyślna."
+
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Plugin zaktualizowany do nowej wersji.\n"
+"Wykonaj restart.\n"
+"Chcesz zrobić to teraz ?"
+
+msgid "The process started..."
+msgstr "Uruchomiono proces..."
+
+msgid "Trying download the file archive... %s"
+msgstr "Próba pobrania archiwum... %s"
+
+msgid "Update picons"
+msgstr "Pobrać picony"
+
+msgid "Update plugin"
+msgstr "Aktualizacja pluginu"
+
+msgid "User defined folder"
+msgstr "Folder wybrany przez użytkownika"
+
+msgid ""
+"You have changed the plugin configuration.\n"
+"Do you want to save all changes now ?"
+msgstr ""
+"Zmieniłeś konfigurację pluginu.\n"
+"Chcesz zapisac zmiany?"
+
+msgid "copy all: current will deleted"
+msgstr "kopiuj wszystko: aktualne zostana usunięte"
+
+msgid "copy all: incremental update"
+msgstr "kopiuj wszystko: aktualizacja dodająca"
+
+msgid "sync with TV userbouquets"
+msgstr "synchronizacja list kanałów TV"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "synchronizacja list kanałów TV+RADIO"
