@@ -74,3 +74,11 @@ Fixed problems updating / downloading preview picons. Thanks to @Hitman222.
 
 2.0.200406
 Added Lithuanian language.
+
+2.0.200409
+Added Polish language.
+Improved algorithm for detecting chipset architecture aarch64 / arm64 (debugged on the Enigma core - OE 2.6), thx to @alexbore.
+Accepting sym-links to 7-zip executable file.
+Changed Enigma core detection method - instead of detecting the Enigma core version, only the type of core will be detected (used for skin modification and timer function).
+
+
