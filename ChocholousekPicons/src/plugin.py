@@ -507,21 +507,21 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if not self.find7zip():
             message = _('The 7-zip archiver was not found on your system.\nThere is possible to update the 7-zip archiver now in two steps:\n\n(1) try to install via the Enigma package manager\n...or...\n(2) try to download the binary file "7za" (standalone archiver) from the internet\n\nDo you want to try it now?')
             self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
-
+    
     def find7zip(self):
-        if os.path.isfile('/usr/bin/7za'):
+        if os.path.isfile('/usr/bin/7za') or os.path.islink('/usr/bin/7za'):
             self.bin7zip = '/usr/bin/7za'
             return True
-        elif os.path.isfile('/usr/bin/7z'):
+        elif os.path.isfile('/usr/bin/7z') or os.path.islink('/usr/bin/7z'):
             self.bin7zip = '/usr/bin/7z'
             return True
         else:
             self.bin7zip = ''
             return False
-
-    def downNinst7zip(self, result):
-        if result:            
-            if newOE() and not os.system('dpkg -l p7zip > /dev/null 2>&1'):                                 # if no error received from os.system (package manager), then...
+    
+    def downNinst7zip(self, confirmed):
+        if confirmed:
+            if newOE() and not os.system('dpkg -l p7zip > /dev/null 2>&1'):             # if no error received from os.system (package manager), then...
                 os.system('dpkg -i p7zip')
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             elif not newOE() and not os.system('opkg update && opkg list | grep p7zip > /dev/null 2>&1'):   # if no error received from os.system (package manager), then...
@@ -529,49 +529,51 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             else:
                 arch = self.getChipsetArch()
-                if 'mips' in arch:
-                    filename = '7za_mips32el'
-                elif 'arm' in arch:
-                    filename = '7za_cortexa15hf-neon-vfpv4'
-                elif 'aarch64' in arch:
-                    filename = '7za_aarch64'
-                elif 'sh4' in arch or 'sh_4' in arch:
-                    filename = '7za_sh4'
+                if 'mips' in arch:                          # MIPS (always 32bit)
+                    fname = '7za_mips32el'
+                elif 'aarch64' in arch or 'arm64' in arch:  # ARM 64bit (Aarch64)
+                    fname = '7za_aarch64'
+                elif 'arm' in arch or 'cortexa15' in arch:  # ARM 32bit
+                    fname = '7za_cortexa15hf-neon-vfpv4'
+                elif 'sh4' in arch or 'sh_4' in arch:       # SH4
+                    fname = '7za_sh4'
                 else:
-                    filename = 'ERROR_-_UNKNOWN_CHIPSET_ARCHITECTURE'
-                #if not os.system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % filename):  # if no error received from os.system, then...
-                if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s' % filename , '/usr/bin/7za'):
+                    fname = 'ERROR_-_UNKNOWN_CHIPSET_ARCHITECTURE'
+                #if not os.system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % fname) \ # if no error received from os.system, then... \
+                if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  \
+                or downloadFile('http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  \
+                or downloadFile('http://aion.webz.cz/ChocholousekPicons/%s' % fname, '/usr/bin/7za')  :
                     os.system('chmod 755 /usr/bin/7za')
-                    if os.system('/usr/bin/7za'):                   # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
-                        os.remove('/usr/bin/7za')                   # remove the binary file (because of an incorect binary file for the chipset architecture !)
+                    if os.system('/usr/bin/7za'):               # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
+                        os.remove('/usr/bin/7za')               # remove the binary file (because of an incorect binary file for the chipset architecture !)
                     else:
                         message = _('Installation of standalone "7za" (7-zip) archiver was successful.')
             
             if self.find7zip():
-                self.downloadPreviewPicons()                        # !!!!! if the installation of the 7-zip archiver was successful, I will try again to download the preview picons (.7z file from the internet), because at the beginning of the class it wasn't possible to download the preview picons - because of the non-existent 7-zip archiver
-                self.showPreviewImage()                             # the Screen layer is already up, so, I may show the image into the screen widget
-                self.session.open(MessageBox, message, type = MessageBox.TYPE_INFO)        # MessageBox with message about successful installation - either a standalone binary file or an ipk package
+                self.downloadPreviewPicons()                    # !!!! if the installation of the 7-zip archiver was successful, I will try again to download the preview picons (.7z file from the internet), because at the beginning of the class it wasn't possible to download the preview picons - because of the non-existent 7-zip archiver
+                self.showPreviewImage()                         # the Screen layer is already up, so, I may show the image into the screen widget
+                self.session.open(MessageBox, message, type = MessageBox.TYPE_INFO)             # MessageBox with message about successful installation - either a standalone binary file or an ipk package
             else:
                 self.session.open(MessageBox, _('Installation of 7-zip archiver failed!'), type = MessageBox.TYPE_ERROR)
-
+    
     def getChipsetArch(self):
         '''
         detecting chipset architecture
         mips32el, armv7l, armv7a-neon, armv7ahf, armv7ahf-neon, cortexa9hf-neon, cortexa15hf-neon-vfpv4, aarch64, sh4, sh_4
         '''
         manager = 'dpkg --print-architecture' if newOE() else 'opkg print-architecture'
-        status,out = runShell(manager + ' | grep -E "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        status,out = runShell(manager + ' | grep -iE "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
-            return out.replace('arch ','').replace('\n',' ')        # return architectures by the Enigma package manager, like as:   'mips32el 16 mipsel 46'
-
-        t = re.findall('isa\s*:\s*(.*)\n+', open('/proc/cpuinfo','r').read() )
-        if t:
-            return t[0]                                             # return list type converted to a string value, like as:   'mips1 mips2 mips32r1'
-
+            return out.lower().replace('arch ','').replace('\n',' ')    # return architectures by the Enigma package manager, like as:  'mips32el 16 mipsel 46'
+        
         status,out = runShell('uname -m')
         if status == 0:
-            return out                                              # return architectures from system, like as:   'mips'
-
+            return out.lower()                                          # return architectures from system, like as:  'mips'
+        
+        t = re.findall('isa\s*:\s*(.*)\n+', open('/proc/cpuinfo','r').read() )
+        if t:
+            return t[0].lower()                                         # return list type converted to a string value, like as:  'mips1 mips2 mips32r1'
+        
         print('MYDEBUGLOGLINE - Error! Could not get information about chipset-architecture! Returning an empty string!')
         return ''
 
@@ -817,7 +819,7 @@ class piconsUpdateJobScreen(Screen):
         dir_list = glob.glob(self.piconDIR + '/*.png')
         if dir_list:
             for path_N_file in dir_list:
-                self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os.path.getsize(path_N_file))  } )        # os.stat.st_time('/etc/enigma2/'+filename)
+                self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os.path.getsize(path_N_file))  } )
         #self.storeVarInFile('SRC_in_HDD', self.SRC_in_HDD)
         
         # 5) Vytvorenie zoznamu SRC kódov z userbouquet súborov
@@ -1008,7 +1010,7 @@ class piconsUpdateJobScreen(Screen):
         self['logWindow'].lastPage()
 
     #def storeVarInFile(self, fname, data):
-    #    with open('/tmp/__%s.log' % fname, 'w') as f:
+    #    with open('/tmp/___%s.log' % fname, 'w') as f:
     #        f.write('\n'.join(data))
 
 
@@ -1026,7 +1028,9 @@ def findHostnameAndNewPlugin():
     '''
     global plugin_version_local, plugin_version_online
     url_lnk = ''
-    url_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/', 'http://aion.webz.cz/ChocholousekPicons/']    # it is important to keep the slash character at the end of the directory paths
+    url_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/',
+                'http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons/released_build/',         # HTTP download - fuse and SSL prevention in some Enigma distributions
+                'http://aion.webz.cz/ChocholousekPicons/']                                              # url_list - it is important to keep the slash character at the end of the directory paths
     for hostname in url_list:
         try:
             url_handle = urllib2.urlopen(hostname + 'version.txt')
@@ -1038,7 +1042,7 @@ def findHostnameAndNewPlugin():
             plugin_version_online = url_handle.read().strip()
             if plugin_version_online > plugin_version_local:
                 url_lnk = hostname
-                break
+                break # to start the plugin update process
     return url_lnk
 
 def pluginUpdateDo():
@@ -1135,20 +1139,22 @@ def runShell(cmd):
 
 def newOE():
     '''
-    return True --- eTimer for commercial versions of Enigma2 core (OE 2.5+) - OpenDreambox, Dream Elite, Merlin, ... etc.
-    return False -- eTimer for open-source versions of Enigma2 core (OE-Alliance 4.?, based on the original core OE 2.0) - OpenATV, OpenPLi, VTi, ... etc.
+    return True ---- for commercial versions of Enigma2 core (OE 2.5+) - Dream Elite, Dream OS, Merlin, ... etc.
+    return False --- for open-source versions of Enigma2 core (OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
     '''
-    ####return os.path.exists('/etc/dpkg')
-    try:
-        from enigma import PACKAGE_VERSION
-        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
-        if major > 4 or major == 4 and minor >= 2:
-            retval = True                       # newer OE version (OpenDreambox / Dream Elite, ...) ==== OE 2.5+ ===================== (c)Dreambox
-        else:
-            retval = False                      # older OE version (OpenATV, OpenPLi, VTi, ...) ========= OE 2.0 / OE-Alliance 4.? ==== open-source
-    except:
-        retval = False
-    return retval
+    return os.path.exists('/etc/dpkg')
+#    try:
+#        from enigma import PACKAGE_VERSION
+#        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
+#        if major > 4 or (major == 4 and minor >= 2):    #if major > 4 or major == 4 and minor >= 2:
+#            retval = True                               #### new enigma2 core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.5+ ====================== (c)Dreambox
+#        else:
+#            retval = False                              #### old enigma2 core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source
+#    except ImportError:
+#        retval = False                                  #### OE 2.0 = import error    
+#    if os.path.exists('/etc/dpkg'):
+#        retval = True
+#    return retval
 
 
 
