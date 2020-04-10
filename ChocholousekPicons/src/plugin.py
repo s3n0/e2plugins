@@ -542,8 +542,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 #if not os.system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % fname) \ # if no error received from os.system, then... \
                 if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  \
                 or downloadFile('http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  \
-                or downloadFile('http://aion.webz.cz/ChocholousekPicons/%s' % fname, '/usr/bin/7za')  :
-                    os.system('chmod 755 /usr/bin/7za')
+                or downloadFile('http://aion.webz.cz/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  :
+                    os.system('chmod a+x /usr/bin/7za')
                     if os.system('/usr/bin/7za'):               # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
                         os.remove('/usr/bin/7za')               # remove the binary file (because of an incorect binary file for the chipset architecture !)
                     else:
@@ -1027,23 +1027,23 @@ def findHostnameAndNewPlugin():
     return URL ---- if a new online version was found
     '''
     global plugin_version_local, plugin_version_online
-    url_lnk = ''
-    url_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/',
-                'http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons/released_build/',         # HTTP download - fuse and SSL prevention in some Enigma distributions
-                'http://aion.webz.cz/ChocholousekPicons/']                                              # url_list - it is important to keep the slash character at the end of the directory paths
-    for hostname in url_list:
+    server_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons',
+                   'http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons',          # HTTP download - fuse and SSL prevention in some Enigma distributions
+                   'http://aion.webz.cz/ChocholousekPicons']
+    result = ''
+    for url in server_list:
         try:
-            url_handle = urllib2.urlopen(hostname + 'version.txt')
+            url_handle = urllib2.urlopen(url + '/src/version.txt')
         except urllib2.URLError as err:
-            print('Error: %s , while trying to fetch URL: %s' % (err.reason, hostname + 'version.txt')  )
+            print('Error: %s , while trying to fetch URL: %s' % (err.reason, url + '/src/version.txt')  )
         except Exception as err:
-            print('Error: %s , while trying to fetch URL: %s' % (str(err), hostname + 'version.txt')  )
+            print('Error: %s , while trying to fetch URL: %s' % (str(err),   url + '/src/version.txt')  )
         else:
             plugin_version_online = url_handle.read().strip()
             if plugin_version_online > plugin_version_local:
-                url_lnk = hostname
+                result = url
                 break # to start the plugin update process
-    return url_lnk
+    return result
 
 def pluginUpdateDo():
     '''
@@ -1051,10 +1051,10 @@ def pluginUpdateDo():
     return False ---- if a new version was not found
     '''
     global plugin_version_local, plugin_version_online
-    url_host = findHostnameAndNewPlugin()
-    if url_host:
+    host = findHostnameAndNewPlugin()
+    if host:
         pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + ('_all.deb' if newOE() else '_all.ipk')
-        dwn_url   =  url_host + pckg_name
+        dwn_url   =  host + '/released_build/' + pckg_name
         dwn_file  = '/tmp/' + pckg_name
         if downloadFile(dwn_url, dwn_file):
             if pckg_name.endswith('.deb'):
