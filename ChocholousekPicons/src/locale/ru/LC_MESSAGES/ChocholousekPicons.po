@@ -1,0 +1,226 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ChocholousekPicons\n"
+"POT-Creation-Date: 2020-04-10 13:39+0300\n"
+"PO-Revision-Date: 2020-04-10 13:39+0300\n"
+"Last-Translator: Vladimir.F <volodya072@yahoo.com>\n"
+"Language-Team: <Duremar>\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+msgid "(user defined)"
+msgstr "(пользовательский)"
+
+msgid "copy all: current will deleted"
+msgstr "все копии: текущий будет удален"
+
+msgid "copy all: incremental update"
+msgstr "все копии: поэтапное обновление"
+
+msgid "sync with TV userbouquets"
+msgstr "синхронизация с ТВ букетами"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "синхронизация с ТВ+РАДИО букетами"
+
+msgid "first select the satellites"
+msgstr "сперва выберите спутники"
+
+msgid "Exit"
+msgstr "Выxод"
+
+msgid "Save & Exit"
+msgstr "Сохранить & Выйти"
+
+msgid "Update plugin"
+msgstr "Обновить плагин"
+
+msgid "Update picons"
+msgstr "Обновить пиконы"
+
+msgid "Picon folder"
+msgstr "Папка пиконов"
+
+msgid "User defined folder"
+msgstr "Определённая папка"
+
+msgid "Picon update method"
+msgstr "Метод обновления пиконов"
+
+msgid "Satellite positions"
+msgstr "Спутниковые позиции"
+
+msgid "Picon resolution"
+msgstr "Пикон разрешение"
+
+msgid "Picon background"
+msgstr "Фон пикона"
+
+msgid "Choose picon design"
+msgstr "Выбрать стиль пикона"
+
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Плагин обновился до новой версии.\n"
+"Требуется быстрая перезагрузка.\n"
+"Сделать быструю перезагрузку сейчас ?"
+
+#, python-format
+msgid ""
+"Plugin version is up to date.\n"
+"\n"
+"Installed version: %s"
+msgstr ""
+"Обновлена версия плагина.\n"
+"\n"
+"Версия установки: %s"
+
+msgid ""
+"You have changed the plugin configuration.\n"
+"Do you want to save all changes now ?"
+msgstr ""
+"Вы изменили конфигурацию плагина.\n"
+"Вы хотите сохранить все изменения сейчас ?"
+
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Пиконы для выбранного разрешения и спутников не найдены !"
+
+msgid ""
+"The 7-zip archiver was not found on your system.\n"
+"There is possible to update the 7-zip archiver now in two steps:\n"
+"\n"
+"(1) try to install via the Enigma package manager\n"
+"...or...\n"
+"(2) try to download the binary file \"7za\" (standalone archiver) from the "
+"internet\n"
+"\n"
+"Do you want to try it now?"
+msgstr ""
+"7-zip архиватор не найден в вашей системе.\n"
+"Обновить архиватор 7-zip теперь можно в два этапа:\n"
+"\n"
+"(1) попробуйте установить через менеджер пакетов Enigma\n"
+"...или же...\n"
+"(2) попробуйте загрузить бинарный файл \"7za\" (отдельный архиватор) из "
+"интернета\n"
+"\n"
+"Попробуем прямо сейчас?"
+
+msgid ""
+"The installation of the 7-zip archiver from the Enigma2\n"
+"feed server was successful."
+msgstr ""
+"Установка 7-zip архиватора на базе Enigma2\n"
+"фид-сервер прошел успешно."
+
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr "Установка автономного архиватора \"7za\" (7-zip) прошла успешно."
+
+msgid "Installation of 7-zip archiver failed!"
+msgstr "Установка 7-zip архиватора не удалась!"
+
+msgid "Select satellites:"
+msgstr "Выбрать спутники:"
+
+msgid "Apply"
+msgstr "Применить"
+
+msgid "No operation ! Picon update failed !"
+msgstr "Нет операции ! Сбой обновления Пиконов !"
+
+msgid "Some errors has occurred !"
+msgstr "Возникли некоторые ошибки !"
+
+msgid "Done !"
+msgstr "Сделано !"
+
+#, python-format
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(%s добавлено / %s изменено / %s удалено)"
+
+msgid "Internet connection is not available !"
+msgstr "Подключение к интернету недоступно !"
+
+msgid "Internet connection is OK."
+msgstr "Соединение с интернетом OK."
+
+#, python-format
+msgid ""
+"Error creating directory %s:\n"
+"%s"
+msgstr ""
+"Сбой создания директории %s:\n"
+"%s"
+
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Файлы userbouquet не найдены !\n"
+"Проверьте папку /etc/enigma2 для файлов userbouquet."
+
+msgid "Preparing a list of picons from the picon directory on the local disk."
+msgstr "Подготовка списка пиконов из каталога пиконов на локальном диске."
+
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Подготовка списка пиконов из файлов букета..."
+
+msgid "...done."
+msgstr "...сделано."
+
+msgid "Deleting unnecessary picons from local disk..."
+msgstr "Сброс ненужных пиконов с локального диска..."
+
+#, python-format
+msgid "...%s picons deleted."
+msgstr "...%s пиконы удалены."
+
+msgid "The process started..."
+msgstr "Процесс начался..."
+
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(скачивание и извлечение всех необходимых пиконов)"
+
+msgid "...the process is complete."
+msgstr "...процесс завершён."
+
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Обновив пиконы, вам может понадобиться перезапуск Enigma (GUI)."
+
+msgid "No picons added or changed."
+msgstr "Нет пиконов добавленных или изменённых."
+
+#, python-format
+msgid "Download ID for file %s was not found!"
+msgstr "Скачиваемый ID файла %s не найден!"
+
+#, python-format
+msgid "Trying download the file archive... %s"
+msgstr "Попробую скачать архив файлов... %s"
+
+msgid "...file download failed !!!"
+msgstr "...файл скачать не удалось !!!"
+
+msgid "...file download successful."
+msgstr "...файл успешно скачан."
+
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Сбой! В скачанном архивном файле пиконов не найдено!"
+
+msgid "Extracting files from the archive..."
+msgstr "Распаковка файлов из архива..."
+
+#, python-format
+msgid "...%s picons were extracted from the archive."
+msgstr "...%s пиконы изъяты из архива."
