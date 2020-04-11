@@ -177,16 +177,16 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def __init__(self, session):
         
         Screen.__init__(self, session)
-        #self.session = session          # this is not necessary, this is done already during class initialization - Screen.__init__
+        #self.session = session                 # this is not necessary, this is done already during class initialization - Screen.__init__
         
         self.onChangedEntry = []
         self.list = []
         
         ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
         
-        self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (1 = enable auto-correction ; 0 = disable auto-correction)
+        self.lineHeight = 1                     # for text height auto-correction on dmm-enigma2 (1 = enable auto-correction ; 0 = disable auto-correction)
         self.lineheight = 1
-
+        
         self['previewImage'] = Pixmap()
         
         self['txt_red']      = StaticText(_('Exit'))
@@ -210,22 +210,24 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 'cancel': self.keyToExit
         }, -2)
         
-        self.bin7zip = None             # path to directory with '7z' or '7za' executable binary file
-        self.chochoContent = None       # content of the file "id_for_permalinks*.log" - downloaded from google.drive
+        self.bin7zip = None                     # path to directory with '7z' or '7za' executable binary file
+        self.chochoContent = None               # content of the file "id_for_permalinks*.log" - downloaded from google.drive
         
-        self.layoutFinishTimer = eTimer()
-        if newOE():
+        if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):            # NewEnigma2 (based on OpenDreambox) firmware with OE 2.0 core - uses some new SKIN modules, therefore it's necessary to leave the FONT in the configList widget
             i = mainConfigScreen.skin.index('font=')
             self.skin = mainConfigScreen.skin[:i] + mainConfigScreen.skin[i+34:]                        # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
-            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for commercial versions of Enigma2 core (OE 2.5+)
         else:
             self.skin = mainConfigScreen.skin
             
-            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for free-ware versions of Enigma2 core (OE-Alliance 4.?)
+        self.layoutFinishTimer = eTimer()
+        if newOE():
+            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for new version of Enigma2 core (OE 2.2+)
+        else:
+            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for old version of Enigma2 core (OE 2.0 / OE-Alliance 4.? open-source core)
         self.layoutFinishTimer.start(200, True)
         
         #self.onShown.append(self.rebuildConfigList)
-        #self.onLayoutFinish.append(self.layoutFinished)
+        #self.onLayoutFinish.append(self.prepareSetup)
     
     def prepareSetup(self):
         self.loadChochoContent()        
@@ -363,21 +365,22 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def downloadPreviewPicons(self):
         '''
         download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
-        the online file version will be detected from the current chochoContent (from the preloaded "id_for_permalinks*.log" file)
+        the online file version will be detected from the current chochoContent (from the preloaded "id_for_permalinks*.log" file on the plugin-configuration Screen initialization)
         the  local file version will be detected from the existing local file
-        archive filename example:         filmbox-premium-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
-        files inside the archive file:    filmbox-premium-transparent-220x132.png ; filmbox-premium-gray-400x240.png
+        archive filename example:  filmbox-premium-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
+        files inside the archive file: filmbox-premium-transparent-220x132.png ;  filmbox-premium-gray-400x240.png ;  ...
         '''
         for line in self.chochoContent.splitlines():
             if 'filmbox-premium-' in line:
-                t = line.split()
-                url, new_file = 'https://drive.google.com/uc?export=download&id=' + t[0], PLUGIN_PATH + t[1]
+                r = line.split()
+                url = 'https://drive.google.com/uc?export=download&id=' + r[0]
+                new_file = PLUGIN_PATH + r[1]
                 break
         
-        lst = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
-        current_file = lst[0] if lst else PLUGIN_PATH + 'foo-bar(000000).7z'        # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
+        l = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
+        current_file = l[0] if l else PLUGIN_PATH + 'foo-bar(000000).7z'            # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
         
-        if new_file[-10:-4] > current_file[-10:-4] :                                # comparsion, for example as the following:  '191125' > '191013'
+        if new_file[-10:-4] > current_file[-10:-4]:                                 # comparsion, for example as the following:  '191125' > '191013'
             if not downloadFile(url, new_file):                                     # .7z archive with preview images (channel picons for the one and the same TV-channel)
                 print('Picons preview file download failed ! (URL = %s)' % url)
                 return
@@ -412,41 +415,33 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.downloadChochoFile()
         path = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
         if path:
-            with open(path[0],'r') as f:            # full path-name as the string from list index 0
-                txt = f.read()
+            self.chochoContent = open(path[0],'r').read()               # glob returns a list type variable, so I need to  translate list to string
+            print('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
         else:
-            txt = ''
-            print('MYDEBUGLOGLINE - Warning! The file %s was not found on the internet but also not found on the internal disk!' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
-        self.chochoContent = txt
+            self.chochoContent = ''
+            print('MYDEBUGLOGLINE - Warning ! The file %s was not found !' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
     
     def downloadChochoFile(self):
         '''
-        checking new online version, download if neccessary and load the content from file with the list of all IDs for google.drive download
-        the online version will be detected from the http request header
-        the  local version will be detected from the existing local file
-        file name example:   id_for_permalinks191017.log
-        example entry from inside the file:     1xmITO0SouVDTrATgh0JauEpIS7IfIQuB        piconblack-220x132-13.0E_by_chocholousek_(191016).7z       bin      16.3 MB      2018-09-07 19:40:54
+        1. check if there is a new version of the file on the internet and download if so
+        2. then the content from the saved file is loaded into memory
+        --- the     new/online file version will be retrieved from the HTTP header - with the helping of function downloadFile()
+        --- the  current/local file version will be retrieved from the existing local file name
+        file name example:    "id_for_permalinks191017.log"
+        example of a line from inside the file:    "1xmITO0SouVDTrATgh0JauEpIS7IfIQuB        piconblack-220x132-13.0E_by_chocholousek_(191016).7z       bin      16.3 MB      2018-09-07 19:40:54"
         '''        
-        flist = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
-        if flist:
-            localfilenamefull = flist[0]                                                # string converted as from list[0]
-        else:
-            localfilenamefull = PLUGIN_PATH + 'id_for_permalinks000000.log'             # low version, to force update the file (the first download at all, if the file does not exists !)
-
+        l = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
+        current_filename = l[0] if l else PLUGIN_PATH + 'id_for_permalinks000000.log'               # low version, to force update the file (the first download at all, if the file does not exists !)
+        
         url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'    # id_for_permalinks191017.log -- means the chochoFile for the chochoContent value :)
-        try:
-            rq = urllib2.urlopen(url)
-        except urllib2.URLError as e:
-            print('Error %s when reading from URL %s' % (e.reason, url))
-        except Exception as e:
-            print('Error %s when reading URL %s' % (str(e), url))
+        new_filename = downloadFile(url, PLUGIN_PATH, False)                                        # as the first - to test the online file only ... and return their file name as string (if online file will found)
+        if new_filename:
+            if new_filename[-10:-4] > current_filename[-10:-4]:                                     # Python <string> comparison like as <integer>, for example as the following:   '191125' > '191013'
+                self.deleteFiles(current_filename)
+                downloadFile(url, PLUGIN_PATH)
+                print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" was updated to new version: %s' % new_filename[-10:-4])
         else:
-            onlinefilename = rq.headers['Content-Disposition'].split('"')[1]            # get filename from html header
-            if onlinefilename[-10:-4] > localfilenamefull[-10:-4]:                      # comparsion, for example as the following:   '191125' > '191013'
-                self.deleteFiles(localfilenamefull)
-                localfilenamefull = PLUGIN_PATH + onlinefilename
-                downloadFile(url, localfilenamefull)
-                print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" was updated to new version: %s' % onlinefilename)
+            print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" not found on the internet ! (url = %s)' % url)
     
     def changeAvailableBackgrounds(self):
         '''
@@ -521,10 +516,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     def downNinst7zip(self, confirmed):
         if confirmed:
-            if newOE() and not os.system('dpkg -l p7zip > /dev/null 2>&1'):             # if no error received from os.system (package manager), then...
+            if os.path.exists('/etc/dpkg') and not os.system('dpkg -l p7zip > /dev/null 2>&1'):                             # if no error received from os.system (package manager), then...
                 os.system('dpkg -i p7zip')
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
-            elif not newOE() and not os.system('opkg update && opkg list | grep p7zip > /dev/null 2>&1'):   # if no error received from os.system (package manager), then...
+            elif os.path.exists('/etc/opkg') and not os.system('opkg update > /dev/null && opkg list | grep -q p7zip'):     # if no error received from os.system (package manager), then...
                 os.system('opkg install p7zip')
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             else:
@@ -561,18 +556,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
         detecting chipset architecture
         mips32el, armv7l, armv7a-neon, armv7ahf, armv7ahf-neon, cortexa9hf-neon, cortexa15hf-neon-vfpv4, aarch64, sh4, sh_4
         '''
-        manager = 'dpkg --print-architecture' if newOE() else 'opkg print-architecture'
-        status,out = runShell(manager + ' | grep -iE "arm|mips|cortex|aarch64|sh4|sh_4"')       # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        cmd = 'dpkg --print-architecture' if os.path.exists('/etc/dpkg') else 'opkg print-architecture'
+        status,out = runShell(cmd + ' | grep -iE "arm|mips|cortex|aarch64|sh4|sh_4"')           # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             return out.lower().replace('arch ','').replace('\n',' ')    # return architectures by the Enigma package manager, like as:  'mips32el 16 mipsel 46'
         
         status,out = runShell('uname -m')
         if status == 0:
             return out.lower()                                          # return architectures from system, like as:  'mips'
-        
-        t = re.findall('isa\s*:\s*(.*)\n+', open('/proc/cpuinfo','r').read() )
-        if t:
-            return t[0].lower()                                         # return list type converted to a string value, like as:  'mips1 mips2 mips32r1'
         
         print('MYDEBUGLOGLINE - Error! Could not get information about chipset-architecture! Returning an empty string!')
         return ''
@@ -633,7 +624,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         self.onShown.append(self.rebuildConfigList)
         
-        if newOE():
+        if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):            # NewEnigma2 firmware (based on OpenDreambox) with OE 2.0 core - uses some new SKIN modules and therefore it's necessary to leave the FONT in the configList widget
             ### remove first found item "font=....itemHeght=...." from the widget "config"
             ### # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
             s = satellitesConfigScreen.skin
@@ -740,9 +731,9 @@ class piconsUpdateJobScreen(Screen):
         
         self.thStopCheckingTimer = eTimer()
         if newOE():
-            self.thStopCheckingTimer_conn = self.thStopCheckingTimer.timeout.connect(self.thStopChecking)   # eTimer for commercial versions of Enigma2 core (OE 2.5+)
+            self.thStopCheckingTimer_conn = self.thStopCheckingTimer.timeout.connect(self.thStopChecking)   # eTimer for new version of Enigma2 core (OE 2.2+)
         else:
-            self.thStopCheckingTimer.callback.append(self.thStopChecking)                                   # eTimer for free-ware versions of Enigma2 core (OE-Alliance 4.?)
+            self.thStopCheckingTimer.callback.append(self.thStopChecking)                                   # eTimer for old version of Enigma2 core  (OE 2.0 / OE-Alliance 4.? open-source core)
         self.thStopCheckingTimer.start(1000, False)
         
         #self.onShown.append(self.func_name)
@@ -764,11 +755,11 @@ class piconsUpdateJobScreen(Screen):
             self.close()
     
     def thProcess(self):
-        #### start of the thread process
+        #### start a separate thread in the background + waiting for it to finish
         boo, msg = self.mainFunc()
-        # boo = True ----------- picons updating function was ended with some error
+        # boo = True ----------- picons updating function was ended with error
         # boo = False ---------- picons updating function was ended without error
-        # msg = <type 'str'> --- returned string - as the result of the process, as warning / sucessful text (for the MessageBox purpose)
+        # msg = <type 'str'> --- returned string - as the result of the process, as warning / sucessful info message (for the MessageBox purpose)
         if boo:
             type = MessageBox.TYPE_ERROR
             if not msg:
@@ -964,7 +955,7 @@ class piconsUpdateJobScreen(Screen):
         if status == 0:
             return True
         else:
-            self.writeLogArchiveError(status, archiveFile, out)
+            self.writeLog7zipError(status, archiveFile, out)
             return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
@@ -972,7 +963,7 @@ class piconsUpdateJobScreen(Screen):
         if status == 0:
             return True
         else:
-            self.writeLogArchiveError(status, archiveFile, out)
+            self.writeLog7zipError(status, archiveFile, out)
             return False
     
     def getPiconListFromArchive(self, archiveFile):
@@ -993,10 +984,10 @@ class piconsUpdateJobScreen(Screen):
                 i -= 1
             return tmp
         else:
-            self.writeLogArchiveError(status, archiveFile, out)
+            self.writeLog7zipError(status, archiveFile, out)
         return ''         # return the empty string on any errors !
     
-    def writeLogArchiveError(self, status, archiveFile, out):
+    def writeLog7zipError(self, status, archiveFile, out):
         if status == 32512:
             self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
         elif status == 512:
@@ -1006,7 +997,8 @@ class piconsUpdateJobScreen(Screen):
     
     def writeLog(self, msg = ''):
         print(msg)
-        self['logWindow'].appendText('\n[' + str(( datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6] + '] ' + msg)
+        timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # pri operacii odcitania casu za pomoci datetime, ziskame novy objekt - datetime.timedelta(), ktory uz mozme prevadzat na sekundy s metodou .total_seconds()
+        self['logWindow'].appendText('\n[%s] %s' % (timestamp, msg))
         self['logWindow'].lastPage()
 
     #def storeVarInFile(self, fname, data):
@@ -1035,9 +1027,9 @@ def findHostnameAndNewPlugin():
         try:
             url_handle = urllib2.urlopen(url + '/src/version.txt')
         except urllib2.URLError as err:
-            print('Error: %s , while trying to fetch URL: %s' % (err.reason, url + '/src/version.txt')  )
+            print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
         except Exception as err:
-            print('Error: %s , while trying to fetch URL: %s' % (str(err),   url + '/src/version.txt')  )
+            print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
         else:
             plugin_version_online = url_handle.read().strip()
             if plugin_version_online > plugin_version_local:
@@ -1053,7 +1045,7 @@ def pluginUpdateDo():
     global plugin_version_local, plugin_version_online
     host = findHostnameAndNewPlugin()
     if host:
-        pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + ('_all.deb' if newOE() else '_all.ipk')
+        pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + ('_all.deb' if os.path.exists('/etc/dpkg') else '_all.ipk')
         dwn_url   =  host + '/released_build/' + pckg_name
         dwn_file  = '/tmp/' + pckg_name
         if downloadFile(dwn_url, dwn_file):
@@ -1080,17 +1072,17 @@ def pluginUpdateDo():
 
 
 
-def downloadFile(url, storagepath=None):
+def downloadFile(url, storagepath='', savefile=True):
     
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/74.0'}           # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
+    headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/74.0'}           # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
     
     cookie_jar = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
     urllib2.install_opener(opener)
     
-    #ctx = ssl.create_default_context()                  # urllib2 does not verify server certificate by default - but this is not true anymore for Python 2.7.9 or newer versions !
-    #ctx.check_hostname = False                          # .create_default_context() method does not work in versions earlier than Python 2.6 ! has been added since Python 2.6 and later
-    #ctx.verify_mode = ssl.CERT_NONE                     # example of use:    handler = urllib2.urlopen(req, timeout=20, context=ctx)
+    #ctx = ssl.create_default_context()                 # urllib2 does not verify server certificate by default - but this is not true anymore for Python 2.7.9 or newer versions !
+    #ctx.check_hostname = False                         # .create_default_context() method does not work in versions earlier than Python 2.6 ! has been added since Python 2.6 and later
+    #ctx.verify_mode = ssl.CERT_NONE                    # example of use:    handler = urllib2.urlopen(req, timeout=20, context=ctx)
     
     try:
         req = urllib2.Request(url, data=None, headers=headers)
@@ -1102,21 +1094,57 @@ def downloadFile(url, storagepath=None):
                     req = urllib2.Request(url, data=None, headers=headers)
                     handler = urllib2.urlopen(req, timeout=20)
                     break
-        if storagepath is None:
+        
+        if storagepath.endswith('/') or storagepath == '':
             if 'content-disposition' in handler.headers:
-                storagepath = '/tmp/' + handler.headers['content-disposition'].split('"')[1]        # get filename from html header
-            else:
-                storagepath = '/tmp/unknown_file_{:0>6}____'.format(random.randint(0,150000))
-        data = handler.read()
-        with open(storagepath, 'wb') as f:
-            f.write(data)
+                storagepath = storagepath + handler.headers['content-disposition'].split('"')[1]    # get filename from html header
+            else:    
+                storagepath = '/tmp/unknown_file_' + datetime.now().strftime('%s')                  # unix-timestamp: '/tmp/unknown_file_1586625400'
+                #storagepath = '/tmp/unknown_file_{:0>6}____'.format(random.randint(0,150000))      # random number
+        
+        if savefile:                                    # skip writting the file to disk - if it's a file test
+            data = handler.read()
+            with open(storagepath, 'wb') as f:
+                f.write(data)
+    
     except Exception as e:
         print('File download error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
         return False
+    
     except:
         return False
     
-    return True
+    if savefile:
+        return True                                     # return True, if all done (file is saved on disk, no testing purpose)
+    else:
+        return storagepath                              # return the file name - if it's a file test
+
+def newOE():
+    '''
+    return True ---- for commercial versions of Enigma2 core (OE 2.2+) - DreamElite, DreamOS, Merlin, ... etc.
+    return False --- for open-source versions of Enigma2 core (OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
+    '''
+    #return os.path.exists('/etc/dpkg')
+    try:
+        from enigma import PACKAGE_VERSION
+        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
+        if major > 4 or (major == 4 and minor >= 2):    # if major > 4 or major == 4 and minor >= 2:
+            retval = True                               #### new enigma core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.2+ ====================== (c)Dreambox core
+        else:
+            retval = False                              #### old enigma core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source core
+    except ImportError:
+        retval = False                                  #### on import error it means OE 2.0 core
+    
+    return retval
+
+def runShell(cmd):
+    try:
+        t = getstatusoutput(cmd)
+    except Exception as e:
+        t = -1 , e.message
+    except:
+        t = -1 , ''
+    return t
 
 #def runShell(cmd):
 #    try:
@@ -1128,33 +1156,12 @@ def downloadFile(url, storagepath=None):
 #    except:
 #        t = -1 , ''
 #    return t
-def runShell(cmd):
-    try:
-        t = getstatusoutput(cmd)
-    except Exception as e:
-        t = -1 , e.message
-    except:
-        t = -1 , ''
-    return t
 
-def newOE():
-    '''
-    return True ---- for commercial versions of Enigma2 core (OE 2.5+) - Dream Elite, Dream OS, Merlin, ... etc.
-    return False --- for open-source versions of Enigma2 core (OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
-    '''
-    return os.path.exists('/etc/dpkg')
-#    try:
-#        from enigma import PACKAGE_VERSION
-#        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
-#        if major > 4 or (major == 4 and minor >= 2):    #if major > 4 or major == 4 and minor >= 2:
-#            retval = True                               #### new enigma2 core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.5+ ====================== (c)Dreambox
-#        else:
-#            retval = False                              #### old enigma2 core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source
-#    except ImportError:
-#        retval = False                                  #### OE 2.0 = import error    
-#    if os.path.exists('/etc/dpkg'):
-#        retval = True
-#    return retval
+#def runShell(cmd):
+#    retCODE = os.system(cmd + ' > /tmp/redirected_output 2>&1')     # redirecting stdout and stderr to a temporary file
+#    retOUT = open('/tmp/redirected_output', 'r').read()
+#    os.remove('/tmp/redirected_output')
+#    return retCODE, retOUT
 
 
 
