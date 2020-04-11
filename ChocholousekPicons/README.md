@@ -28,17 +28,17 @@
    
    # Example:
    opkg remove enigma2-plugin-extensions-chocholousek-picons   
-   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.ipk
+   wget --proxy off --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.ipk
    opkg install /tmp/*.ipk
    ```
    
-   >- OE 2.5+ based Enigma (OpenDreambox, Merlin, DreamElite, etc.) using the **.deb** installation package:
+   >- OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the **.deb** installation package:
    ```shell
    dpkg -r <package_name>          # to uninstall package
    dpkg -i <package_name>          # to install package
 
    # Example:
    dpkg -r enigma2-plugin-extensions-chocholousek-picons
-   wget --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.deb
+   wget --proxy off --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200410_all.deb
    dpkg -i /tmp/*.deb
    ```
