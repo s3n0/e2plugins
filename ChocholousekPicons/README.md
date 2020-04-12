@@ -27,9 +27,14 @@
    opkg install <package_name>     # to install package
    
    # Example:
-   opkg remove enigma2-plugin-extensions-chocholousek-picons   
-   wget --proxy off --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200411_all.ipk https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200411_all.ipk
-   opkg install /tmp/*.ipk
+   
+   ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+   pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.ipk"
+   
+   opkg remove ${pkg:0:45}
+   wget --proxy off --no-check-certificate -O "/tmp/$pkg" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+   opkg install /tmp/$pkg
+   init 4; sleep 5; init 3         # to reboot the Enigma only
    ```
    
    >- OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the **.deb** installation package:
@@ -38,7 +43,12 @@
    dpkg -i <package_name>          # to install package
 
    # Example:
-   dpkg -r enigma2-plugin-extensions-chocholousek-picons
-   wget --proxy off --no-check-certificate -O /tmp/enigma2-plugin-extensions-chocholousek-picons_2.0.200411_all.deb https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/enigma2-plugin-extensions-chocholousek-picons_2.0.200411_all.deb
-   dpkg -i /tmp/*.deb
+   
+   ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+   pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.deb"
+   
+   dpkg -r ${pkg:0:45}
+   wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+   dpkg -i /tmp/$pkg
+   systemctl stop enigma2; sleep 5; systemctl start enigma2
    ```
