@@ -30,10 +30,10 @@
    
    ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.ipk"
-   
    opkg remove ${pkg:0:45}          # uninstall the previous version
    wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
    opkg install /tmp/$pkg
+   
    init 4; sleep 5; init 3          # fast restart
    ```
    
@@ -46,9 +46,9 @@
    
    ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.deb"
-   
    dpkg -r ${pkg:0:45}              # uninstall the previous version
    wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
    dpkg -i /tmp/$pkg
+   
    systemctl stop enigma2; sleep 5; systemctl start enigma2         # fast restart
    ```
