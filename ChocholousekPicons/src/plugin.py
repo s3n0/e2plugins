@@ -387,10 +387,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.deleteFiles(current_file)
             self.deleteFiles(PLUGIN_PATH + 'images/filmbox-premium-*.png')
             # extracting .7z archive (picon preview images):
-            status, out = runShell('%s e -y -o%s "%s" *.png' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
+            status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
                 print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % new_file[-10:-4] )
+                print('MYDEBUGLINE - \nstatus=%s\nout=%s\n' % (status, out) )
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
             elif status == 32512:
@@ -950,7 +951,7 @@ class piconsUpdateJobScreen(Screen):
     def extractCertainPiconsFromArchive(self, archiveFile, SRC_list):
         with open('/tmp/picons-to-extraction.txt', 'w') as f:
             f.write('.png\n'.join(SRC_list) + '.png\n')
-        status, out = runShell('%s e -y -o%s "%s" @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile)  )
+        status, out = runShell('%s e -y -o"%s" "%s" @/tmp/picons-to-extraction.txt' % (self.bin7zip, self.piconDIR, archiveFile)  )
         os.remove('/tmp/picons-to-extraction.txt')
         if status == 0:
             return True
@@ -959,7 +960,7 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
-        status, out = runShell('%s e -y -o%s "%s" *.png' % (self.bin7zip, self.piconDIR, archiveFile) )
+        status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, self.piconDIR, archiveFile) )
         if status == 0:
             return True
         else:
