@@ -19,38 +19,38 @@
    >    1. Download and install 7-zip via the package manager (i.e. attempt to install 7-zip from your Enigma feed server)
    >    2. Attempt to download a standalone `7za` binary file from the internet
 
-### **How to un/install:**
+### **How to un/install (via Shell):**
 
-   >- OE 2.0 / OE Alliance Core 4.x based Enigma (ATV, PLi, VTi, etc.) using the **.ipk** installation package:
+   >- **OE 2.0 / OE Alliance Core 4.x based Enigma (ATV, PLi, VTi, etc.) using the ".ipk" installation package:**
    ```shell
    # Example:
    opkg remove <package_name>       # to uninstall package
    opkg install <package_name>      # to install package
    
-   # Download latest version (.ipk package):
+   ### Download latest version (.ipk package):
    ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.ipk"
    wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
-   # Re-install:
+   ### Re-install:
    opkg remove ${pkg:0:45}
    opkg install /tmp/$pkg
-   # Fast restart:
+   ### Fast restart:
    init 4; sleep 5; init 3
    ```
    
-   >- OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the **.deb** installation package:
+   >- **OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the ".deb" installation package:**
    ```shell
    # Example:
    dpkg -r <package_name>           # to uninstall package
    dpkg -i <package_name>           # to install package
 
-   # Download latest version (.deb package):
+   ### Download latest version (.deb package):
    ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.deb"
    wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
-   # Re-install:
+   ### Re-install:
    dpkg -r ${pkg:0:45}
    dpkg -i /tmp/$pkg
-   # Fast restart:
+   ### Fast restart:
    systemctl stop enigma2; sleep 5; systemctl start enigma2
    ```
