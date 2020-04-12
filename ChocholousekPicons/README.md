@@ -34,7 +34,7 @@
    opkg remove ${pkg:0:45}
    wget --proxy off --no-check-certificate -O "/tmp/$pkg" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
    opkg install /tmp/$pkg
-   init 4; sleep 5; init 3         # to reboot the Enigma only
+   init 4; sleep 5; init 3         # fast restart
    ```
    
    >- OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the **.deb** installation package:
@@ -50,5 +50,5 @@
    dpkg -r ${pkg:0:45}
    wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
    dpkg -i /tmp/$pkg
-   systemctl stop enigma2; sleep 5; systemctl start enigma2
+   systemctl stop enigma2; sleep 5; systemctl start enigma2         # fast restart
    ```
