@@ -23,32 +23,34 @@
 
    >- OE 2.0 / OE Alliance Core 4.x based Enigma (ATV, PLi, VTi, etc.) using the **.ipk** installation package:
    ```shell
+   # Example:
    opkg remove <package_name>       # to uninstall package
    opkg install <package_name>      # to install package
    
-   # Example:
-   
+   # Download latest version (.ipk package):
    ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.ipk"
-   opkg remove ${pkg:0:45}          # uninstall the previous version
    wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+   # Re-install:
+   opkg remove ${pkg:0:45}
    opkg install /tmp/$pkg
-   
-   init 4; sleep 5; init 3          # fast restart
+   # Fast restart:
+   init 4; sleep 5; init 3
    ```
    
    >- OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the **.deb** installation package:
    ```shell
+   # Example:
    dpkg -r <package_name>           # to uninstall package
    dpkg -i <package_name>           # to install package
 
-   # Example:
-   
+   # Download latest version (.deb package):
    ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.deb"
-   dpkg -r ${pkg:0:45}              # uninstall the previous version
    wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+   # Re-install:
+   dpkg -r ${pkg:0:45}
    dpkg -i /tmp/$pkg
-   
-   systemctl stop enigma2; sleep 5; systemctl start enigma2         # fast restart
+   # Fast restart:
+   systemctl stop enigma2; sleep 5; systemctl start enigma2
    ```
