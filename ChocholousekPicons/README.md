@@ -32,7 +32,7 @@
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.ipk"
    
    opkg remove ${pkg:0:45}
-   wget --proxy off --no-check-certificate -O "/tmp/$pkg" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+   wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
    opkg install /tmp/$pkg
    init 4; sleep 5; init 3         # fast restart
    ```
