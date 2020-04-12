@@ -85,10 +85,12 @@ Changed Enigma core detection method - instead of detecting the Enigma core vers
 Added Russian language.
 
 2.0.200411
-Updated Lithuanian language (by @Adga)
-Minor improvements (added a method for detecting dpkg and opkg package managers, reverting the previous Enigma core detection algorithm - again the detection of new cores is based on OE version numbers)
-Trying to run the plugin also on the old, complicated Enigma distribution and that is: 
+Updated Lithuanian language (by @Adga).
+Minor improvements (added a method for detecting dpkg and opkg package managers, reverting the previous Enigma core detection algorithm - again the detection of new cores is based on OE version numbers).
+Trying to run the plugin also on the old, complicated Enigma distribution and that is:
  - NewEnigma2 (OpenDreambox) firmware / OE2.0 core / opkg manager / Python 2.7.2 (deadly combination = big problems) / DM800se device ...but problems still persist with Thread and access to e2-configuration
 Detecting a new version of preview picons as well as detecting new Chocholousek content is triggered by the same algorithm as downloading picons, i.e. there is an improved algorithm for downloading files from drive.google (virus warning message and endless SSL issues).
 
+2.0.200412
+Fixed a problem on image DreamboxOS 4.3.2 / core OE 2.5 with a 7-zip archiver problem that did not extract files due to a malfunctioning wildcard convention "*.png". Thanks to @mjozef.
 
