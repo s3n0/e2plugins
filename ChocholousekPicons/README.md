@@ -28,11 +28,11 @@
    opkg install <package_name>      # to install package
    
    ### Download latest version (.ipk package):
-   ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+   ver="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.ipk"
-   wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+   [ -z "$ver" ] || wget -O "/tmp/${pkg}" --proxy off --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
    ### Re-install:
-   opkg remove ${pkg:0:45}
+   opkg remove ${pkg%%_*}
    opkg install /tmp/$pkg
    ### Fast restart:
    init 4; sleep 5; init 3
@@ -45,11 +45,11 @@
    dpkg -i <package_name>           # to install package
 
    ### Download latest version (.deb package):
-   ver="$(wget --proxy off --no-check-certificate -O - https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+   ver="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
    pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.deb"
-   wget --proxy off --no-check-certificate -O "/tmp/${pkg}" "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+   [ -z "$ver" ] || wget -O "/tmp/${pkg}" --proxy off --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
    ### Re-install:
-   dpkg -r ${pkg:0:45}
+   dpkg -r ${pkg%%_*}
    dpkg -i /tmp/$pkg
    ### Fast restart:
    systemctl stop enigma2; sleep 5; systemctl start enigma2
