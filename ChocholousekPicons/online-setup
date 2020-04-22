@@ -1,35 +1,32 @@
 #!/bin/bash
 
-[ -z "$1" ] && { echo "Error ! No argument found !"; exit 1; }
+[ -z "$1" ] && { echo "Error ! No 'install|uninstall' argument found !"; exit 1; }
+
+PKGNAME="enigma2-plugin-extensions-chocholousek-picons"
 
 case "$1" in
     install)
-        # retrieve the online version number
-        ver="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
-        pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.$([ -d /etc/dpkg ] && echo -n 'deb' || echo -n 'ipk')"
-        # check the variable and download
-        if [ -z "$ver" ]; then
-            echo "Error ! The online version was not recognized !"
-            exit 1
-        else
-            # download the latest version from internet
-            wget -O "/tmp/${pkg}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
-        fi
+        # retrieve the online version number and download file
+        VER="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+        [ -z "$VER" ] && { echo "Error ! The online version was not recognized !"; exit 1; }
+        # download the latest version from internet
+        FNAME="${PKGNAME}_${VER}_all.$([ -d /etc/dpkg ] && echo -n 'deb' || echo -n 'ipk')"
+        wget -qO "/tmp/${FNAME}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${FNAME}" || { echo "Error ! File download failed !"; exit 1; }
         # re-install
         if [ -d /etc/dpkg ]; then
-            dpkg -r ${pkg%%_*}
-            dpkg -i /tmp/$pkg
+            dpkg -r $PKGNAME                # dpkg -r ${FNAME%%_*}
+            dpkg -i /tmp/$FNAME
         else
-            opkg remove ${pkg%%_*}
-            opkg install /tmp/$pkg
+            opkg remove $PKGNAME            # opkg remove ${FNAME%%_*}
+            opkg install /tmp/$FNAME
         fi
-        rm -f "/tmp/${pkg}"
+        rm -f "/tmp/${FNAME}"
         ;;
     uninstall)
         if [ -d /etc/dpkg ]; then
-            dpkg -r enigma2-plugin-extensions-chocholousek-picons
+            dpkg -r $PKGNAME
         else
-            opkg remove enigma2-plugin-extensions-chocholousek-picons
+            opkg remove $PKGNAME
         fi
         rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
         ;;
