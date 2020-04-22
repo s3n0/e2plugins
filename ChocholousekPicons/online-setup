@@ -1,0 +1,48 @@
+#!/bin/bash
+
+[ -z "$1" ] && { echo "Error ! No argument found !"; exit 1; }
+
+case "$1" in
+    install)
+        # retrieve the online version number
+        ver="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+        pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.$([ -d /etc/dpkg ] && echo -n 'deb' || echo -n 'ipk')"
+        # check the variable and download
+        if [ -z "$ver" ]; then
+            echo "Error ! The online version was not recognized !"
+            exit 1
+        else
+            # download the latest version from internet
+            wget -O "/tmp/${pkg}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+        fi
+        # re-install
+        if [ -d /etc/dpkg ]; then
+            dpkg -r ${pkg%%_*}
+            dpkg -i /tmp/$pkg
+        else
+            opkg remove ${pkg%%_*}
+            opkg install /tmp/$pkg
+        fi
+        rm -f "/tmp/${pkg}"
+        ;;
+    uninstall)
+        if [ -d /etc/dpkg ]; then
+            dpkg -r enigma2-plugin-extensions-chocholousek-picons
+        else
+            opkg remove enigma2-plugin-extensions-chocholousek-picons
+        fi
+        rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
+# enigma2 fast restart
+if [ -d /etc/dpkg ]; then
+    systemctl stop enigma2; sleep 5; systemctl start enigma2
+else
+    init 4; sleep 5; init 3
+fi
+
+exit 0
