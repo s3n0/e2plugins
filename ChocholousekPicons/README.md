@@ -21,7 +21,7 @@
 
 ### **How to un/install (via Shell):**
 
-   >- **Automated setup for .ipk / .deb package using the shell script:**
+   >- **Automated un-installer for .ipk / .deb packages using an online shell script:**
    ```shell
    # Download and install the latest version (.deb / .ipk):
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
