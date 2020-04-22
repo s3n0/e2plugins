@@ -39,6 +39,7 @@
    ```shell
    # Download and install the latest version (.deb and .ipk):
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
+   
    # Uninstall (.deb and .ipk):
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
