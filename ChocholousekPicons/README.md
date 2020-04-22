@@ -26,11 +26,6 @@
    # Example:
    opkg remove <package_name>       # to uninstall package
    opkg install <package_name>      # to install package
-   
-   # Download and install the latest version (.ipk):
-   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s ipk install
-   # Uninstall (.ipk):
-   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s ipk uninstall
    ```
    
    >- **OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the ".deb" installation package:**
