@@ -21,6 +21,15 @@
 
 ### **How to un/install (via Shell):**
 
+   >- **Automated setup for .ipk / .deb package using the shell script:**
+   ```shell
+   # Download and install the latest version (.deb / .ipk):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
+   
+   # Uninstall (.deb / .ipk):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
+   ```
+
    >- **OE 2.0 / OE Alliance Core 4.x based Enigma (ATV, PLi, VTi, etc.) using the ".ipk" installation package:**
    ```shell
    # Example:
@@ -33,13 +42,4 @@
    # Example:
    dpkg -r <package_name>           # to uninstall package
    dpkg -i <package_name>           # to install package
-   ```
-
-   >- **Automated setup for .ipk / .deb package using the shell script:**
-   ```shell
-   # Download and install the latest version (.deb / .ipk):
-   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
-   
-   # Uninstall (.deb / .ipk):
-   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
