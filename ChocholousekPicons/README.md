@@ -35,11 +35,11 @@
    dpkg -i <package_name>           # to install package
    ```
 
-   >- **Automated setup for .ipk / .deb packages using the shell script:**
+   >- **Automated setup for .ipk / .deb package using the shell script:**
    ```shell
-   # Download and install the latest version (.deb and .ipk):
+   # Download and install the latest version (.deb / .ipk):
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
    
-   # Uninstall (.deb and .ipk):
+   # Uninstall (.deb / .ipk):
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
