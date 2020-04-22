@@ -32,14 +32,12 @@
 
    >- **OE 2.0 / OE Alliance Core 4.x based Enigma (ATV, PLi, VTi, etc.) using the ".ipk" installation package:**
    ```shell
-   # Example:
    opkg remove <package_name>       # to uninstall package
    opkg install <package_name>      # to install package
    ```
    
    >- **OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the ".deb" installation package:**
    ```shell
-   # Example:
    dpkg -r <package_name>           # to uninstall package
    dpkg -i <package_name>           # to install package
    ```
