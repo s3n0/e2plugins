@@ -35,11 +35,11 @@ case "$1" in
         ;;
 esac
 
-# enigma2 fast restart
+# enigma2 fast restart + delete all ChocholousekPicons settings (plugin configuration)
 if [ -d /etc/dpkg ]; then
-    systemctl stop enigma2; sleep 5; systemctl start enigma2
+    systemctl stop enigma2; sleep 5; sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings; systemctl start enigma2
 else
-    init 4; sleep 5; init 3
+    init 4; sleep 5; sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings; init 3
 fi
 
 exit 0
