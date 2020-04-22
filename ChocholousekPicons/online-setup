@@ -2,6 +2,8 @@
 
 [ -z "$1" ] || [ -z "$2" ] && { echo "Error - arguments are missing !"; exit 1; }
 
+echo "$0 $1 $2"
+
 case "$2" in
     install)
         # retrieve the online version number
