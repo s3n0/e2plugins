@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -z "$1" ] || [ -z "$2" ] || { echo "Error - arguments are missing !"; exit 1; }
+[ -z "$1" ] || [ -z "$2" ] && { echo "Error - arguments are missing !"; exit 1; }
 
 case "$2" in
     install)
