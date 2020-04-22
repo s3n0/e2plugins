@@ -1,0 +1,42 @@
+#!/bin/bash
+
+[ -z "$1" ] || [ -z "$2" ] || { echo "Error - arguments are missing !"; exit 1; }
+
+case "$2" in
+    install)
+        # retrieve the online version number
+        ver="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+        pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.${1}"
+        # download latest version ($1 parameter = ipk/deb package):
+        [ -z "$ver" ] || wget -O "/tmp/${pkg}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
+        # re-install
+        if [ "$1" = "ipk" ]; then
+            opkg remove ${pkg%%_*}
+            opkg install /tmp/$pkg
+        else
+            dpkg -r ${pkg%%_*}
+            dpkg -i /tmp/$pkg
+        fi
+        ;;
+    uninstall)
+        if [ "$1" = "ipk" ]; then
+            opkg remove enigma2-plugin-extensions-chocholousek-picons
+            rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
+        else
+            dpkg -r enigma2-plugin-extensions-chocholousek-picons
+            rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
+        fi
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
+# enigma2 fast restart
+if [ "$1" = "ipk" ]; then
+    init 4; sleep 5; init 3
+else
+    systemctl stop enigma2; sleep 5; systemctl start enigma2
+fi
+
+exit 0
