@@ -38,9 +38,12 @@
    # Example:
    dpkg -r <package_name>           # to uninstall package
    dpkg -i <package_name>           # to install package
+   ```
 
-   # Download and install the latest version (.deb):
-   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s deb install
-   # Uninstall (.deb):
-   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s deb uninstall
+   >- **Automated setup for .ipk / .deb packages using the shell script:**
+   ```shell
+   # Download and install the latest version (.deb and .ipk):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
+   # Uninstall (.deb and .ipk):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
