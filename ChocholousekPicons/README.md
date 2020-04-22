@@ -27,15 +27,10 @@
    opkg remove <package_name>       # to uninstall package
    opkg install <package_name>      # to install package
    
-   ### Download latest version (.ipk package):
-   ver="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
-   pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.ipk"
-   [ -z "$ver" ] || wget -O "/tmp/${pkg}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"; }
-   ### Re-install:
-   opkg remove ${pkg%%_*}
-   opkg install /tmp/$pkg
-   ### Fast restart:
-   init 4; sleep 5; init 3
+   # Download and install the latest version (.ipk):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s ipk install
+   # Uninstall (.ipk):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s ipk uninstall
    ```
    
    >- **OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the ".deb" installation package:**
@@ -44,13 +39,8 @@
    dpkg -r <package_name>           # to uninstall package
    dpkg -i <package_name>           # to install package
 
-   ### Download latest version (.deb package):
-   ver="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
-   pkg="enigma2-plugin-extensions-chocholousek-picons_${ver}_all.deb"
-   [ -z "$ver" ] || wget -O "/tmp/${pkg}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${pkg}"
-   ### Re-install:
-   dpkg -r ${pkg%%_*}
-   dpkg -i /tmp/$pkg
-   ### Fast restart:
-   systemctl stop enigma2; sleep 5; systemctl start enigma2
+   # Download and install the latest version (.deb):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s deb install
+   # Uninstall (.deb):
+   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s deb uninstall
    ```
