@@ -43,8 +43,8 @@ from datetime import datetime
 from time import sleep
 ###########################################################################
 from enigma import ePicLoad, eActionMap, eTimer, eEnv, getDesktop
-sizemaxY = getDesktop(0).size().height()
-sizemaxX = getDesktop(0).size().width()
+desktopY = getDesktop(0).size().height()
+desktopX = getDesktop(0).size().width()
 ###########################################################################
 from Plugins.Extensions.ChocholousekPicons import _, PLUGIN_PATH            # from . import _, PLUGIN_PATH
 ###########################################################################
@@ -72,7 +72,7 @@ config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
         )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
 for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
     if glob.glob(picdir[0] + '/*.png'):
-        config.plugins.chocholousekpicons.picon_folder.default = picdir[0]      # change the default picon directory (on the first plugin start) if some picons (.PNG files) was found in some folder
+        config.plugins.chocholousekpicons.picon_folder.default = picdir[0]   # change the default picon directory (on the first plugin start) if some picons (.PNG files) was found in some folder
         break
 
 config.plugins.chocholousekpicons.picon_folder_user = ConfigText(default = '/', fixed_size = False)
@@ -131,14 +131,14 @@ plugin_version_online = '0.0.000000'
 
 class mainConfigScreen(Screen, ConfigListScreen):
     
-    if sizemaxX > 1900:    # Full-HD or higher
+    if desktopX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="1200,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
-            <widget name="config"       position="center,100"    size="1100,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
-
             <widget name="version_txt"  position="0,0"           size="1200,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="author_txt"   position="0,60"          size="1200,40"  font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+
+            <widget name="config"       position="50,100"        size="1100,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
             <widget name="previewImage" position="100,390"       size="500,300"  zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
@@ -156,10 +156,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="850,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
-            <widget name="config"       position="center,70"     size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
-
             <widget name="version_txt"  position="0,0"           size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="author_txt"   position="0,40"          size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+
+            <widget name="config"       position="25,70"         size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
             <widget name="previewImage" position="70,225" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
@@ -213,9 +213,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.bin7zip = None                     # path to directory with '7z' or '7za' executable binary file
         self.chochoContent = None               # content of the file "id_for_permalinks*.log" - downloaded from google.drive
         
-        if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):            # NewEnigma2 (based on OpenDreambox) firmware with OE 2.0 core - uses some new SKIN modules, therefore it's necessary to leave the FONT in the configList widget
-            i = mainConfigScreen.skin.index('font=')
-            self.skin = mainConfigScreen.skin[:i] + mainConfigScreen.skin[i+34:]                        # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
+        if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):        # the NewNigma2 firmware (nn2-feed.conf), based on OpenDreambox, with updated OE 2.0 core - uses some new SKIN modules and therefore it's necessary to leave the FONT in the configList widget!
+            i = mainConfigScreen.skin.index('font=', mainConfigScreen.skin.index('name="config"'))
+            self.skin = mainConfigScreen.skin[:i] + mainConfigScreen.skin[i+34:]                        ### ConfigListScreen / ConfigScreen / widget name="config" - under OE 2.2+ unfortunately the font style is configured with a new method and the original font attribute in OE 2.2+ is considered as error
         else:
             self.skin = mainConfigScreen.skin
             
@@ -249,7 +249,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         listWidth = self['config'].l.getItemSize().width()
         self['config'].list = self.list
-        self['config'].l.setSeperation(listWidth / 3)                       # fix the size of seperator in some new SKINs (for example in OE2.5)
+        self['config'].l.setSeperation(listWidth / 3)                       # fix the size of seperator in some new SKINs (for example in OE 2.5)
         self["config"].l.setList(self.list)
         
         #self['config'].list = self.list
@@ -329,6 +329,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         else:
             for x in self['config'].list:
                 x[1].cancel()
+            config.plugins.chocholousekpicons.sats.cancel()
         self.close()
     
     def changedEntry(self):
@@ -391,7 +392,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
                 print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % new_file[-10:-4] )
-                print('MYDEBUGLINE - \nstatus=%s\nout=%s\n' % (status, out) )
+                print('MYDEBUGLOGLINE - \nstatus=%s\nout=%s\n' % (status, out) )
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
             elif status == 32512:
@@ -536,9 +537,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 else:
                     fname = 'ERROR_-_UNKNOWN_CHIPSET_ARCHITECTURE'
                 #if not os.system('wget -q --no-check-certificate -O /usr/bin/7za "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s" > /dev/null 2>&1' % fname) \ # if no error received from os.system, then... \
-                if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  \
-                or downloadFile('http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  \
-                or downloadFile('http://aion.webz.cz/ChocholousekPicons/7za/%s' % fname, '/usr/bin/7za')  :
+                if downloadFile('https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/7za/' + fname, '/usr/bin/7za')  \
+                or downloadFile('http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons/7za/' + fname, '/usr/bin/7za')  \
+                or downloadFile('http://aion.webz.cz/ChocholousekPicons/7za/' + fname, '/usr/bin/7za') :
                     os.system('chmod a+x /usr/bin/7za')
                     if os.system('/usr/bin/7za'):               # let's try to execute the binary file cleanly ... if the error number from the 7za executed binary file is not equal to zero, then...
                         os.remove('/usr/bin/7za')               # remove the binary file (because of an incorect binary file for the chipset architecture !)
@@ -579,23 +580,27 @@ class mainConfigScreen(Screen, ConfigListScreen):
 
 class satellitesConfigScreen(Screen, ConfigListScreen):
     
-    if sizemaxX > 1900:    # Full-HD or higher
+    if desktopX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="config"    position="center,120" size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
-            <widget name="title_txt" position="center,40"  size="350,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
+            <widget name="title_txt"          position="0,0"           size="450,110" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="config"             position="50,110"        size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <widget  render="Label" source="txt_green"       position="65,854" size="250,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <ePixmap pixmap="skin_default/buttons/red.png"   position="260,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <widget  render="Label" source="txt_red"         position="300,854" size="250,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="350,600" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="config"    position="center,70" size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
-            <widget name="title_txt" position="center,20" size="300,40"  font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="top" />
+            <widget name="title_txt"          position="0,0"           size="350,070" font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="config"             position="25,70"         size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             
             <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <widget  render="Label" source="txt_green"       position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <ePixmap pixmap="skin_default/buttons/red.png"   position="190,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <widget  render="Label" source="txt_red"         position="220,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     
     def __init__(self, session, allSat):
@@ -614,61 +619,80 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         self['title_txt'] = Label(_('Select satellites:'))
         self['txt_green'] = StaticText(_('Apply'))
+        self['txt_red']   = StaticText(_('Cancel'))
 
         self['actions'] = ActionMap( ['ColorActions', 'DirectionActions', 'OkCancelActions'] ,
         {
-                'left'  : self.keyToPageUp,
-                'right' : self.keyToPageDown,
-                'ok'    : self.keyToOk,
-                'green' : self.keyToExit
+                'left'  : self.keyToLeft,
+                'right' : self.keyToRight,
+                'cancel': self.keyToExit,
+                'ok'    : self.keyToExit,
+                'green' : self.keyToGreen,
+                'red'   : self.keyToRed
         }, -2)
+        
+        self.satsBackedUp = config.plugins.chocholousekpicons.sats.getValue()
         
         self.onShown.append(self.rebuildConfigList)
         
-        if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):            # NewEnigma2 firmware (based on OpenDreambox) with OE 2.0 core - uses some new SKIN modules and therefore it's necessary to leave the FONT in the configList widget
-            ### remove first found item "font=....itemHeght=...." from the widget "config"
-            ### # ConfigListScreen/ConfigScreen (widget "config") - under OE2.5 unfortunately the font style is configured with a new method and the original font attribute in OE2.5 is considered as error
+        if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):        # the NewNigma2 firmware (nn2-feed.conf) based on OpenDreambox, with updated OE 2.0 core, uses a new SKIN modules and therefore it's necessary to leave the FONT in the configList widget!
+            
             s = satellitesConfigScreen.skin
-            i = s.index('font')
-            s = s[:i] + s[i+34:]
-            ### increase width of the Screen layer and width of the "config" widget (for differences in the Screen layer of the OpenDreambox Enigma - OE2.5)
-            i = s.index('size')                     # first match is the size of main Screen frame
-            y = s[i+10 : i+13]
-            s = s[:i] + 'size="' + y + s[i+9:]
-            i = s.index('size', i+20)               # second match is the size of widget "config"
-            y = s[i+10 : i+13]
-            s = s[:i] + 'size="' + y + s[i+9:]
-            #i = s.index('size', i+20)              # third match is the size of my own title for window Screen
-            #y = s[i+10 : i+13]
-            #s = s[:i] + 'size="' + y + s[i+9:]
+            
+            ### ConfigListScreen / ConfigScreen / widget name="config" - under OE 2.2+ unfortunately the font style is configured with a new method and the original font attribute in OE 2.2+ is considered as error
+            i = s.index('font=', s.index('name="config"'))
+            s = s[:i] + s[i+34:]                                # remove found item "font=....itemHeight=...." from the widget "config"
+            
+            ### due to the limitation of the minimum width of some ConfigListScreen in the new OE2.5+ cores, I have to increase the layer width
+            ### I will use the height value, and replace the width value with height (size=x,y will then contains the same value)
+            i = s.index('size=')                                # first match found is the size of main Screen layer
+            y1 = s[i+10 : i+13]
+            s = s[:i] + 'size="' + y1 + s[i+9:]
+            
+            i = s.index('size=', s.index('name="title_txt"'))   # second match is the size of widget "title_txt", but the width value is the same as previous value
+            s = s[:i] + 'size="' + y1 + s[i+9:]
+            
+            i = s.index('size=', s.index('name="config"'))      # another match is the size of widget "config" (replace the value of heigth ---to--> width)
+            y2 = s[i+10 : i+13]
+            s = s[:i] + 'size="' + y2 + s[i+9:]
+            
+            x = str( (int(y1) - int(y2))  /  2 )
+            i = s.index('position=', s.index('name="config"'))  # and also change the widget relative horizontal position ("center,0" does not work under NewNigma2 image, so I need use a relative horizontal position, instead of the "center" position for all widgets)
+            s = s[:i+10] + x + s[i+12:]
+            
             self.skin = s
         else:
             self.skin = satellitesConfigScreen.skin
     
-    def keyToOk(self):
-        self.switchSelectedSat()
+    def keyToRight(self):
+        self.switchSelectedSat(True)
         self.changedEntry()
     
-    def keyToPageUp(self):
-        self['config'].pageUp()                             # self["config"].pageUp (.pageDown) cannot be called directly from ["actions"] because the BlackHole Enigma does not allow this, so there is another function on the left/right buttons to call .pageUp / .pageDown
-        
-    def keyToPageDown(self):
-        self['config'].pageDown()                           # self["config"].pageUp (.pageDown) cannot be called directly from ["actions"] because the BlackHole Enigma does not allow this, so there is another function on the left/right buttons to call .pageUp / .pageDown
+    def keyToLeft(self):
+        self.switchSelectedSat(False)
+        self.changedEntry()
     
-    def switchSelectedSat(self):
-        sel = self['config'].getCurrent()[0]                                # example:  '23.5E 19.2E 13.0E'            ...another example:   '13.0E'
-        sats = config.plugins.chocholousekpicons.sats.getValue().split()    # example:  ['23.5E', '19.2E', '13.0E']    ...another example:   ['13.0E']
-        sats.remove(sel) if sel in sats else sats.append(sel)
+    def switchSelectedSat(self, boo):
+        sel = self['config'].getCurrent()[0]                                # retrieve example:   '23.5E 19.2E 13.0E'             ... or another example:   '13.0E'
+        sats = config.plugins.chocholousekpicons.sats.getValue().split()    # result   example:   ['23.5E', '19.2E', '13.0E']     ... or another example:   ['13.0E']
+        if boo:
+            if sel not in sats:
+                 sats.append(sel)
+        else:
+            if sel in sats:
+                sats.remove(sel)
         config.plugins.chocholousekpicons.sats.setValue(' '.join(sats))     # set the new value as the string (converted from a list variable)
     
     def changedEntry(self):
         for x in self.onChangedEntry:
             x()
-        self['txt_green'].setText(_('Apply') + '*')
+        if self.satsBackedUp == config.plugins.chocholousekpicons.sats.getValue():
+            self['txt_green'].setText(_('Apply'))
+        else:
+            self['txt_green'].setText(_('Apply') + '*')
         self.rebuildConfigList()
-
+    
     def rebuildConfigList(self):
-        
         self.list = []
         for sat in self.allSat:
             self.list.append(getConfigListEntry(sat, NoSave(ConfigYesNo( default = sat in config.plugins.chocholousekpicons.sats.getValue().split() ))))
@@ -681,12 +705,28 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         #self['config'].list = self.list
         #self['config'].setList(self.list)
     
-    def keyToExit(self):
-        s = self['txt_green'].getText()
-        if s[-1:] == '*':                       # plugin configuration changed ... ?
-            self.close(True)
+    def keyToGreen(self):
+        if self.satsBackedUp == config.plugins.chocholousekpicons.sats.getValue():
+            self.close(False)       # satellites configuration is not changed
         else:
-            self.close(False)
+            self.close(True)        # satellites configuration is changed
+    
+    def keyToRed(self):
+        config.plugins.chocholousekpicons.sats.setValue(self.satsBackedUp)  # restore the previous satellites settings from the backed-up variable
+        self.close(False)
+    
+    def keyToExit(self):
+        if self['txt_green'].getText().endswith('*'):                       # satellites configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings
+            message = _("You have changed the selection of satellites.\nApply these changes ?")
+            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
+        else:
+            self.exitWithConditionalSave(False)
+    
+    def exitWithConditionalSave(self, result):
+        if result:
+            self.keyToGreen()
+        else:
+            self.keyToRed()
 
 
 
@@ -697,22 +737,39 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
 
 class piconsUpdateJobScreen(Screen):
-
+    
+    border = 50 if desktopX > 1900 else 30
+    outerFrameSizeX = desktopX - border*2
+    outerFrameSizeY = desktopY - border*2
+    innerFrameSizeX = outerFrameSizeX - border*2
+    innerFrameSizeY = outerFrameSizeY - border*2
+    innerFramePositionX = border
+    innerFramePositionY = border
+    fontSize = 28 if desktopX > 1900 else 20
+    
     skin = '''
-        <screen name="piconsUpdateJobScreen" position="center,center" size="''' + str(sizemaxX - 80) + ',' + str(sizemaxY - 80) + '''" title="picons update in progress" flags="wfNoBorder" backgroundColor="#22000000">
-            <widget name="logWindow" position="center,center" size="''' + str(sizemaxX - 180) + ',' + str(sizemaxY - 180) + '''" font="Regular;''' + (str(28) if sizemaxX > 1900 else str(20)) + '''" transparent="0" foregroundColor="white" backgroundColor="#11330000" zPosition="1" />
-        </screen>'''
-
+        <screen name="piconsUpdateJobScreen" position="center,center" size="{},{}" title="picons update in progress" flags="wfNoBorder" backgroundColor="#22000000">
+            <widget name="logWindow" position="{},{}" size="{},{}" font="Regular;{}" transparent="0" foregroundColor="white" backgroundColor="#11330000" zPosition="1" />
+        </screen>
+        '''.format( outerFrameSizeX,outerFrameSizeY  ,  innerFramePositionX,innerFramePositionY  ,  innerFrameSizeX,innerFrameSizeY  ,  fontSize )
+    
     def __init__(self, session, chochoContent, bin7zip):
-
+        
         self.chochoContent = chochoContent
         self.bin7zip = bin7zip
-
+        
         Screen.__init__(self, session)
         #self.session = session          # this is not necessary, this is done already during class initialization - Screen.__init__
-
-        self['logWindow'] = ScrollLabel('LOG:\n')
+                
+        self.logWindowText = 'LOG:\n'
+        self['logWindow'] = ScrollLabel(self.logWindowText)
         self['logWindow'].scrollbarmode = "showOnDemand"
+        self.logWindowTimer = eTimer()
+        if newOE():
+            self.logWindowTimer_conn = self.logWindowTimer.timeout.connect(self.logWindowUpdate)
+        else:
+            self.logWindowTimer.callback.append(self.logWindowUpdate)
+        self.logWindowTimer.start(500, False)
         
         self['actions'] = ActionMap( ['DirectionActions'] ,
         {
@@ -720,7 +777,7 @@ class piconsUpdateJobScreen(Screen):
                 'left'  :  self['logWindow'].pageUp,
                 'down'  :  self['logWindow'].pageDown,
                 'right' :  self['logWindow'].pageDown
-        }, -1)
+        }, -2)
         
         self.piconUpdateReturn = _('No operation ! Picon update failed !'), MessageBox.TYPE_ERROR           # error boolean, error message
         self.piconCounters = {'added' : 0, 'changed' : 0, 'removed' : 0}
@@ -730,33 +787,20 @@ class piconsUpdateJobScreen(Screen):
         self.th.daemon = True
         self.th.start()
         
+        # it is necessary to run a thread completion test cycle (the cycle is timed to run every second):
         self.thStopCheckingTimer = eTimer()
         if newOE():
             self.thStopCheckingTimer_conn = self.thStopCheckingTimer.timeout.connect(self.thStopChecking)   # eTimer for new version of Enigma2 core (OE 2.2+)
         else:
-            self.thStopCheckingTimer.callback.append(self.thStopChecking)                                   # eTimer for old version of Enigma2 core  (OE 2.0 / OE-Alliance 4.? open-source core)
+            self.thStopCheckingTimer.callback.append(self.thStopChecking)                                   # eTimer for old version of Enigma2 core (OE 2.0 / OE-Alliance 4.? open-source core)
         self.thStopCheckingTimer.start(1000, False)
         
         #self.onShown.append(self.func_name)
         #self.onLayoutFinish.append(self.func_name)
         #self.onClose.append(self.func_name)
     
-    def thStopChecking(self):
-        if not self.th.is_alive():
-            self.thStopCheckingTimer.stop()
-            self.th.join()                                      # close the finished "th" thread
-            msg, type = self.piconUpdateReturn
-            self.writeLog(msg)
-            if type == MessageBox.TYPE_ERROR:
-                sleep(8)
-            else:
-                sleep(4)
-            self['logWindow'].hide()                            # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
-            self.session.open(MessageBox, msg, type)            
-            self.close()
-    
     def thProcess(self):
-        #### start a separate thread in the background + waiting for it to finish
+        #### start a separate thread in the background + WAITING for it to finish
         boo, msg = self.mainFunc()
         # boo = True ----------- picons updating function was ended with error
         # boo = False ---------- picons updating function was ended without error
@@ -772,7 +816,32 @@ class piconsUpdateJobScreen(Screen):
         self.piconUpdateReturn = msg, type
         #### end of the thread process
     
-    def mainFunc(self):        
+    def thStopChecking(self):
+        if not self.th.is_alive():
+            self.logWindowTimer.stop()
+            self.thStopCheckingTimer.stop()                     # if self.thStopCheckingTimer.isActive(): .....
+            self.th.join()                                      # close the finished "th" thread
+            msg, type = self.piconUpdateReturn
+            self.writeLog(msg)
+            if type == MessageBox.TYPE_ERROR:
+                sleep(8)
+            else:
+                sleep(4)
+            self['logWindow'].hide()                            # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
+            self.session.open(MessageBox, msg, type)            
+            self.close()
+    
+    def logWindowUpdate(self):
+        if len(self.logWindowText) != len(self['logWindow'].getText()):
+            self['logWindow'].setText(self.logWindowText)
+            #self['logWindow'].appendText('')
+            self['logWindow'].lastPage()
+        # A note regarding to NewNigma2 with OE2.0 core :
+        # ScrollLabel as the GUI Component uses a eTimer for each refresh of its content, which causes the system to crash --- FATAL!: addTimer must be called from thread 3261 but is called from thread 3680
+        # ScrollLabel uses eTimer as one of the GUI components to update its content ... if we invoke ScrollLabel (which is currently updating its content) from some separate thread in Python, it will cause a system-crash in some cases (probably a bug in some C-libraries in some Enigma distributions)
+        # Therefore, it's necessary to update the content of the ScrollLabel "logWindow" via a separate eTimer - outside of the running thread (thProcess and mainFunc) in the background
+    
+    def mainFunc(self):
         
         # 1) Ocheckuje sa internetové pripojenie
         if os.system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr enigma image
@@ -968,25 +1037,28 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def getPiconListFromArchive(self, archiveFile):
-        status, out = runShell('%s l "%s"' % (self.bin7zip, archiveFile) )   # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        tmp = ''
+        status, out = runShell('%s l "%s" "*.png"' % (self.bin7zip, archiveFile) )   # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
-            tmp = {}
-            i = -3
-            while not "-----" in out[i]:
-                # processing files obtained at Shell output:
-                # column:  Date       Time      Attr   Size       Compressed  Name
-                # index:   0****************19  20*25  26*****38  39******52  53**********************************************>
-                # out:     2019-12-05 10:16:06  ....A      26824       57902  filmbox-premium-freezeframe-400x240.png
-                fsize, fpath = out[i][26:38].strip(), out[i][53:].strip()
-                #if fattr[0] != 'D':                    # retreive all files with a full path, but no individual directories !
-                if fpath.lower().endswith('.png'):      # retreive all files with a full path, but only if the file path contains '.png' string
+            indexes = [ i for i,s in enumerate(out) if s.startswith('------') ]
+            if len(indexes) == 2:
+                first, last = indexes
+                tmp = {}
+                for line in out[first + 1 : last]:
+                    # processing files obtained from Shell output:
+                    # columns:   Date       Time     Attr  Size      Compressed Name
+                    # index:     0________________19 20_25 26_____38 39______52 53______________________________________________>
+                    # example1:  2019-12-05 10:16:06 ....A     26824      57902 filmbox-premium-freezeframe-400x240.png
+                    # example2:  2019-12-18 18:01:46 ....A     21028            filmbox-premium-black-220x132.png
+                    fsize, fpath = line[26:38].strip(), line[53:].strip()
+                    #if fattr[0] != 'D':                    # retreive all files with a full path, but no individual directories !
                     tmp.update( {fpath.split('/')[-1].split('.')[0]  :  int(fsize)} )        # {"service_reference_code" : file_size}
-                i -= 1
-            return tmp
+            else:
+                print('MYDEBUGLOGLINE - Error ! Could not find the beginning and end of the list in the "%s" archive when listing "*.png" files.' % archiveFile)
         else:
             self.writeLog7zipError(status, archiveFile, out)
-        return ''         # return the empty string on any errors !
+        return tmp  # returns an empty string on error, otherwise returns the list of all file names without extension + file sizes
     
     def writeLog7zipError(self, status, archiveFile, out):
         if status == 32512:
@@ -996,12 +1068,12 @@ class piconsUpdateJobScreen(Screen):
         else:
             self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
     
-    def writeLog(self, msg = ''):
-        print(msg)
-        timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # pri operacii odcitania casu za pomoci datetime, ziskame novy objekt - datetime.timedelta(), ktory uz mozme prevadzat na sekundy s metodou .total_seconds()
-        self['logWindow'].appendText('\n[%s] %s' % (timestamp, msg))
-        self['logWindow'].lastPage()
-
+    def writeLog(self, text = ''):
+        timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method
+        msg = '\n[%s] %s' % (timestamp, text)
+        print('MYDEBUGLOGLINE - %s' % msg)
+        self.logWindowText += msg
+    
     #def storeVarInFile(self, fname, data):
     #    with open('/tmp/___%s.log' % fname, 'w') as f:
     #        f.write('\n'.join(data))
@@ -1179,7 +1251,7 @@ def pluginMenu(session, **kwargs):              # starts when the plugin is open
     session.open(mainConfigScreen)
 
 def Plugins(**kwargs):
-    if sizemaxX > 1900:
+    if desktopX > 1900:
         logo_img = 'images/plugin_fhd.png'
     else:
         logo_img = 'images/plugin.png'
