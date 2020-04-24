@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-08 18:00+0200\n"
-"PO-Revision-Date: 2020-03-20 17:55+0200\n"
+"PO-Revision-Date: 2020-04-24 17:55+0200\n"
 "Last-Translator: audi06_19 <info@dreamosat-forum.com>\n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
@@ -48,6 +48,13 @@ msgstr "Uydu konumları"
 
 msgid "Select satellites:"
 msgstr "Uyduları seç:"
+
+msgid ""
+"You have changed the selection of satellites.\n"
+"Apply these changes ?"
+msgstr ""
+"Uydu seçimini değiştirdiniz.\n"
+"Bu değişiklikler uygulansın mı ?"
 
 msgid "Picon resolution"
 msgstr "Picon çözünürlüğü"
@@ -202,6 +209,9 @@ msgstr "Bitti !"
 
 msgid "Apply"
 msgstr "Uygula"
+
+msgid "Cancel"
+msgstr "İptal"
 
 msgid "No operation ! Picon update failed !"
 msgstr "İşlem yok! Picon güncellemesi başarısız!"

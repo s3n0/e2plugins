@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-12-08 18:00+0100\n"
-"PO-Revision-Date: 2020-03-20 17:51+0100\n"
+"PO-Revision-Date: 2020-04-24 17:51+0100\n"
 "Last-Translator: Timeshock <http://www.ab-forum.info/memberlist.php?mode=viewprofile&u=22374>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -48,6 +48,13 @@ msgstr "Satellitenposition"
 
 msgid "Select satellites:"
 msgstr "Auswahl der Satelliten:"
+
+msgid ""
+"You have changed the selection of satellites.\n"
+"Apply these changes ?"
+msgstr ""
+"Sie haben die Auswahl der Satelliten geändert.\n"
+"Diese Änderungen übernehmen ?"
 
 msgid "Picon resolution"
 msgstr "Picon Größe"
@@ -202,6 +209,9 @@ msgstr "Ende !"
 
 msgid "Apply"
 msgstr "Anwenden"
+
+msgid "Cancel"
+msgstr "Abbrechen"
 
 msgid "No operation ! Picon update failed !"
 msgstr "Keine Operation ! Picon-Update fehlgeschlagen !"

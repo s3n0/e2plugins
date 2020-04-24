@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-11-11 19:26+0100\n"
-"PO-Revision-Date: 2020-03-20 17:53+0100\n"
+"PO-Revision-Date: 2020-04-24 17:53+0100\n"
 "Last-Translator: s3n0 <https://www.linuxsat-support.com/cms/user/347246-s3n0/>\n"
 "Language-Team: \n"
 "Language: sk_SK\n"
@@ -48,6 +48,13 @@ msgstr "Satelitné pozície"
 
 msgid "Select satellites:"
 msgstr "Výber satelitov:"
+
+msgid ""
+"You have changed the selection of satellites.\n"
+"Apply these changes ?"
+msgstr ""
+"Zmenili ste výber satelitov.\n"
+"Aplikovať tieto zmeny ?"
 
 msgid "Picon resolution"
 msgstr "Rozlíšenie picon"
@@ -202,6 +209,9 @@ msgstr "Hotovo !"
 
 msgid "Apply"
 msgstr "Aplikovať"
+
+msgid "Cancel"
+msgstr "Zrušiť"
 
 msgid "No operation ! Picon update failed !"
 msgstr "Žiadna operácia ! Aktualizácia pikon zlyhala !"
