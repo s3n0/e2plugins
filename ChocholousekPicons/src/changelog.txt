@@ -88,9 +88,17 @@ Added Russian language.
 Updated Lithuanian language (by @Adga).
 Minor improvements (added a method for detecting dpkg and opkg package managers, reverting the previous Enigma core detection algorithm - again the detection of new cores is based on OE version numbers).
 Trying to run the plugin also on the old, complicated Enigma distribution and that is:
- - NewEnigma2 (OpenDreambox) firmware / OE2.0 core / opkg manager / Python 2.7.2 (deadly combination = big problems) / DM800se device ...but problems still persist with Thread and access to e2-configuration
+- NewNigma2 (based on OpenDreambox) firmware / OE 2.0 core / opkg manager / Python 2.7.2 (deadly combination = big problems) / DM800SE set-top box ... but problems still persist with Thread and access to e2-configuration
 Detecting a new version of preview picons as well as detecting new Chocholousek content is triggered by the same algorithm as downloading picons, i.e. there is an improved algorithm for downloading files from drive.google (virus warning message and endless SSL issues).
 
 2.0.200412
 Fixed a problem on image DreamboxOS 4.3.2 / core OE 2.5 with a 7-zip archiver problem that did not extract files due to a malfunctioning wildcard convention "*.png". Thanks to @mjozef.
+
+2.0.200424
+Minor fixes for some SKINs (in NewNigma2 / OE2.0):
+- thanks to @alexbore, for renting a set-top box for remote debugging of the source code (DM800HDse with NewNigma2 / OE2.0)
+- determining the position of the nested widget via "center,center" does not work, therefore it's necessary to use the relative determination of the position "x,y"
+- removed the ability to scroll the list in the satellite configuration window, via the left / right buttons on the RCU, as the .pageUp() and .pageDown() methods for the ConfigList does not work in some OE cores (SKINs)
+- fixed error "FATAL!: addTimer must be called from thread 3261 but is called from thread 3680" (probably a bug in some C-libraries in some Enigma distributions)
+Added "Cancel" button in the satellite configuration window (including improved control of changes made by the user).
 
