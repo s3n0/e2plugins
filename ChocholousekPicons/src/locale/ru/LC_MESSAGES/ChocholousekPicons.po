@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ChocholousekPicons\n"
-"POT-Creation-Date: 2020-04-10 13:39+0300\n"
-"PO-Revision-Date: 2020-04-24 13:39+0300\n"
+"Project-Id-Version: Chocholousek Picons_2.0.200424\n"
+"POT-Creation-Date: 2020-04-25 00:43+0300\n"
+"PO-Revision-Date: 2020-04-25 00:44+0300\n"
 "Last-Translator: Vladimir.F <volodya072@yahoo.com>\n"
 "Language-Team: <Duremar>\n"
 "Language: ru_RU\n"
@@ -20,10 +20,10 @@ msgid "(user defined)"
 msgstr "(пользовательский)"
 
 msgid "copy all: current will deleted"
-msgstr "все копии: текущий будет удален"
+msgstr "копия всех: текущий удаляется"
 
 msgid "copy all: incremental update"
-msgstr "все копии: поэтапное обновление"
+msgstr "копия всех: поэтапное обновление"
 
 msgid "sync with TV userbouquets"
 msgstr "синхронизация с ТВ букетами"
@@ -57,13 +57,6 @@ msgstr "Метод обновления пиконов"
 
 msgid "Satellite positions"
 msgstr "Спутниковые позиции"
-
-msgid ""
-"You have changed the selection of satellites.\n"
-"Apply these changes ?"
-msgstr ""
-"Вы изменили выбор спутников.\n"
-"Применить эти изменения ?"
 
 msgid "Picon resolution"
 msgstr "Пикон разрешение"
@@ -146,8 +139,15 @@ msgstr "Применить"
 msgid "Cancel"
 msgstr "Отмена"
 
+msgid ""
+"You have changed the selection of satellites.\n"
+"Apply these changes ?"
+msgstr ""
+"Вы изменили выбор спутников.\n"
+"Применить эти изменения ?"
+
 msgid "No operation ! Picon update failed !"
-msgstr "Нет операции ! Сбой обновления Пиконов !"
+msgstr "Без операции ! Сбой обновления Пиконов !"
 
 msgid "Some errors has occurred !"
 msgstr "Возникли некоторые ошибки !"
@@ -160,10 +160,10 @@ msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s добавлено / %s изменено / %s удалено)"
 
 msgid "Internet connection is not available !"
-msgstr "Подключение к интернету недоступно !"
+msgstr "Интернет соединение недоступно !"
 
 msgid "Internet connection is OK."
-msgstr "Соединение с интернетом OK."
+msgstr "Интернет соединение OK."
 
 #, python-format
 msgid ""
