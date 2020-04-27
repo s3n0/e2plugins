@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-25 19:26+0100\n"
-"PO-Revision-Date: 2020-04-24 21:19+0200\n"
+"PO-Revision-Date: 2020-04-27 13:19+0200\n"
 "Last-Translator: PKTeam <sq9hhc@op.pl>\n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -45,6 +45,9 @@ msgstr "Po aktualizacji picon zrestartuj Enigma2 (GUI)."
 
 msgid "Apply"
 msgstr "Zapisz"
+
+msgid "Accept"
+msgstr "Zaakceptować"
 
 msgid "Cancel"
 msgstr "Anuluj"
@@ -219,3 +222,28 @@ msgstr "synchronizacja list kanałów TV"
 
 msgid "sync with TV+RADIO userbouquets"
 msgstr "synchronizacja list kanałów TV+RADIO"
+
+msgid "Path to the picon folder:"
+msgstr "Ścieżka do folderu picon:"
+
+msgid "Create directory"
+msgstr "Utworzyć katalog"
+
+msgid "Delete directory"
+msgstr "Usuń katalog"
+
+msgid "Please enter a name for the new directory:"
+msgstr "Wprowadź nazwę nowego katalogu:"
+
+msgid "Do you want to delete this directory ?"
+msgstr "Czy chcesz usunąć ten katalog ?"
+
+msgid "Note: This directory is not empty - it contains %s item(s)."
+msgstr "Uwaga: Ten katalog nie jest pusty - zawiera %s pozycję(i)."
+
+msgid ""
+"You have changed the path to the picon folder.\n"
+"Accept changed path ?"
+msgstr ""
+"Zmieniłeś ścieżkę do folderu picon.\n"
+"Zaakceptować zmienioną ścieżkę ?"

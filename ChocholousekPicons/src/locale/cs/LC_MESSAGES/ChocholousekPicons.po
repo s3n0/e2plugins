@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-25 19:26+0100\n"
-"PO-Revision-Date: 2020-04-24 17:50+0100\n"
+"PO-Revision-Date: 2020-04-27 12:50+0100\n"
 "Last-Translator: Chocholousek <https://www.linuxsat-support.com/cms/user/25586-chocholousek/>\n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -210,6 +210,9 @@ msgstr "Konec!"
 msgid "Apply"
 msgstr "Aplikovat"
 
+msgid "Accept"
+msgstr "Akceptovat"
+
 msgid "Cancel"
 msgstr "Zrušit"
 
@@ -218,3 +221,28 @@ msgstr "Žádná operace ! Aktualizace picon se nezdařila !"
 
 msgid "No picons found for selected resolution and satellites !"
 msgstr "Nebyly nalezeny žádné picony pro vybrané rozlišení a satelity!"
+
+msgid "Path to the picon folder:"
+msgstr "Cesta ke složce s piconami:"
+
+msgid "Create directory"
+msgstr "Vytvořit složku"
+
+msgid "Delete directory"
+msgstr "Odstranit složku"
+
+msgid "Please enter a name for the new directory:"
+msgstr "Prosím zadejte název nové složky:"
+
+msgid "Do you want to delete this directory ?"
+msgstr "Chcete tuto složku smazat ?"
+
+msgid "Note: This directory is not empty - it contains %s item(s)."
+msgstr "Poznámka: Tato složka není prázdná - obsahuje %s položku/ky."
+
+msgid ""
+"You have changed the path to the picon folder.\n"
+"Accept changed path ?"
+msgstr ""
+"Změnili jste cestu ke složce picon.\n"
+"Akceptovat změněnou cestu ?"
