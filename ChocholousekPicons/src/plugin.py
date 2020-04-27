@@ -9,6 +9,7 @@
 from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
+from Screens.InputBox import InputBox
 from Screens.Standby import TryQuitMainloop, inStandby                      # TryQuitMainLoop for the enigma2 gui restart # inStandby to detect if enigma2 is in Standby mode
 ###########################################################################
 from Components.ActionMap import ActionMap
@@ -20,7 +21,7 @@ from Components.Sources.StaticText import StaticText
 ###########################################################################
 #from Components.MenuList import MenuList
 from Components.ConfigList import ConfigList, ConfigListScreen
-from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSubList, ConfigSubDict, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK, NoSave
+from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK, NoSave, ConfigNothing
 ###########################################################################
 import urllib2, ssl, cookielib
 try:
@@ -87,7 +88,7 @@ config.plugins.chocholousekpicons.method = ConfigSelection(
                   ]
         )
 
-config.plugins.chocholousekpicons.sats = ConfigText(default = '19.2E 23.5E', fixed_size = False)            # ConfigSubList()  /  ConfigSubDict()  /  ConfigDictionarySet()
+config.plugins.chocholousekpicons.sats = ConfigText(default = '19.2E 23.5E', fixed_size = False)
 
 limitedRes = [ 
                 ('50x30'   ,      '"MiniPicons"   50x30'),
@@ -168,10 +169,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="370,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="605,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
 
-            <widget render="Label" source="txt_red"           position="55,560"  size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_green"         position="200,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_yellow"        position="405,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_blue"          position="640,560" size="180,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_red"           position="55,560"  size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"         position="200,560" size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_yellow"        position="405,560" size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_blue"          position="640,560" size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     
     def __init__(self, session):
@@ -230,22 +231,27 @@ class mainConfigScreen(Screen, ConfigListScreen):
         #self.onLayoutFinish.append(self.prepareSetup)
     
     def prepareSetup(self):
-        self.loadChochoContent()        
-        self.check7zip()
+        self.check7zip()                        # 1.
+        
         if self.bin7zip:
-            self.downloadPreviewPicons()            
+            self.downloadChochoFile()
+        self.loadChochoContent()                # 2.
+        
+        if self.bin7zip:
+            self.downloadPreviewPicons()        # 3.
+        
         self.changeAvailableBackgrounds()
         self.rebuildConfigList()
     
     def rebuildConfigList(self):
         self.list = []
-        self.list.append(getConfigListEntry( _('Picon folder')  ,  config.plugins.chocholousekpicons.picon_folder ))
+        self.list.append(getConfigListEntry( _('Picon folder')           , config.plugins.chocholousekpicons.picon_folder  ))
         if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
-            self.list.append(getConfigListEntry( _('User defined folder'), config.plugins.chocholousekpicons.picon_folder_user ))
-        self.list.append(getConfigListEntry( _('Picon update method') , config.plugins.chocholousekpicons.method  ))
-        self.list.append(getConfigListEntry( _('Satellite positions') , NoSave(ConfigSelection(default = config.plugins.chocholousekpicons.sats.value, choices = [config.plugins.chocholousekpicons.sats.value])) ))  # only display of selected satellites (without object configuration effect)
-        self.list.append(getConfigListEntry( _('Picon resolution') , config.plugins.chocholousekpicons.resolution ))
-        self.list.append(getConfigListEntry( _('Picon background') , config.plugins.chocholousekpicons.background , _('Choose picon design')  ))        
+            self.list.append(getConfigListEntry( _('User defined folder'), NoSave(ConfigSelection(choices = [config.plugins.chocholousekpicons.picon_folder_user.value])) ))   # for display purposes only, without the ability to configure this item as an object
+        self.list.append(getConfigListEntry( _('Picon update method')    , config.plugins.chocholousekpicons.method        ))
+        self.list.append(getConfigListEntry( _('Satellite positions')    , NoSave(ConfigSelection(choices = [config.plugins.chocholousekpicons.sats.value])) ))   # for display purposes only, without the ability to configure this item as an object
+        self.list.append(getConfigListEntry( _('Picon resolution')       , config.plugins.chocholousekpicons.resolution    ))
+        self.list.append(getConfigListEntry( _('Picon background')       , config.plugins.chocholousekpicons.background    ))
         
         listWidth = self['config'].l.getItemSize().width()
         self['config'].list = self.list
@@ -279,14 +285,20 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def keyToOk(self):
         k = self.getCursorTitle()
         if k == _('Satellite positions'):
-            self.session.openWithCallback(self.satellitesConfigScreenReturn, satellitesConfigScreen, self.getAllSat() )
+            self.session.openWithCallback(self.satellitesConfigScreen_Return, satellitesConfigScreen, self.getAllSat() )
         elif k == _('User defined folder'):
-            ConfigListScreen.keyOK(self)        # self['config'].handleKey(KEY_OK)          # self.keyOK()
+            self.session.openWithCallback(self.directoryBrowserScreen_Return, directoryBrowserScreen, config.plugins.chocholousekpicons.picon_folder_user.getValue())     # ConfigListScreen.keyOK(self)     # self['config'].handleKey(KEY_OK)     # self.keyOK()
     
-    def satellitesConfigScreenReturn(self, retval):
-        if retval:
+    def satellitesConfigScreen_Return(self, ret_val):
+        if ret_val:
             #self.loadChochoContent()
-            self.changeAvailableBackgrounds()   # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
+            self.changeAvailableBackgrounds()       # if there has been a change in the necessary satellites settings, then I need to rescan the available picon styles (by default picon resolution)
+            self.changedEntry()
+            self.rebuildConfigList()
+    
+    def directoryBrowserScreen_Return(self, ret_val):
+        if ret_val:
+            config.plugins.chocholousekpicons.picon_folder_user.setValue(ret_val)
             self.changedEntry()
             self.rebuildConfigList()
     
@@ -314,22 +326,24 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.exitWithConditionalSave(False)
     
     def keyToExit(self):
-        if self['txt_green'].getText().endswith('*'):           # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
+        if self['txt_green'].getText().endswith('*'):       # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
             message = _("You have changed the plugin configuration.\nDo you want to save all changes now ?")
             self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
         else:
             self.exitWithConditionalSave(False)
     
-    def exitWithConditionalSave(self, condition=True):          # save or cancel changes made to the plugin's user configuration, default=True -> to save the configuration
+    def exitWithConditionalSave(self, condition=True):      # save or cancel changes made to the plugin's user configuration, default=True -> to save the configuration
         if condition:
             for x in self['config'].list:
                 x[1].save()
-            config.plugins.chocholousekpicons.sats.save()       # the satellite selection is not in the ["config"].list and therefore after changing the satellites through another Screen class, so I have to save the satellites to disk additionally
-            configfile.save()                                   # '/etc/enigma2/settings' - the configuration file will be saved only when the Enigma is stopped or restarted
+            config.plugins.chocholousekpicons.sats.save()                   # this item in the ["config"] list is wittingly switched to the "view-only" item, with a special type configuration NoSave + ConfigSelection, so I need the item to save or cancel as separately
+            config.plugins.chocholousekpicons.picon_folder_user.save()      # this item in the ["config"] list is wittingly switched to the "view-only" item, with a special type configuration NoSave + ConfigSelection, so I need the item to save or cancel as separately        
+            configfile.save()                                               # configfile means '/etc/enigma2/settings' - the configuration file will be saved only when the Enigma is stopped or restarted
         else:
             for x in self['config'].list:
                 x[1].cancel()
-            config.plugins.chocholousekpicons.sats.cancel()
+            config.plugins.chocholousekpicons.sats.cancel()                 # this item in the ["config"] list is wittingly switched to the "view-only" item, with a special type configuration NoSave + ConfigSelection, so I need the item to save or cancel as separately
+            config.plugins.chocholousekpicons.picon_folder_user.cancel()    # this item in the ["config"] list is wittingly switched to the "view-only" item, with a special type configuration NoSave + ConfigSelection, so I need the item to save or cancel as separately
         self.close()
     
     def changedEntry(self):
@@ -368,20 +382,24 @@ class mainConfigScreen(Screen, ConfigListScreen):
         download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
         the online file version will be detected from the current chochoContent (from the preloaded "id_for_permalinks*.log" file on the plugin-configuration Screen initialization)
         the  local file version will be detected from the existing local file
-        archive filename example:  filmbox-premium-(all)_by_chocholousek_(191020).7z         (the parentheses will replace by underline characters)
-        files inside the archive file: filmbox-premium-transparent-220x132.png ;  filmbox-premium-gray-400x240.png ;  ...
+        archive filename example:   filmbox-premium-(all)_by_chocholousek_(191020).7z
+        files inside the archive file:   filmbox-premium-transparent-220x132.png ;  filmbox-premium-gray-400x240.png ;   ...
         '''
+        new_file = None
         for line in self.chochoContent.splitlines():
             if 'filmbox-premium-' in line:
                 r = line.split()
                 url = 'https://drive.google.com/uc?export=download&id=' + r[0]
                 new_file = PLUGIN_PATH + r[1]
                 break
+        if new_file is None:
+            print('Error ! The archive file name "filmbox-premium" was not found in the contents of the file "id_for_permalinks*.log"!')
+            return
         
-        l = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
-        current_file = l[0] if l else PLUGIN_PATH + 'foo-bar(000000).7z'            # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
+        k = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
+        current_file = k[0] if k else PLUGIN_PATH + 'foo-bar(000000).7z'            # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
         
-        if new_file[-10:-4] > current_file[-10:-4]:                                 # comparsion, for example as the following:  '191125' > '191013'
+        if self.ver(new_file) > self.ver(current_file):                             # comparsion, for example as the following:  '191125' > '191013'
             if not downloadFile(url, new_file):                                     # .7z archive with preview images (channel picons for the one and the same TV-channel)
                 print('Picons preview file download failed ! (URL = %s)' % url)
                 return
@@ -391,7 +409,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
-                print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % new_file[-10:-4] )
+                print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % self.ver(new_file))
                 print('MYDEBUGLOGLINE - \nstatus=%s\nout=%s\n' % (status, out) )
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
@@ -406,18 +424,21 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 self.deleteFiles(new_file)
     
     def deleteFiles(self, mask):
+        print('MYDEBUGLOGLINE - deleting files by mask: %s' % mask)
         lst = glob.glob(mask)
         if lst:
             for file in lst:
                 os.remove(file)
     
+    def ver(self, filepath):
+        return int( re.findall(r'\d{6}', filepath)[-1] )
+    
     ###########################################################################
     
     def loadChochoContent(self):
-        self.downloadChochoFile()
         path = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
         if path:
-            self.chochoContent = open(path[0],'r').read()               # glob returns a list type variable, so I need to  translate list to string
+            self.chochoContent = open(path[0], 'r').read()                  # glob returns a list type variable, so I need to  translate list to string
             print('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
         else:
             self.chochoContent = ''
@@ -427,23 +448,30 @@ class mainConfigScreen(Screen, ConfigListScreen):
         '''
         1. check if there is a new version of the file on the internet and download if so
         2. then the content from the saved file is loaded into memory
-        --- the     new/online file version will be retrieved from the HTTP header - with the helping of function downloadFile()
-        --- the  current/local file version will be retrieved from the existing local file name
-        file name example:    "id_for_permalinks191017.log"
-        example of a line from inside the file:    "1xmITO0SouVDTrATgh0JauEpIS7IfIQuB        piconblack-220x132-13.0E_by_chocholousek_(191016).7z       bin      16.3 MB      2018-09-07 19:40:54"
+        -  the   new / online    file version will be retrieved from the HTTP header - helping with the downloadFile() function
+        -  the  current / local  file version will be retrieved from the existing local file name
+        ---file name example:    "id_for_permalinks191017.log"
+        ---example of a line from inside the "permalinks" file:    "1xmITO0SouVDTrATgh0JauEpIS7IfIQuB        piconblack-220x132-13.0E_by_chocholousek_(191016).7z       bin      16.3 MB      2018-09-07 19:40:54"
         '''        
-        l = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
-        current_filename = l[0] if l else PLUGIN_PATH + 'id_for_permalinks000000.log'               # low version, to force update the file (the first download at all, if the file does not exists !)
+        k = glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log')
+        current_filename = k[0] if k else PLUGIN_PATH + 'id_for_permalinks000000.log'               # low version, to force update the file (the first download at all, if the file does not exists !)
         
-        url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'    # id_for_permalinks191017.log -- means the chochoFile for the chochoContent value :)
-        new_filename = downloadFile(url, PLUGIN_PATH, False)                                        # as the first - to test the online file only ... and return their file name as string (if online file will found)
-        if new_filename:
-            if new_filename[-10:-4] > current_filename[-10:-4]:                                     # Python <string> comparison like as <integer>, for example as the following:   '191125' > '191013'
+        url = 'https://drive.google.com/uc?export=download&id=1wn4yKNbJDKN_r5mGHrFFUEn7E6A9kUZ8'    # "zip_idforpermalinks(200426).7z" download the archive file which contains the "id_for_permalinks*.log" file inside --- so, as first, it's necessary to extract the .log file from inside!
+        #url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'   # "id_for_permalinks191017.log" - means the chochoFile for the chochoContent value :)
+        new_filename = downloadFile(url, '', False)                                                 # as the first, do a test the online file only ... and return their file name as a string (if online file will found)
+        if new_filename  \
+        and ('unknown' not in new_filename)  \
+        and (self.ver(new_filename) > self.ver(current_filename)) :                                 # Python <string> comparison like as <integer>, for example as the following:   '191125' > '191013'
+            archive_file_path = downloadFile(url, '/tmp/')
+            status, out = runShell('%s e -y -o"%s" "%s" "id_for_permalinks*.log"' % (self.bin7zip, PLUGIN_PATH, archive_file_path))
+            self.deleteFiles(archive_file_path)
+            if status == 0:
                 self.deleteFiles(current_filename)
-                downloadFile(url, PLUGIN_PATH)
-                print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" was updated to new version: %s' % new_filename[-10:-4])
+                print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.ver(current_filename), self.ver(new_filename)))
+            else:
+                print('MYDEBUGLOGLINE - Error ! File "id_for_permalinks*.log" was not extracted from the archive file: %s' % archive_file_path)
         else:
-            print('MYDEBUGLOGLINE - file "id_for_permalinks*.log" not found on the internet ! (url = %s)' % url)
+            print('MYDEBUGLOGLINE - Error ! File "zip_idforpermalinks*.7z" was not found on the internet ! (url = %s)' % url)
     
     def changeAvailableBackgrounds(self):
         '''
@@ -457,7 +485,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             config.plugins.chocholousekpicons.background = ConfigSelection( default = 'no_picons', choices = [('no_picons', _('No picons found for selected resolution and satellites !') )]  )
     
     def backgroundsByUserCfg(self, sats, res):
-        usrcontent = self.contentByUserCfg(sats, res)        
+        usrcontent = self.contentByUserCfg(sats, res)
         backgrounds = sorted(list(set(  re.findall('.*picon(.*)-%s-.*' % (res), usrcontent)  )))          # using the set() to remove duplicites and the sorted() to sort the list by ASCII
         for b in backgrounds:
             for s in sats:
@@ -586,10 +614,11 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             <widget name="title_txt"          position="0,0"           size="450,110" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="config"             position="50,110"        size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             
-            <ePixmap pixmap="skin_default/buttons/green.png" position="25,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <widget  render="Label" source="txt_green"       position="65,854" size="250,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <ePixmap pixmap="skin_default/buttons/red.png"   position="260,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <widget  render="Label" source="txt_red"         position="300,854" size="250,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <ePixmap pixmap="skin_default/buttons/red.png"   position="25,854"  size="30,46"  transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png" position="230,854" size="30,46"  transparent="1" alphatest="on" zPosition="1" />
+            
+            <widget  render="Label" source="txt_red"         position="65,854"  size="250,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_green"       position="270,854" size="250,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
@@ -597,10 +626,11 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             <widget name="title_txt"          position="0,0"           size="350,070" font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="config"             position="25,70"         size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             
-            <ePixmap pixmap="skin_default/buttons/green.png" position="20,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <widget  render="Label" source="txt_green"       position="55,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <ePixmap pixmap="skin_default/buttons/red.png"   position="190,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <widget  render="Label" source="txt_red"         position="220,560" size="140,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <ePixmap pixmap="skin_default/buttons/red.png"   position="20,560"  size="30,40"  transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png" position="190,560" size="30,40"  transparent="1" alphatest="on" zPosition="1" />
+            
+            <widget  render="Label" source="txt_red"         position="55,560"  size="150,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_green"       position="220,560" size="150,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     
     def __init__(self, session, allSat):
@@ -736,6 +766,218 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
 
 
 
+class directoryBrowserScreen(Screen, ConfigListScreen):
+    
+    if desktopX > 1900:    # Full-HD or higher
+        skin = '''
+        <screen name="directoryBrowserScreen" position="center,center" size="1000,900" title="Directory browser" flags="wfNoBorder" backgroundColor="#44000000">
+            <widget name="txt_title"  position="0,0"     size="1000,90"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            
+            <widget name="txt_dir"    position="50,90"   size="900,50"   font="Regular;30" foregroundColor="white"  transparent="1" halign="left"   valign="center" />
+            <eLabel name="frame_dir"  position="50,90"   size="900,50"   zPosition="-1"    backgroundColor="#114C0000" />
+            
+            <widget name="config"     position="50,155"  size="900,660"  font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+            
+            <ePixmap pixmap="skin_default/buttons/red.png"    position="25,854"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="190,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/yellow.png" position="390,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/blue.png"   position="680,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            
+            <widget  render="Label" source="txt_red"          position="65,854"  size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_green"        position="230,854" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_yellow"       position="430,854" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_blue"         position="720,854" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+        </screen>'''
+    else:                   # HD-ready or lower
+        skin = '''
+        <screen name="directoryBrowserScreen" position="center,center" size="800,600" title="Directory browser" flags="wfNoBorder" backgroundColor="#44000000">
+            <widget name="txt_title"  position="0,0"     size="800,65"   font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            
+            <widget name="txt_dir"    position="25,65"   size="750,35"   font="Regular;22" foregroundColor="white"  transparent="1" halign="left"   valign="center" />
+            <eLabel name="frame_dir"  position="25,65"   size="750,35"   zPosition="-1"    backgroundColor="#114C0000" />
+            
+            <widget name="config"     position="25,110"  size="750,420"  font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+            
+            <ePixmap pixmap="skin_default/buttons/red.png"    position="20,560"  size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="155,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/yellow.png" position="325,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/blue.png"   position="570,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            
+            <widget  render="Label" source="txt_red"          position="55,560"  size="200,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_green"        position="190,560" size="200,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_yellow"       position="360,560" size="200,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget  render="Label" source="txt_blue"         position="605,560" size="200,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+        </screen>'''
+    
+    def __init__(self, session, start_dir = '/'):
+        
+        Screen.__init__(self, session)
+        
+        self.onChangedEntry = []
+        self.list = []
+        
+        ConfigListScreen.__init__(self, self.list, session = self.session)      # , on_change = self.changedEntry)
+        
+        self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
+        self.lineheight = 1
+        
+        if not os.path.isdir(start_dir):
+            start_dir = '/'
+        self.shown_dir = self.start_dir = start_dir
+        
+        self['txt_title']  = Label(_('Path to the picon folder:'))
+        self['txt_dir']    = Label(self.shown_dir)
+        
+        self['txt_red']    = StaticText(_('Cancel'))
+        self['txt_green']  = StaticText(_('Apply'))
+        self['txt_yellow'] = StaticText(_('Create directory'))
+        self['txt_blue']   = StaticText(_('Delete directory'))
+        
+        self['actions'] = ActionMap( ['ColorActions', 'DirectionActions', 'OkCancelActions'] ,
+        {
+                'left'  : self.keyToLeft,
+                'right' : self.keyToOk,
+                'ok'    : self.keyToOk,
+                'blue'  : self.keyToBlue,
+                'yellow': self.keyToYellow,
+                'green' : self.keyToGreen,
+                'red'   : self.keyToRed,
+                'cancel': self.keyToExit
+        }, -2)
+        
+        if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):    # the NewNigma2 firmware (nn2-feed.conf) based on OpenDreambox, with updated OE 2.0 core, uses a new SKIN modules and therefore it's necessary to leave the FONT in the configList widget!
+            s = directoryBrowserScreen.skin
+            i = s.index('font=', s.index('name="config"'))          # ConfigListScreen / ConfigScreen / widget name="config" - under OE 2.2+ unfortunately the font style is configured with a new method and the original font attribute in OE 2.2+ is considered as error
+            s = s[:i] + s[i+34:]                                    # remove found item "font=....itemHeight=...." from the widget "config"
+            self.skin = s
+        else:
+            self.skin = directoryBrowserScreen.skin
+        
+        self.onShown.append(self.rebuildConfigList)
+    
+    def keyToOk(self):
+        cursor_sub_dir = self['config'].getCurrent()[0]
+        self.changeShownDir(cursor_sub_dir)
+    
+    def keyToLeft(self):
+        self.changeShownDir('..')
+    
+    def getDirAppointedToCursor(self):
+        cursor_sub_dir = self['config'].getCurrent()[0]
+        return self.getSwitchedDir(cursor_sub_dir)
+    
+    def changeShownDir(self, sub_dir):
+        result = self.getSwitchedDir(sub_dir)
+        if self.shown_dir != result:
+            self.shown_dir = result
+            self.rebuildConfigList()
+    
+    def getSwitchedDir(self, choiced):
+        if choiced == '..':
+            result_dir = self.shown_dir.rsplit('/',1)[0] or '/'
+        elif choiced == '/':
+            result_dir = '/'
+        else:
+            result_dir = '/' + choiced if self.shown_dir == '/' else self.shown_dir + '/' + choiced
+        result_dir = result_dir.replace('//','/')
+        if not os.path.isdir(result_dir):
+            result_dir = self.shown_dir
+        return result_dir
+    
+    #def changedEntry(self):
+    #    print('MYDEBUGLOGLINE - changedEntry = %s' % [ x for x in self.onChangedEntry ])
+    #    for x in self.onChangedEntry:
+    #        x()
+    
+    def rebuildConfigList(self):
+        self['txt_dir'].setText(self.shown_dir)
+        
+        if self.shown_dir != self.start_dir:
+            self['txt_green'].setText(_('Apply') + '*')
+        else:
+            self['txt_green'].setText(_('Apply'))
+        
+        ls_dirs = [] if self.shown_dir == '/' else ['..']
+        ls_dirs += sorted(next(os.walk(self.shown_dir, followlinks=True))[1])
+        #ls_files = []
+        #for (dirpath, dirnames, filenames) in os.walk(self.shown_dir, followlinks=True):
+        #    ls_files.extend(filenames)
+        #    break
+        ls_files = [ x.rsplit('/',1)[-1] for x in glob.glob(self.shown_dir + '/*.png') ]
+        
+        self.list = []
+        for s in ls_dirs + ['-------------------------png-files:'] + ls_files:
+            self.list.append(getConfigListEntry(s, NoSave(ConfigNothing())))
+        
+        listWidth = self['config'].l.getItemSize().width()
+        self['config'].list = self.list
+        self['config'].l.setSeperation(listWidth / 2)                  # fix the size of seperator in some new SKINs (for example in OE2.5)
+        self["config"].l.setList(self.list)
+        
+        #self['config'].list = self.list
+        #self['config'].setList(self.list)
+    
+    
+    def keyToYellow(self):
+        self.session.openWithCallback(self.createDir_FromCallBack, InputBox, title = _('Please enter a name for the new directory:'), text = '')
+    
+    def createDir_FromCallBack(self, dirname):
+        if dirname:
+            new_dir = self.shown_dir + '/' + dirname
+            os.mkdir(new_dir.replace('//','/'))
+            self.rebuildConfigList()
+    
+    
+    def keyToBlue(self):
+        cursor_dir = self['config'].getCurrent()[0]
+        dir_to_del = self.shown_dir + cursor_dir if self.shown_dir == '/' else self.shown_dir + '/' + cursor_dir
+        if cursor_dir == '..' or cursor_dir.startswith('------') or not os.path.isdir(dir_to_del):
+            return
+        message = _('Do you want to delete this directory ?')
+        dir_content = glob.glob(dir_to_del + '/*')
+        if dir_content:
+            message += '\n' + _('Note: This directory is not empty - it contains %s item(s).') % len(dir_content)
+        message += '\n\n' + dir_to_del
+        self.session.openWithCallback(self.deleteDir_FromCallBack, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
+    
+    def deleteDir_FromCallBack(self, confirmed):
+        if confirmed:
+            print('MYDEBUGLOGLINE - deleting directory: %s' % self.getDirAppointedToCursor())
+            err_num, std_out = runShell('rm -r %s' % self.getDirAppointedToCursor())
+            #os.removedirs(self.getDirAppointedToCursor())
+            self.rebuildConfigList()
+    
+    
+    def keyToGreen(self):
+        if self.shown_dir == self.start_dir:
+            self.close('')                              # configuration is not changed
+        else:
+            self.close(self.shown_dir)                  # configuration is changed
+    
+    def keyToRed(self):
+        self.close('')
+    
+    def keyToExit(self):
+        if self['txt_green'].getText().endswith('*'):                 # satellites configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings
+            message = _('You have changed the path to the picon folder.\nAccept changed path ?') + '\n\n' + self.shown_dir
+            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
+        else:
+            self.exitWithConditionalSave(False)
+    
+    def exitWithConditionalSave(self, result):
+        if result:
+            self.keyToGreen()
+        else:
+            self.keyToRed()
+
+
+
+###########################################################################
+###########################################################################
+###########################################################################
+
+
+
 class piconsUpdateJobScreen(Screen):
     
     border = 50 if desktopX > 1900 else 30
@@ -832,14 +1074,16 @@ class piconsUpdateJobScreen(Screen):
             self.close()
     
     def logWindowUpdate(self):
+        '''
+        A note regarding to NewNigma2 with OE2.0 core :
+        ScrollLabel as the GUI Component uses a eTimer for each refresh of its content, which causes the system to crash --- FATAL!: addTimer must be called from thread 3261 but is called from thread 3680
+        ScrollLabel uses eTimer as one of the GUI components to update its content ... if we invoke ScrollLabel (which is currently updating its content) from some separate thread in Python, it will cause a system-crash in some cases (probably a bug in some C-libraries in some Enigma distributions)
+        Therefore, it's necessary to update the content of the ScrollLabel "logWindow" via a separate eTimer - outside of the running thread (thProcess and mainFunc) in the background
+        '''
         if len(self.logWindowText) != len(self['logWindow'].getText()):
             self['logWindow'].setText(self.logWindowText)
             #self['logWindow'].appendText('')
             self['logWindow'].lastPage()
-        # A note regarding to NewNigma2 with OE2.0 core :
-        # ScrollLabel as the GUI Component uses a eTimer for each refresh of its content, which causes the system to crash --- FATAL!: addTimer must be called from thread 3261 but is called from thread 3680
-        # ScrollLabel uses eTimer as one of the GUI components to update its content ... if we invoke ScrollLabel (which is currently updating its content) from some separate thread in Python, it will cause a system-crash in some cases (probably a bug in some C-libraries in some Enigma distributions)
-        # Therefore, it's necessary to update the content of the ScrollLabel "logWindow" via a separate eTimer - outside of the running thread (thProcess and mainFunc) in the background
     
     def mainFunc(self):
         
@@ -1146,7 +1390,13 @@ def pluginUpdateDo():
 
 
 def downloadFile(url, storagepath='', savefile=True):
-    
+    '''
+    Download files from the internet to the destination, taking into account the Drive.Google server (warning window with virus scan).
+    If the storagepath variable (a destination) of the downloaded file ENDS WITH A "/", then this directory will be used as the destination of the downloaded file. Otherwise folder "/tmp" will be used.
+    If the storagepath variable (a destination) of the downloaded file not contains some file name, then the algorithm looks for the file name in Cookies and if the name cannot be found, it is invented as "unknown_file_<random-num>".
+    The savefile variable determines whether the file is saved (True) to the local disk or not (False). If not, it only means testing the existence of the online file (the function "" returns on error or the path to the file if the online file exists).
+    When the download fails, function returns an empty string "". Otherwise, it returns the path + name of the downloaded file.
+    '''
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/74.0'}           # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
     
     cookie_jar = cookielib.CookieJar()
@@ -1159,43 +1409,40 @@ def downloadFile(url, storagepath='', savefile=True):
     
     try:
         req = urllib2.Request(url, data=None, headers=headers)
-        handler = urllib2.urlopen(req, timeout=20)
+        handler = urllib2.urlopen(req, timeout=15)
         if 'drive.google' in url:
             for c in cookie_jar:
                 if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
                     url = url.replace('&id=', '&confirm=%s&id=' % c.value)   # and then it's necessary to add a parameter with confirmation of the warning message
                     req = urllib2.Request(url, data=None, headers=headers)
-                    handler = urllib2.urlopen(req, timeout=20)
+                    handler = urllib2.urlopen(req, timeout=15)
                     break
         
         if storagepath.endswith('/') or storagepath == '':
             if 'content-disposition' in handler.headers:
-                storagepath = storagepath + handler.headers['content-disposition'].split('"')[1]    # get filename from html header
-            else:    
+                storagepath += handler.headers['content-disposition'].split('"')[1]                 # get filename from html header
+            else:
                 storagepath = '/tmp/unknown_file_' + datetime.now().strftime('%s')                  # unix-timestamp: '/tmp/unknown_file_1586625400'
                 #storagepath = '/tmp/unknown_file_{:0>6}____'.format(random.randint(0,150000))      # random number
         
-        if savefile:                                    # skip writting the file to disk - if it's a file test
+        if savefile:                                    # download file from the internet + save file to local disk
             data = handler.read()
             with open(storagepath, 'wb') as f:
                 f.write(data)
     
     except Exception as e:
         print('File download error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
-        return False
+        storagepath = ''
     
     except:
-        return False
+        storagepath = ''
     
-    if savefile:
-        return True                                     # return True, if all done (file is saved on disk, no testing purpose)
-    else:
-        return storagepath                              # return the file name - if it's a file test
+    return storagepath      # return the path and filename, if all done (file is saved on disk, no testing purpose)  # return the empty string, if the download fails
 
 def newOE():
     '''
     return True ---- for commercial versions of Enigma2 core (OE 2.2+) - DreamElite, DreamOS, Merlin, ... etc.
-    return False --- for open-source versions of Enigma2 core (OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
+    return False --- for open-source versions of Enigma2 core (OE 2.0 or OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
     '''
     #return os.path.exists('/etc/dpkg')
     try:
