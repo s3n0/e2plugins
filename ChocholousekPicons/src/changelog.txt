@@ -98,7 +98,13 @@ Fixed a problem on image DreamboxOS 4.3.2 / core OE 2.5 with a 7-zip archiver pr
 Minor fixes for some SKINs (in NewNigma2 / OE2.0):
 - thanks to @alexbore, for renting a set-top box for remote debugging of the source code (DM800HDse with NewNigma2 / OE2.0)
 - determining the position of the nested widget via "center,center" does not work, therefore it's necessary to use the relative determination of the position "x,y"
-- removed the ability to scroll the list in the satellite configuration window, via the left / right buttons on the RCU, as the .pageUp() and .pageDown() methods for the ConfigList does not work in some OE cores (SKINs)
+- removed the ability to scroll the list in the satellite configuration window, via the left / right buttons on the RCU, as the .pageUp() and .pageDown() methods for the ConfigList does not work in some Enigmas (SKINs)
 - fixed error "FATAL!: addTimer must be called from thread 3261 but is called from thread 3680" (probably a bug in some C-libraries in some Enigma distributions)
 Added "Cancel" button in the satellite configuration window (including improved control of changes made by the user).
+
+2.1.200427
+A directory browser has been added - for the purpose of selecting a user-defined picon folder. 
+- !!! please be careful when deleting and creating folders in the directory browser !
+- !!! you are responsible for any loss of important data, after accidentally deleting the directory !
+Minor changes in the source code.
 
