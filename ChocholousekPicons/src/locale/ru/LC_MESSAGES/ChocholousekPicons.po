@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Chocholousek Picons_2.1.200427\n"
-"POT-Creation-Date: 2020-04-28 00:51+0300\n"
-"PO-Revision-Date: 2020-04-28 00:51+0300\n"
+"Project-Id-Version: Chocholousek Picons_2.1.200504\n"
+"POT-Creation-Date: 2020-05-04 22:12+0300\n"
+"PO-Revision-Date: 2020-05-04 22:12+0300\n"
 "Last-Translator: Vladimir.F <volodya072@yahoo.com>\n"
 "Language-Team: <Duremar>\n"
 "Language: ru_RU\n"
@@ -64,14 +64,13 @@ msgstr "Пикон разрешение"
 msgid "Picon background"
 msgstr "Фон пикона"
 
+#, python-format
 msgid ""
-"The plugin has been updated to the new version.\n"
-"A quick reboot is required.\n"
-"Do a quick reboot now ?"
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
 msgstr ""
-"Плагин обновился до новой версии.\n"
-"Требуется быстрая перезагрузка.\n"
-"Сделать быструю перезагрузку сейчас ?"
+"Доступна новая версия плагина: %s\n"
+"Установить её прямо сейчас ?"
 
 #, python-format
 msgid ""
@@ -126,6 +125,18 @@ msgstr "Установка автономного архиватора \"7za\" (
 
 msgid "Installation of 7-zip archiver failed!"
 msgstr "Установка 7-zip архиватора не удалась!"
+
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Плагин обновился до новой версии.\n"
+"Требуется быстрая перезагрузка.\n"
+"Сделать быструю перезагрузку сейчас ?"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Ошибка ! Отказ при скачивании установочного пакета плагина !"
 
 msgid "Select satellites:"
 msgstr "Выбрать спутники:"
@@ -257,13 +268,3 @@ msgstr "Распаковка файлов из архива..."
 #, python-format
 msgid "...%s picons were extracted from the archive."
 msgstr "...%s пиконы изъяты из архива."
-
-msgid ""
-"New plugin version found: %s\n"
-"Do you want to install it now ?"
-msgstr ""
-"Найдена новая версия плагина: %s\n"
-"Вы хотите установить его сейчас ?"
-
-msgid "Error ! Downloading plugin installation package failed !"
-msgstr "Ошибка ! Загрузка установочного пакета плагина не удалась !"
