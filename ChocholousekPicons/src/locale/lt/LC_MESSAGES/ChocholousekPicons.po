@@ -273,3 +273,13 @@ msgid ""
 msgstr ""
 "Pakeitėte kelią į „picon“ aplanką.\n"
 "Sutikti pakeistą kelią ?"
+
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Rasta nauja papildinio versija: %s\n"
+"Ar norite ją įdiegti dabar ?"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Klaida ! Nepavyko atsisiųsti papildinio diegimo paketo !"

@@ -82,7 +82,7 @@ Accepting sym-links to 7-zip executable file.
 Changed Enigma core detection method - instead of detecting the Enigma core version, only the type of core will be detected (used for skin modification and timer function).
 
 2.0.200410
-Added Russian language.
+Added Russian language (by @FRAP).
 
 2.0.200411
 Updated Lithuanian language (by @Adga).
@@ -108,3 +108,6 @@ A directory browser has been added - for the purpose of selecting a user-defined
 - !!! you are responsible for any loss of important data, after accidentally deleting the directory !
 Minor changes in the source code.
 
+2.1.200504
+Improved Russian language (by @FRAP).
+Minor changes in the source code.

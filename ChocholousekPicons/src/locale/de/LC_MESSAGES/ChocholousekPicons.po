@@ -246,3 +246,13 @@ msgid ""
 msgstr ""
 "Sie haben den Pfad zum Picon-Ordner geändert.\n"
 "Geänderten Pfad akzeptieren ?"
+
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Neue Plugin-Version gefunden: %s\n"
+"Möchten Sie es jetzt installieren ?"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Fehler ! Das Herunterladen des Plugin-Installationspakets ist fehlgeschlagen !"

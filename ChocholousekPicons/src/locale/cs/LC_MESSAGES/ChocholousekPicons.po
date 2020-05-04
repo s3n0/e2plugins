@@ -246,3 +246,13 @@ msgid ""
 msgstr ""
 "Změnili jste cestu ke složce picon.\n"
 "Akceptovat změněnou cestu ?"
+
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Nalezena nová verze pluginu: %s\n"
+"Nainstalovat ?"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Chyba ! Stahování instalačního balíčku pluginu selhalo !"

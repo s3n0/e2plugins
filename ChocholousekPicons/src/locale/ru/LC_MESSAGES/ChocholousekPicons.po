@@ -257,3 +257,13 @@ msgstr "Распаковка файлов из архива..."
 #, python-format
 msgid "...%s picons were extracted from the archive."
 msgstr "...%s пиконы изъяты из архива."
+
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Найдена новая версия плагина: %s\n"
+"Вы хотите установить его сейчас ?"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Ошибка ! Загрузка установочного пакета плагина не удалась !"

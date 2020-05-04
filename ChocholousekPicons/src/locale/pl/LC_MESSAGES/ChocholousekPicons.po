@@ -247,3 +247,13 @@ msgid ""
 msgstr ""
 "Zmieniłeś ścieżkę do folderu picon.\n"
 "Zaakceptować zmienioną ścieżkę ?"
+
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Znaleziono nową wersję wtyczki: %s\n"
+"Czy chcesz go teraz zainstalować ?"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Błąd ! Pobieranie pakietu instalacyjnego wtyczki nie powiodło się !"

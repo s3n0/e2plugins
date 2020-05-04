@@ -246,3 +246,13 @@ msgid ""
 msgstr ""
 "Picon klasörünün yolunu değiştirdiniz.\n"
 "Değiştirilen yol kabul edilsin mi ?"
+
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Yeni eklenti sürümü bulundu: %s\n"
+"Şimdi yüklemek istiyor musunuz ?"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Hata ! Eklenti kurulum paketi indirilemedi !"
