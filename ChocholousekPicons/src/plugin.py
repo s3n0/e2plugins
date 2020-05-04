@@ -23,6 +23,7 @@ from Components.Sources.StaticText import StaticText
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK, NoSave, ConfigNothing
 ###########################################################################
+import requests, json
 import urllib2, ssl, cookielib
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -111,16 +112,8 @@ config.plugins.chocholousekpicons.background = ConfigSelection(
 
 
 
-###########################################################################
-###########################################################################
-###########################################################################
-
-
 
 session = None
-
-plugin_version_local  = '0.0.000000'
-plugin_version_online = '0.0.000000'
 
 
 
@@ -195,8 +188,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self['txt_yellow']   = StaticText(_('Update plugin'))
         self['txt_blue']     = StaticText(_('Update picons'))
         
-        global plugin_version_local
-        self['version_txt']  = Label('Chocholousek picons - plugin ver.%s' % plugin_version_local)
+        self.plugin_update_server = ''
+        self.plugin_ver_online = '0.0.000000'
+        self.plugin_ver_local  = open(PLUGIN_PATH + 'version.txt','r').read().strip()
+        
+        self['version_txt']  = Label('Chocholousek picons - plugin ver.%s' % self.plugin_ver_local)
         self['author_txt']   = Label('(https://github.com/s3n0)')
         
         self['actions'] = ActionMap( ['ColorActions', 'DirectionActions', 'OkCancelActions'] ,
@@ -211,8 +207,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 'cancel': self.keyToExit
         }, -2)
         
-        self.bin7zip = None                     # path to directory with '7z' or '7za' executable binary file
-        self.chochoContent = None               # content of the file "id_for_permalinks*.log" - downloaded from google.drive
+        self.bin7zip = ''                       # path to directory with '7z' or '7za' executable binary file
+        self.chochoContent = ''                 # content of the file "id_for_permalinks*.log" - downloaded from google.drive
         
         if newOE() or os.path.isfile('/etc/opkg/nn2-feed.conf'):        # the NewNigma2 firmware (nn2-feed.conf), based on OpenDreambox, with updated OE 2.0 core - uses some new SKIN modules and therefore it's necessary to leave the FONT in the configList widget!
             i = mainConfigScreen.skin.index('font=', mainConfigScreen.skin.index('name="config"'))
@@ -234,14 +230,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.check7zip()                        # 1.
         
         if self.bin7zip:
-            self.downloadChochoFile()
-        self.loadChochoContent()                # 2.
+            self.downloadChochoFile()           # 2.
+        
+        self.loadChochoContent()                # 3.
         
         if self.bin7zip:
-            self.downloadPreviewPicons()        # 3.
+            self.downloadPreviewPicons()        # 4.
         
-        self.changeAvailableBackgrounds()
-        self.rebuildConfigList()
+        self.changeAvailableBackgrounds()       # 5.
+        self.rebuildConfigList()                # 6.
     
     def rebuildConfigList(self):
         self.list = []
@@ -310,13 +307,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.check7zip()
     
     def keyToPluginUpdate(self):
-        global pluginUpdateDo, plugin_version_local
-        if pluginUpdateDo():
-            message = _("The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?")
-            self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type = MessageBox.TYPE_YESNO, default = False)
+        if self.findHostnameAndNewPlugin():
+            message = _("New plugin version found: %s\nDo you want to install it now ?") % self.plugin_ver_online
+            self.session.openWithCallback(self.downNinstPlugin, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
         else:
             message = _("Plugin version is up to date.\n\n"
-                        "Installed version: %s") % (plugin_version_local)
+                        "Installed version: %s") % (self.plugin_ver_local)
             self.session.open(MessageBox, message, type = MessageBox.TYPE_INFO, timeout = 10)
     
     def exitWithSave(self):
@@ -409,8 +405,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
-                print('Picon preview files v.%s were successfully updated. The archive file was extracted into the plugin directory.' % self.ver(new_file))
-                print('MYDEBUGLOGLINE - \nstatus=%s\nout=%s\n' % (status, out) )
+                print('Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.ver(new_file))
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
             elif status == 32512:
@@ -459,17 +454,18 @@ class mainConfigScreen(Screen, ConfigListScreen):
         url = 'https://drive.google.com/uc?export=download&id=1wn4yKNbJDKN_r5mGHrFFUEn7E6A9kUZ8'    # "zip_idforpermalinks(200426).7z" download the archive file which contains the "id_for_permalinks*.log" file inside --- so, as first, it's necessary to extract the .log file from inside!
         #url = 'https://drive.google.com/uc?export=download&id=1oi6F1WRABHYy8utcgaMXEeTGNeznqwdT'   # "id_for_permalinks191017.log" - means the chochoFile for the chochoContent value :)
         new_filename = downloadFile(url, '', False)                                                 # as the first, do a test the online file only ... and return their file name as a string (if online file will found)
-        if new_filename  \
-        and ('unknown' not in new_filename)  \
-        and (self.ver(new_filename) > self.ver(current_filename)) :                                 # Python <string> comparison like as <integer>, for example as the following:   '191125' > '191013'
-            archive_file_path = downloadFile(url, '/tmp/')
-            status, out = runShell('%s e -y -o"%s" "%s" "id_for_permalinks*.log"' % (self.bin7zip, PLUGIN_PATH, archive_file_path))
-            self.deleteFiles(archive_file_path)
-            if status == 0:
-                self.deleteFiles(current_filename)
-                print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.ver(current_filename), self.ver(new_filename)))
+        if new_filename:   # and ('unknown' not in new_filename) :
+            if self.ver(new_filename) > self.ver(current_filename):
+                archive_file_path = downloadFile(url, '/tmp/')
+                status, out = runShell('%s e -y -o"%s" "%s" "id_for_permalinks*.log"' % (self.bin7zip, PLUGIN_PATH, archive_file_path))
+                self.deleteFiles(archive_file_path)
+                if status == 0:
+                    self.deleteFiles(current_filename)
+                    print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.ver(current_filename), self.ver(new_filename)))
+                else:
+                    print('MYDEBUGLOGLINE - Error ! File "id_for_permalinks*.log" was not extracted from the archive file: %s' % archive_file_path)
             else:
-                print('MYDEBUGLOGLINE - Error ! File "id_for_permalinks*.log" was not extracted from the archive file: %s' % archive_file_path)
+                print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.ver(current_filename), self.ver(new_filename)))
         else:
             print('MYDEBUGLOGLINE - Error ! File "zip_idforpermalinks*.7z" was not found on the internet ! (url = %s)' % url)
     
@@ -534,15 +530,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
     
     def find7zip(self):
-        if os.path.isfile('/usr/bin/7za') or os.path.islink('/usr/bin/7za'):
+        if os.path.isfile('/usr/bin/7za'):      # or os.path.islink('/usr/bin/7za'):
             self.bin7zip = '/usr/bin/7za'
-            return True
-        elif os.path.isfile('/usr/bin/7z') or os.path.islink('/usr/bin/7z'):
+        elif os.path.isfile('/usr/bin/7z'):     # or os.path.islink('/usr/bin/7z'):
             self.bin7zip = '/usr/bin/7z'
-            return True
         else:
             self.bin7zip = ''
-            return False
+        return self.bin7zip
     
     def downNinst7zip(self, confirmed):
         if confirmed:
@@ -587,7 +581,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         mips32el, armv7l, armv7a-neon, armv7ahf, armv7ahf-neon, cortexa9hf-neon, cortexa15hf-neon-vfpv4, aarch64, sh4, sh_4
         '''
         cmd = 'dpkg --print-architecture' if os.path.exists('/etc/dpkg') else 'opkg print-architecture'
-        status,out = runShell(cmd + ' | grep -iE "arm|mips|cortex|aarch64|sh4|sh_4"')           # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        status,out = runShell(cmd + ' | grep -iE "mips|arm|aarch64|cortex|sh4|sh_4"')           # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             return out.lower().replace('arch ','').replace('\n',' ')    # return architectures by the Enigma package manager, like as:  'mips32el 16 mipsel 46'
         
@@ -597,6 +591,60 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         print('MYDEBUGLOGLINE - Error! Could not get information about chipset-architecture! Returning an empty string!')
         return ''
+    
+    ###########################################################################
+    
+    def findHostnameAndNewPlugin(self):
+        '''
+        return "" ----- if a new online version was NOT found
+        return URL ---- if a new online version was found (the new version found will be stored in variable self.plugin_ver_online and hostname in self.plugin_update_server)
+        '''
+        server_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons',
+                       'http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons',
+                       'http://aion.webz.cz/ChocholousekPicons']            # HTTP download - as fuse and SSL prevention in some Enigma distributions
+        self.plugin_update_server = ''
+        for url in server_list:
+            try:
+                url_handle = urllib2.urlopen(url + '/src/version.txt')
+            except urllib2.URLError as err:
+                print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+            except Exception as err:
+                print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+            else:
+                self.plugin_ver_online = url_handle.read().strip()
+                if self.plugin_ver_online > self.plugin_ver_local:
+                    self.plugin_update_server = url
+                    break # to start the plugin update process
+        return self.plugin_update_server
+    
+    def downNinstPlugin(self, confirm):
+        if confirm:
+            
+            if self.plugin_update_server and (self.plugin_ver_online > self.plugin_ver_local):
+                
+                pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + self.plugin_ver_online + ('_all.deb' if os.path.exists('/etc/dpkg') else '_all.ipk')
+                dwn_url   =  self.plugin_update_server + '/released_build/' + pckg_name
+                dwn_file  = '/tmp/' + pckg_name
+                
+                if downloadFile(dwn_url, dwn_file):
+                    
+                    if pckg_name.endswith('.deb'):
+                        os.system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
+                        os.system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
+                    else:
+                        os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
+                    
+                    os.remove(dwn_file)
+                    print('New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (self.plugin_ver_local, self.plugin_ver_online)  )
+                    self.plugin_ver_local = self.plugin_ver_online
+                    
+                    message = _('The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?')
+                    self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
+                
+                else:
+                    print('New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (self.plugin_ver_local, self.plugin_ver_online, dwn_url)  )
+                    message = _('Error ! Downloading plugin installation package failed !') + '\n' + dwn_url
+                    self.session.open(MessageBox, message, type = MessageBox.TYPE_ERROR)
 
 
 
@@ -1006,6 +1054,7 @@ class piconsUpdateJobScreen(Screen):
         self.logWindowText = 'LOG:\n'
         self['logWindow'] = ScrollLabel(self.logWindowText)
         self['logWindow'].scrollbarmode = "showOnDemand"
+        
         self.logWindowTimer = eTimer()
         if newOE():
             self.logWindowTimer_conn = self.logWindowTimer.timeout.connect(self.logWindowUpdate)
@@ -1072,18 +1121,6 @@ class piconsUpdateJobScreen(Screen):
             self['logWindow'].hide()                            # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
             self.session.open(MessageBox, msg, type)            
             self.close()
-    
-    def logWindowUpdate(self):
-        '''
-        A note regarding to NewNigma2 with OE2.0 core :
-        ScrollLabel as the GUI Component uses a eTimer for each refresh of its content, which causes the system to crash --- FATAL!: addTimer must be called from thread 3261 but is called from thread 3680
-        ScrollLabel uses eTimer as one of the GUI components to update its content ... if we invoke ScrollLabel (which is currently updating its content) from some separate thread in Python, it will cause a system-crash in some cases (probably a bug in some C-libraries in some Enigma distributions)
-        Therefore, it's necessary to update the content of the ScrollLabel "logWindow" via a separate eTimer - outside of the running thread (thProcess and mainFunc) in the background
-        '''
-        if len(self.logWindowText) != len(self['logWindow'].getText()):
-            self['logWindow'].setText(self.logWindowText)
-            #self['logWindow'].appendText('')
-            self['logWindow'].lastPage()
     
     def mainFunc(self):
         
@@ -1269,7 +1306,7 @@ class piconsUpdateJobScreen(Screen):
         if status == 0:
             return True
         else:
-            self.writeLog7zipError(status, archiveFile, out)
+            self.writeLog7zipError(status, out, archiveFile)
             return False
     
     def extractAllPiconsFromArchive(self, archiveFile):
@@ -1277,7 +1314,7 @@ class piconsUpdateJobScreen(Screen):
         if status == 0:
             return True
         else:
-            self.writeLog7zipError(status, archiveFile, out)
+            self.writeLog7zipError(status, out, archiveFile)
             return False
     
     def getPiconListFromArchive(self, archiveFile):
@@ -1285,7 +1322,7 @@ class piconsUpdateJobScreen(Screen):
         status, out = runShell('%s l "%s" "*.png"' % (self.bin7zip, archiveFile) )   # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             out = out.splitlines()
-            indexes = [ i for i,s in enumerate(out) if s.startswith('------') ]
+            indexes = [ i for i, s in enumerate(out) if s.startswith('------') ]
             if len(indexes) == 2:
                 first, last = indexes
                 tmp = {}
@@ -1301,10 +1338,10 @@ class piconsUpdateJobScreen(Screen):
             else:
                 print('MYDEBUGLOGLINE - Error ! Could not find the beginning and end of the list in the "%s" archive when listing "*.png" files.' % archiveFile)
         else:
-            self.writeLog7zipError(status, archiveFile, out)
+            self.writeLog7zipError(status, out, archiveFile)
         return tmp  # returns an empty string on error, otherwise returns the list of all file names without extension + file sizes
     
-    def writeLog7zipError(self, status, archiveFile, out):
+    def writeLog7zipError(self, status, out, archiveFile):
         if status == 32512:
             self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
         elif status == 512:
@@ -1314,9 +1351,20 @@ class piconsUpdateJobScreen(Screen):
     
     def writeLog(self, text = ''):
         timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method
-        msg = '\n[%s] %s' % (timestamp, text)
-        print('MYDEBUGLOGLINE - %s' % msg)
-        self.logWindowText += msg
+        m = '[%s] %s' % (timestamp, text)
+        print('MYDEBUGLOGLINE - %s' % m)
+        self.logWindowText += '\n' + m
+    
+    def logWindowUpdate(self):
+        '''
+        A note regarding to NewNigma2 with OE2.0 core :
+        ScrollLabel as the GUI Component uses a eTimer for each refresh of its content, which causes the system to crash --- FATAL!: addTimer must be called from thread 3261 but is called from thread 3680
+        ScrollLabel uses eTimer as one of the GUI components to update its content ... if we invoke ScrollLabel (which is currently updating its content) from some separate thread in Python, it will cause a system-crash in some cases (probably a bug in some C-libraries in some Enigma distributions)
+        Therefore, it's necessary to update the content of the ScrollLabel "logWindow" via a separate eTimer - outside of the running thread (thProcess and mainFunc) in the background
+        '''
+        if len(self.logWindowText) != len(self['logWindow'].getText()):
+            self['logWindow'].setText(self.logWindowText)                   #self['logWindow'].appendText( .........  )
+            self['logWindow'].lastPage()
     
     #def storeVarInFile(self, fname, data):
     #    with open('/tmp/___%s.log' % fname, 'w') as f:
@@ -1330,64 +1378,52 @@ class piconsUpdateJobScreen(Screen):
 
 
 
-def findHostnameAndNewPlugin():
-    '''
-    return "" ----- if a new online version was not found
-    return URL ---- if a new online version was found
-    '''
-    global plugin_version_local, plugin_version_online
-    server_list = ['https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons',
-                   'http://cdn.jsdelivr.net/gh/s3n0/e2plugins/ChocholousekPicons',          # HTTP download - fuse and SSL prevention in some Enigma distributions
-                   'http://aion.webz.cz/ChocholousekPicons']
-    result = ''
-    for url in server_list:
-        try:
-            url_handle = urllib2.urlopen(url + '/src/version.txt')
-        except urllib2.URLError as err:
-            print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
-        except Exception as err:
-            print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
-        else:
-            plugin_version_online = url_handle.read().strip()
-            if plugin_version_online > plugin_version_local:
-                result = url
-                break # to start the plugin update process
-    return result
-
-def pluginUpdateDo():
-    '''
-    return True ----- if a new version was successfull downloaded and installed
-    return False ---- if a new version was not found
-    '''
-    global plugin_version_local, plugin_version_online
-    host = findHostnameAndNewPlugin()
-    if host:
-        pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + plugin_version_online + ('_all.deb' if os.path.exists('/etc/dpkg') else '_all.ipk')
-        dwn_url   =  host + '/released_build/' + pckg_name
-        dwn_file  = '/tmp/' + pckg_name
-        if downloadFile(dwn_url, dwn_file):
-            if pckg_name.endswith('.deb'):
-                os.system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
-                os.system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
-            else:
-                os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
-            print('New plugin version was installed ! old ver.:%s , new ver.:%s' % (plugin_version_local, plugin_version_online)  )
-            plugin_version_local = plugin_version_online            
-            os.remove(dwn_file)
-            return True
-        else:
-            return False
-    else:
-        print('New plugin version is not available - local ver.:%s , online ver.:%s' % (plugin_version_local, plugin_version_online)  )
-        return False
-
-
-
-###########################################################################
-###########################################################################
-###########################################################################
-
-
+# def downloadFile(url, storagepath='', savefile=True):
+    # '''
+    # Download files from the internet to the destination, taking into account the Drive.Google server (warning window with virus scan).
+    # If the storagepath variable (a destination) of the downloaded file ENDS WITH A "/", then this directory will be used as the destination of the downloaded file. Otherwise folder "/tmp" will be used.
+    # If the storagepath variable (a destination) of the downloaded file not contains some file name, then the algorithm looks for the file name in Cookies and if the name cannot be found, it is invented as "unknown_file_<random-num>".
+    # The savefile variable determines whether the file is saved (True) to the local disk or not (False). If not, it only means testing the existence of the online file (the function "" returns on error or the path to the file if the online file exists).
+    # When the download fails, function returns an empty string "". Otherwise, it returns the path + name of the downloaded file.
+    # '''
+    # #ctx = ssl.create_default_context()                 # urllib2 does not verify server certificate by default - but this is not true anymore for Python 2.7.9 or newer versions !
+    # #ctx.check_hostname = False                         # .create_default_context() method does not work in versions earlier than Python 2.6 ! has been added since Python 2.6 and later
+    # #ctx.verify_mode = ssl.CERT_NONE                    # example of use:    handler = urllib2.urlopen(req, timeout=20, context=ctx)
+    # try:
+        # req = requests.get(url)
+        # if 'drive.google' in url:
+            # for key in req.headers.keys():
+                # if key.lower().startswith('download_warning'):                                  # in case of drive.google download a virus warning message is possible (for some downloads)
+                    # print('MYDEBUGLOGLINE - url: %s - "warning_message" detected' % url)
+                    # url = url.replace('&id=', '&confirm=%s&id=' % req.headers[key])             # and then it's necessary to add a parameter with confirmation of the warning message
+                    # req = requests.get(url)
+                    # break
+        
+        # if storagepath.endswith('/') or storagepath == '':
+            # if 'Content-Disposition' in req.headers.keys():
+                # storagepath += req.headers['Content-Disposition'].split('"')[1]                 # get filename from html header
+            # else:
+                # storagepath = '/tmp/unknown_file_' + datetime.now().strftime('%s')              # unix-timestamp: '/tmp/unknown_file_1586625400'
+                # #storagepath = '/tmp/unknown_file_{:0>6}____'.format(random.randint(0,150000))  # random number
+        
+        # if savefile:          # download file from the internet + save file to local disk via buffer (because of limitation on some devices - with a low capacity of RAM size)
+            # CHUNK_SIZE = 524288
+            # with open(storagepath, 'wb') as f:
+                # for chunk in req.iter_content(CHUNK_SIZE):
+                    # if chunk: # filter out keep-alive new chunks
+                        # f.write(chunk)
+    
+    # except Exception as e:
+        # print('MYDEBUGLOGLINE - download failed - error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
+        # storagepath = ''
+    
+    # except:
+        # print('MYDEBUGLOGLINE - download failed - URL: %s , storagepath: %s' % (url, storagepath) )
+        # storagepath = ''
+    
+    # return storagepath
+    # # return the path+filename, if all done (file was found and/or was also stored on disk)
+    # # return the empty string, if the download fails
 
 def downloadFile(url, storagepath='', savefile=True):
     '''
@@ -1397,7 +1433,7 @@ def downloadFile(url, storagepath='', savefile=True):
     The savefile variable determines whether the file is saved (True) to the local disk or not (False). If not, it only means testing the existence of the online file (the function "" returns on error or the path to the file if the online file exists).
     When the download fails, function returns an empty string "". Otherwise, it returns the path + name of the downloaded file.
     '''
-    headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/74.0'}           # 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
+    headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0'}
     
     cookie_jar = cookielib.CookieJar()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
@@ -1413,6 +1449,7 @@ def downloadFile(url, storagepath='', savefile=True):
         if 'drive.google' in url:
             for c in cookie_jar:
                 if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
+                    print('MYDEBUGLOGLINE - url: %s - "warning_message" detected' % url)
                     url = url.replace('&id=', '&confirm=%s&id=' % c.value)   # and then it's necessary to add a parameter with confirmation of the warning message
                     req = urllib2.Request(url, data=None, headers=headers)
                     handler = urllib2.urlopen(req, timeout=15)
@@ -1425,19 +1462,22 @@ def downloadFile(url, storagepath='', savefile=True):
                 storagepath = '/tmp/unknown_file_' + datetime.now().strftime('%s')                  # unix-timestamp: '/tmp/unknown_file_1586625400'
                 #storagepath = '/tmp/unknown_file_{:0>6}____'.format(random.randint(0,150000))      # random number
         
-        if savefile:                                    # download file from the internet + save file to local disk
+        if savefile:        # download file from the internet + save file to local disk
             data = handler.read()
             with open(storagepath, 'wb') as f:
                 f.write(data)
     
     except Exception as e:
-        print('File download error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
+        print('MYDEBUGLOGLINE - download failed - error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
         storagepath = ''
     
     except:
+        print('MYDEBUGLOGLINE - download failed - URL: %s , storagepath: %s' % (url, storagepath) )
         storagepath = ''
     
-    return storagepath      # return the path and filename, if all done (file is saved on disk, no testing purpose)  # return the empty string, if the download fails
+    return storagepath
+    # return the path+filename, if all done (file was found and/or was also stored on disk)
+    # return the empty string, if the download fails
 
 def newOE():
     '''
@@ -1493,20 +1533,18 @@ def runShell(cmd):
 
 def pluginMenu(session, **kwargs):              # starts when the plugin is opened via Plugin-MENU
     print('PLUGINSTARTDEBUGLOG - pluginMenu executed')
-    global plugin_version_local
-    plugin_version_local = open(PLUGIN_PATH + 'version.txt','r').read().strip()
     session.open(mainConfigScreen)
 
 def Plugins(**kwargs):
     if desktopX > 1900:
-        logo_img = 'images/plugin_fhd.png'
+        plugin_logo = 'images/plugin_fhd.png'
     else:
-        logo_img = 'images/plugin.png'
+        plugin_logo = 'images/plugin.png'
     return [ PluginDescriptor(
                 where = PluginDescriptor.WHERE_PLUGINMENU,
                 name = 'Chocholousek picons',
                 description = 'Download and update Chocholousek picons',
-                icon = logo_img,
+                icon = plugin_logo,
                 needsRestart = False,
                 fnc = pluginMenu)  ]
 
