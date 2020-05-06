@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-10 13:39+0300\n"
-"PO-Revision-Date: 2020-04-27 12:07+0300\n"
+"POT-Creation-Date: 2020-05-04 22:12+0300\n"
+"PO-Revision-Date: 2020-05-06 17:58+0300\n"
 "Last-Translator: Audronis Grincevicius <adga45@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -14,74 +14,135 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(%s pridėta / %s pakeista / %s pašalinta)"
+
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(atsisiųsti ir išskleisti visus reikalingus logotipus)"
+
 msgid "(user defined)"
 msgstr "(apibrėžtas naudotojas)"
 
-msgid "copy all: current will deleted"
-msgstr "kopijuoti visus: dabartinis bus ištrintas"
+msgid "...%s picons deleted."
+msgstr "...%s logotipai panaikinti."
 
-msgid "copy all: incremental update"
-msgstr "kopijuoti viską: papildantysis naujinimas"
+msgid "...%s picons were extracted from the archive."
+msgstr "...%s logotipai išskleisti iš archyvo."
 
-msgid "sync with TV userbouquets"
-msgstr "sinchronizuoti su TV paketais"
+msgid "...done."
+msgstr "...atlikta."
 
-msgid "sync with TV+RADIO userbouquets"
-msgstr "sinchronizuoti su TV+RADIJO paketais"
+msgid "...file download failed !!!"
+msgstr "...failo atsisiųsti nepavyko !!!"
 
-msgid "first select the satellites"
-msgstr "pirmiausia pasirinkite palydovus"
+msgid "...file download successful."
+msgstr "...failų atsisiuntimas sėkmingas."
+
+msgid "...the process is complete."
+msgstr "...procesas baigtas."
+
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Atnaujinus logotipus, gali tekti iš naujo paleisti grafinę aplinką."
+
+msgid "Apply"
+msgstr "Patvirtinti"
+
+msgid "Cancel"
+msgstr "Atšaukti"
+
+msgid "Create directory"
+msgstr "Kurti katalogą"
+
+msgid "Delete directory"
+msgstr "Trinti katalogą"
+
+msgid "Deleting unnecessary picons from local disk..."
+msgstr "Naikinami nereikalingi logotipai iš vietinio disko..."
+
+msgid "Do you want to delete this directory ?"
+msgstr "Ar norite ištrinti šį katalogą?"
+
+msgid "Done !"
+msgstr "Atlikta !"
+
+msgid "Download ID for file %s was not found!"
+msgstr "Failo %s atsisiuntimo ID nerastas!"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Klaida! Priedo įdiegimo paketo atsisiųsti nepavyko!"
+
+msgid ""
+"Error creating directory %s:\n"
+"%s"
+msgstr ""
+"Klaida kuriant katalogą %s:\n"
+"%s"
+
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Klaida! Atsisiųstame archyvo faile logotipų nerasta!"
 
 msgid "Exit"
 msgstr "Užverti"
 
-msgid "Save & Exit"
-msgstr "Išsaugoti ir užverti"
+msgid "Extracting files from the archive..."
+msgstr "Išskleidžiami failai iš archyvo..."
 
-msgid "Update plugin"
-msgstr "Naujinti priedą"
+msgid "Installation of 7-zip archiver failed!"
+msgstr "Įdiegti 7-zip archyvuotojo nepavyko!"
 
-msgid "Update picons"
-msgstr "Naujinti logotipus"
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr "Nepavyko įdiegti atskiro \"7za\" (7-zip) archyvuotojo."
 
-msgid "Picon folder"
-msgstr "Logotipų aplankas"
+msgid "Internet connection is OK."
+msgstr "Interneto ryšys yra geras."
 
-msgid "User defined folder"
-msgstr "Vartotojo apibrėžtas aplankas"
-
-msgid "Picon update method"
-msgstr "Logotipų naujinimo metodas"
-
-msgid "Satellite positions"
-msgstr "Palydovai"
+msgid "Internet connection is not available !"
+msgstr "Nėra interneto ryšio !"
 
 msgid ""
-"You have changed the selection of satellites.\n"
-"Apply these changes ?"
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
 msgstr ""
-"Jūs pakeitėte palydovų pasirinkimą.\n"
-"Taikyti šiuos pakeitimus ?"
+"Rasta nauja priedo versija: %s\n"
+"Ar norite įdiegti dabar?"
 
-msgid "Picon resolution"
-msgstr "Logotipo skiriamoji geba"
+msgid "No operation ! Picon update failed !"
+msgstr "Jokios operacijos ! Logotipų atnaujinti nepavyko !"
+
+msgid "No picons added or changed."
+msgstr "Nepridėta arba nepakeista jokių logotipų."
+
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Nerasta pasirinktos skiriamosios gebos ir palydovų logotipų !"
+
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Vartotojo paketų failai nerasti!\n"
+"Prašome patikrinti aplanko /etc/enigma2 userbouquet failus."
+
+msgid "Note: This directory is not empty - it contains %s item(s)."
+msgstr "Pastaba: šis katalogas nėra tuščias – jame yra %s elementas (-ai)."
+
+msgid "Path to the picon folder:"
+msgstr "Kelias į logotipų aplanką:"
 
 msgid "Picon background"
 msgstr "Logotipo fonas"
 
-msgid "Choose picon design"
-msgstr "Pasirinkite logotipo dizainą"
+msgid "Picon folder"
+msgstr "Logotipų aplankas"
 
-msgid ""
-"The plugin has been updated to the new version.\n"
-"A quick reboot is required.\n"
-"Do a quick reboot now ?"
-msgstr ""
-"Priedas atnaujintas į naują versiją.\n"
-"Būtinas greitas perkrovimas.\n"
-"Ar perkrauti dabar?"
+msgid "Picon resolution"
+msgstr "Logotipo skiriamoji geba"
 
-#, python-format
+msgid "Picon update method"
+msgstr "Logotipų naujinimo metodas"
+
+msgid "Please enter a name for the new directory:"
+msgstr "Prašome įrašyti naujo katalogo pavadinimą"
+
 msgid ""
 "Plugin version is up to date.\n"
 "\n"
@@ -91,15 +152,23 @@ msgstr ""
 "\n"
 "Įdiegta versija: %s"
 
-msgid ""
-"You have changed the plugin configuration.\n"
-"Do you want to save all changes now ?"
-msgstr ""
-"Pakeitėte priedo konfigūraciją.\n"
-"Ar norite įrašyti visus keitimus dabar ?"
+msgid "Preparing a list of picons from the picon directory on the local disk."
+msgstr "Ruošiamas logotipų sąrašas iš logotipų katalogo vietiniame diske."
 
-msgid "No picons found for selected resolution and satellites !"
-msgstr "Nerasta pasirinktos skiriamosios gebos ir palydovų logotipų !"
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Ruošiamas logotipų sąrašas iš vartotojo paketų failų..."
+
+msgid "Satellite positions"
+msgstr "Palydovai"
+
+msgid "Save & Exit"
+msgstr "Išsaugoti ir užverti"
+
+msgid "Select satellites:"
+msgstr "Palydovai:"
+
+msgid "Some errors has occurred !"
+msgstr "Yra klaidų !"
 
 msgid ""
 "The 7-zip archiver was not found on your system.\n"
@@ -127,112 +196,71 @@ msgstr ""
 "7-zip archyvuotojo iš Enigma2 įdiegimas\n"
 "iš šaltinių serverio sėkmingas."
 
-msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
-msgstr "Nepavyko įdiegti atskiro \"7za\" (7-zip) archyvuotojo."
-
-msgid "Installation of 7-zip archiver failed!"
-msgstr "Įdiegti 7-zip archyvuotojo nepavyko!"
-
-msgid "Select satellites:"
-msgstr "Palydovai:"
-
-msgid "Apply"
-msgstr "Patvirtinti"
-
-msgid "Accept"
-msgstr "Priimti"
-
-msgid "Cancel"
-msgstr "Atšaukti"
-
-msgid "No operation ! Picon update failed !"
-msgstr "Jokios operacijos ! Logotipų atnaujinti nepavyko !"
-
-msgid "Some errors has occurred !"
-msgstr "Yra klaidų !"
-
-msgid "Done !"
-msgstr "Atlikta !"
-
-#, python-format
-msgid "(%s added / %s changed / %s removed)"
-msgstr "(%s pridėta / %s pakeista / %s pašalinta)"
-
-msgid "Internet connection is not available !"
-msgstr "Interneto ryšys negalimas !"
-
-msgid "Internet connection is OK."
-msgstr "Interneto ryšys yra geras."
-
-#, python-format
 msgid ""
-"Error creating directory %s:\n"
-"%s"
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
 msgstr ""
-"Klaida kuriant katalogą %s:\n"
-"%s"
-
-msgid ""
-"No userbouquet files found !\n"
-"Please check the folder /etc/enigma2 for the userbouquet files."
-msgstr ""
-"Vartotojo paketų failai nerasti!\n"
-"Prašome patikrinti aplanko /etc/enigma2 userbouquet failus."
-
-msgid "Preparing a list of picons from the picon directory on the local disk."
-msgstr "Ruošiamas logotipų sąrašas iš logotipų katalogo vietiniame diske."
-
-msgid "Preparing a list of picons from userbouquet files..."
-msgstr "Ruošiamas logotipų sąrašas iš vartotojo paketų failų..."
-
-msgid "...done."
-msgstr "...atlikta."
-
-msgid "Deleting unnecessary picons from local disk..."
-msgstr "Naikinami nereikalingi logotipai iš vietinio disko..."
-
-#, python-format
-msgid "...%s picons deleted."
-msgstr "...%s logotipai panaikinti."
+"Priedas atnaujintas į naują versiją.\n"
+"Būtinas greitas perkrovimas.\n"
+"Ar perkrauti dabar?"
 
 msgid "The process started..."
 msgstr "Procesas prasidėjo..."
 
-msgid "(downloading and extracting all necessary picons)"
-msgstr "(atsisiųsti ir išskleisti visus reikalingus logotipus)"
-
-msgid "...the process is complete."
-msgstr "...procesas baigtas."
-
-msgid "After updating the picons you may need to restart the Enigma (GUI)."
-msgstr "Atnaujinus logotipus, gali tekti iš naujo paleisti Enigma (GUI)."
-
-msgid "No picons added or changed."
-msgstr "Nepridėta arba nepakeista jokių logotipų."
-
-#, python-format
-msgid "Download ID for file %s was not found!"
-msgstr "Failo %s atsisiuntimo ID nerastas!"
-
-#, python-format
 msgid "Trying download the file archive... %s"
 msgstr "Bandoma atsisiųsti failų archyvą... %s"
 
-msgid "...file download failed !!!"
-msgstr "...failo atsisiųsti nepavyko !!!"
+msgid "Update picons"
+msgstr "Naujinti logotipus"
 
-msgid "...file download successful."
-msgstr "...failų atsisiuntimas sėkmingas."
+msgid "Update plugin"
+msgstr "Naujinti priedą"
 
-msgid "Error! No picons found in the downloaded archive file!"
-msgstr "Klaida! Atsisiųstame archyvo faile logotipų nerasta!"
+msgid "User defined folder"
+msgstr "Vartotojo apibrėžtas aplankas"
 
-msgid "Extracting files from the archive..."
-msgstr "Išskleidžiami failai iš archyvo..."
+msgid ""
+"You have changed the path to the picon folder.\n"
+"Accept changed path ?"
+msgstr ""
+"Pakeitėte kelią į logotipų aplanką.\n"
+"Patvirtinti pakeistą kelią?"
 
-#, python-format
-msgid "...%s picons were extracted from the archive."
-msgstr "...%s logotipai išskleisti iš archyvo."
+msgid ""
+"You have changed the plugin configuration.\n"
+"Do you want to save all changes now ?"
+msgstr ""
+"Pakeitėte priedo konfigūraciją.\n"
+"Ar norite įrašyti visus keitimus dabar?"
+
+msgid ""
+"You have changed the selection of satellites.\n"
+"Apply these changes ?"
+msgstr ""
+"Jūs pakeitėte palydovų pasirinkimą.\n"
+"Patvirtinti šiuos pakeitimus?"
+
+msgid "copy all: current will deleted"
+msgstr "kopijuoti visus: dabartinis bus ištrintas"
+
+msgid "copy all: incremental update"
+msgstr "kopijuoti viską: papildantysis naujinimas"
+
+msgid "first select the satellites"
+msgstr "pirmiausia pasirinkite palydovus"
+
+msgid "selected"
+msgstr "pasirinkta"
+
+msgid "sync with TV userbouquets"
+msgstr "sinchronizuoti su TV paketais"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "sinchronizuoti su TV+RADIJO paketais"
+
+#~ msgid "Choose picon design"
+#~ msgstr "Pasirinkite logotipo dizainą"
 
 #~ msgid "Browse the contents of the downloaded archive file."
 #~ msgstr "Naršykite atsisiųsto archyvo failo turinį."
@@ -248,41 +276,3 @@ msgstr "...%s logotipai išskleisti iš archyvo."
 
 #~ msgid "Preparing picon list for extracting (missing files and files of different sizes)."
 #~ msgstr "Ruošiamasi išskleisti logotipų sąrašą (trūkstamus failus ir failus įvairių dydžių)."
-
-msgid "Path to the picon folder:"
-msgstr "Pasirinkite „picon“ aplanką:"
-
-msgid "Create directory"
-msgstr "Sukurti aplanką"
-
-msgid "Delete directory"
-msgstr "Ištrinti aplanką"
-
-msgid "Please enter a name for the new directory:"
-msgstr "Įveskite naujo aplanko pavadinimą:"
-
-msgid "Do you want to delete this directory ?"
-msgstr "Ar norite ištrinti šį aplanką ?"
-
-msgid "Note: This directory is not empty - it contains %s item(s)."
-msgstr "Pastaba: Šis aplankas nėra tuščias - jame yra %s elementas(i)."
-
-msgid ""
-"You have changed the path to the picon folder.\n"
-"Accept changed path ?"
-msgstr ""
-"Pakeitėte kelią į „picon“ aplanką.\n"
-"Sutikti pakeistą kelią ?"
-
-msgid ""
-"New plugin version found: %s\n"
-"Do you want to install it now ?"
-msgstr ""
-"Rasta nauja papildinio versija: %s\n"
-"Ar norite ją įdiegti dabar ?"
-
-msgid "Error ! Downloading plugin installation package failed !"
-msgstr "Klaida ! Nepavyko atsisiųsti papildinio diegimo paketo !"
-
-msgid "selected"
-msgstr "pasirinkta"
