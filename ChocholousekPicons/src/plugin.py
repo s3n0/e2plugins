@@ -23,7 +23,6 @@ from Components.Sources.StaticText import StaticText
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK, NoSave, ConfigNothing
 ###########################################################################
-import requests, json
 import urllib2, ssl, cookielib
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -129,12 +128,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="1200,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
-            <widget name="version_txt"  position="0,0"           size="1200,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="author_txt"   position="0,60"          size="1200,40"  font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="version_txt"  position="0,0"     size="1200,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="author_txt"   position="0,60"    size="1200,40"  font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
-            <widget name="config"       position="50,100"        size="1100,600" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+            <widget name="config"       position="50,100"  size="1100,600" font="Regular;30" itemHeight="34" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
-            <widget name="previewImage" position="100,390"       size="500,300"  zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="previewImage" position="100,390" size="500,300"  zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="200,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
@@ -150,12 +149,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
         skin = '''
         <screen name="mainConfigScreen" position="center,center" size="850,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
-            <widget name="version_txt"  position="0,0"           size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="author_txt"   position="0,40"          size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="version_txt"  position="0,0"     size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+            <widget name="author_txt"   position="0,40"    size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
-            <widget name="config"       position="25,70"         size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+            <widget name="config"       position="25,70"   size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
-            <widget name="previewImage" position="70,225" size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="previewImage" position="70,225"  size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="20,560"  size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="165,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
@@ -242,13 +241,18 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     def rebuildConfigList(self):
         self.list = []
-        self.list.append(getConfigListEntry( _('Picon folder')           , config.plugins.chocholousekpicons.picon_folder  ))
+        self.list.append(getConfigListEntry( _('Picon folder')            ,  config.plugins.chocholousekpicons.picon_folder ))
         if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
-            self.list.append(getConfigListEntry( _('User defined folder'), NoSave(ConfigSelection(choices = [config.plugins.chocholousekpicons.picon_folder_user.value])) ))   # for display purposes only, without the ability to configure this item as an object
-        self.list.append(getConfigListEntry( _('Picon update method')    , config.plugins.chocholousekpicons.method        ))
-        self.list.append(getConfigListEntry( _('Satellite positions')    , NoSave(ConfigSelection(choices = [config.plugins.chocholousekpicons.sats.value])) ))   # for display purposes only, without the ability to configure this item as an object
-        self.list.append(getConfigListEntry( _('Picon resolution')       , config.plugins.chocholousekpicons.resolution    ))
-        self.list.append(getConfigListEntry( _('Picon background')       , config.plugins.chocholousekpicons.background    ))
+            self.list.append(getConfigListEntry( _('User defined folder') ,  NoSave(ConfigSelection(choices = [config.plugins.chocholousekpicons.picon_folder_user.value]))  )) # for display purposes only, without the ability to configure this item as an object
+        self.list.append(getConfigListEntry( _('Picon update method')     ,  config.plugins.chocholousekpicons.method       ))
+        s = config.plugins.chocholousekpicons.sats.value
+        if len(s) > 40:
+            s = '%s.... (%s %s)' % (s[:40], len(s.split()), _('selected'))
+        else:
+            s = '%s (%s %s)' % ( s    , len(s.split()), _('selected'))
+        self.list.append(getConfigListEntry( _('Satellite positions')     ,  NoSave(ConfigSelection( choices = [s] ) )      ))      # for display purposes only, without the ability to configure this item as an object
+        self.list.append(getConfigListEntry( _('Picon resolution')        ,  config.plugins.chocholousekpicons.resolution   ))
+        self.list.append(getConfigListEntry( _('Picon background')        ,  config.plugins.chocholousekpicons.background   ))
         
         listWidth = self['config'].l.getItemSize().width()
         self['config'].list = self.list
@@ -659,9 +663,13 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     if desktopX > 1900:    # Full-HD or higher
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="450,900" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="title_txt"          position="0,0"           size="450,110" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="config"             position="50,110"        size="350,700" font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
-            
+            <widget name="txt_title"          position="0,0"           size="450,080" font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+
+            <widget name="txt_counter"        position="180,80"        size="90,30"   font="Regular;30" foregroundColor="white"  transparent="1" halign="center" valign="center" />
+            <eLabel name="frame_counter"      position="180,80"        size="90,30"   zPosition="-1"    backgroundColor="#114C0000" />
+
+            <widget name="config"             position="50,120"        size="350,690" font="Regular;30" itemHeight="34" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+                        
             <ePixmap pixmap="skin_default/buttons/red.png"   position="25,854"  size="30,46"  transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png" position="230,854" size="30,46"  transparent="1" alphatest="on" zPosition="1" />
             
@@ -671,8 +679,12 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     else:                   # HD-ready or lower
         skin = '''
         <screen name="satellitesConfigScreen" position="center,center" size="350,600" title="Satellite positions" flags="wfNoBorder" backgroundColor="#44000000">
-            <widget name="title_txt"          position="0,0"           size="350,070" font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
-            <widget name="config"             position="25,70"         size="300,470" font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+            <widget name="txt_title"          position="0,0"           size="350,050" font="Regular;24" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
+
+            <widget name="txt_counter"        position="145,50"        size="60,25"   font="Regular;22" foregroundColor="white"  transparent="1" halign="center" valign="center" />
+            <eLabel name="frame_counter"      position="145,50"        size="60,25"   zPosition="-1"    backgroundColor="#114C0000" />
+
+            <widget name="config"             position="25,75"         size="300,470" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             
             <ePixmap pixmap="skin_default/buttons/red.png"   position="20,560"  size="30,40"  transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png" position="190,560" size="30,40"  transparent="1" alphatest="on" zPosition="1" />
@@ -695,7 +707,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
         self.lineheight = 1
         
-        self['title_txt'] = Label(_('Select satellites:'))
+        self['txt_title']   = Label(_('Select satellites:'))
+        self['txt_counter'] = Label(_('-'))
         self['txt_green'] = StaticText(_('Apply'))
         self['txt_red']   = StaticText(_('Cancel'))
 
@@ -727,7 +740,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             y1 = s[i+10 : i+13]
             s = s[:i] + 'size="' + y1 + s[i+9:]
             
-            i = s.index('size=', s.index('name="title_txt"'))   # second match is the size of widget "title_txt", but the width value is the same as previous value
+            i = s.index('size=', s.index('name="txt_title"'))   # second match is the size of widget "txt_title", but the width value is the same as previous value
             s = s[:i] + 'size="' + y1 + s[i+9:]
             
             i = s.index('size=', s.index('name="config"'))      # another match is the size of widget "config" (replace the value of heigth ---to--> width)
@@ -735,8 +748,16 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             s = s[:i] + 'size="' + y2 + s[i+9:]
             
             x = str( (int(y1) - int(y2))  /  2 )
-            i = s.index('position=', s.index('name="config"'))  # and also change the widget relative horizontal position ("center,0" does not work under NewNigma2 image, so I need use a relative horizontal position, instead of the "center" position for all widgets)
+            i = s.index('position=', s.index('name="config"'))  # and also change the WIDGET relative horizontal position ("center,0" does not work under NewNigma2 image, so I need use a relative horizontal position, instead of the "center" position for all widgets)
             s = s[:i+10] + x + s[i+12:]
+            
+            i = s.index('size=', s.index('name="frame_counter'))
+            m = s[i+6 : i+8]
+            n = str( (int(y1) - int(m))  /  2 )
+            i = s.index('position=', s.index('name="txt_counter'))
+            s = s[:i+10] + n + s[i+13:]                         # replace "center" position to fixed value, in widget "txt_counter"
+            i = s.index('position=', s.index('name="frame_counter'))
+            s = s[:i+10] + n + s[i+13:]                         # replace "center" position to fixed value, in widget "frame_counter"
             
             self.skin = s
         else:
@@ -751,11 +772,11 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.changedEntry()
     
     def switchSelectedSat(self, boo):
-        sel = self['config'].getCurrent()[0]                                # retrieve example:   '23.5E 19.2E 13.0E'             ... or another example:   '13.0E'
-        sats = config.plugins.chocholousekpicons.sats.getValue().split()    # result   example:   ['23.5E', '19.2E', '13.0E']     ... or another example:   ['13.0E']
-        if boo:
+        sel  = str(self['config'].getCurrent()[0].split(' ')[1])            # for example:   u"● 23.5E"  ,  str(u"● 23.5E".split(" ")[1]) => "23.5E"
+        sats = config.plugins.chocholousekpicons.sats.getValue().split()    # retrieve example:   '23.5E 19.2E 13.0E'            ...   or another example:   '13.0E'
+        if boo:                                                             # result   example:   ['23.5E', '19.2E', '13.0E']    ...   or another example:   ['13.0E']
             if sel not in sats:
-                 sats.append(sel)
+                sats.append(sel)
         else:
             if sel in sats:
                 sats.remove(sel)
@@ -764,30 +785,33 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     def changedEntry(self):
         for x in self.onChangedEntry:
             x()
-        if self.satsBackedUp == config.plugins.chocholousekpicons.sats.getValue():
-            self['txt_green'].setText(_('Apply'))
-        else:
+        if set(self.satsBackedUp.split()) ^ set(config.plugins.chocholousekpicons.sats.value.split()):
             self['txt_green'].setText(_('Apply') + '*')
+        else:
+            self['txt_green'].setText(_('Apply'))
         self.rebuildConfigList()
     
     def rebuildConfigList(self):
         self.list = []
         for sat in self.allSat:
-            self.list.append(getConfigListEntry(sat, NoSave(ConfigYesNo( default = sat in config.plugins.chocholousekpicons.sats.getValue().split() ))))
+            found = sat in config.plugins.chocholousekpicons.sats.value.split()
+            self.list.append(getConfigListEntry('● ' + sat if found else '○ ' + sat, NoSave(ConfigYesNo(default = found))))
         
-        listWidth = self['config'].l.getItemSize().width()
         self['config'].list = self.list
-        self['config'].l.setSeperation(listWidth / 2)                       # fix the size of seperator in some new SKINs (for example in OE2.5)
-        self["config"].l.setList(self.list)
+        listWidth = self['config'].l.getItemSize().width()
+        self['config'].l.setSeperation(listWidth / 2)                       # fix the size of seperator on config list in some new SKINs / OE2.5
+        self['config'].l.setList(self.list)
 
         #self['config'].list = self.list
         #self['config'].setList(self.list)
+        
+        self['txt_counter'].setText('%s' % len(config.plugins.chocholousekpicons.sats.value.split()))
     
     def keyToGreen(self):
-        if self.satsBackedUp == config.plugins.chocholousekpicons.sats.getValue():
-            self.close(False)       # satellites configuration is not changed
+        if self['txt_green'].getText().endswith('*'):
+            self.close(True)        # if satellites configuration was changed
         else:
-            self.close(True)        # satellites configuration is changed
+            self.close(False)       # if satellites configuration was not changed
     
     def keyToRed(self):
         config.plugins.chocholousekpicons.sats.setValue(self.satsBackedUp)  # restore the previous satellites settings from the backed-up variable
@@ -795,7 +819,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     
     def keyToExit(self):
         if self['txt_green'].getText().endswith('*'):                       # satellites configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings
-            message = _("You have changed the selection of satellites.\nApply these changes ?")
+            message = _('You have changed the selection of satellites.\nApply these changes ?')
             self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
         else:
             self.exitWithConditionalSave(False)
@@ -824,7 +848,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
             <widget name="txt_dir"    position="50,90"   size="900,50"   font="Regular;30" foregroundColor="white"  transparent="1" halign="left"   valign="center" />
             <eLabel name="frame_dir"  position="50,90"   size="900,50"   zPosition="-1"    backgroundColor="#114C0000" />
             
-            <widget name="config"     position="50,155"  size="900,660"  font="Regular;30" itemHeight="32" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+            <widget name="config"     position="50,155"  size="900,660"  font="Regular;30" itemHeight="34" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,854"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="190,854" size="30,46" transparent="1" alphatest="on" zPosition="1" />
@@ -844,7 +868,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
             <widget name="txt_dir"    position="25,65"   size="750,35"   font="Regular;22" foregroundColor="white"  transparent="1" halign="left"   valign="center" />
             <eLabel name="frame_dir"  position="25,65"   size="750,35"   zPosition="-1"    backgroundColor="#114C0000" />
             
-            <widget name="config"     position="25,110"  size="750,420"  font="Regular;22" itemHeight="23" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
+            <widget name="config"     position="25,110"  size="750,420"  font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
             
             <ePixmap pixmap="skin_default/buttons/red.png"    position="20,560"  size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="155,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
@@ -1377,7 +1401,8 @@ class piconsUpdateJobScreen(Screen):
 ###########################################################################
 
 
-
+# import requests           # WARNING : Some Enigma distributions do not have the "requests" Python module pre-installed, and this must be included in the dependencies in the so-called CONTROL script (in the .ipk / .deb installation package). Or reinstall manually: opkg install python-requests
+#
 # def downloadFile(url, storagepath='', savefile=True):
     # '''
     # Download files from the internet to the destination, taking into account the Drive.Google server (warning window with virus scan).

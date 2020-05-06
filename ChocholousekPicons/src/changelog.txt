@@ -111,3 +111,15 @@ Minor changes in the source code.
 2.1.200504
 Improved Russian language (by @FRAP).
 Minor changes in the source code.
+
+2.1.200506
+Minor changes in the source code.
+Fixed a bug in the non-existent Python module "requests", when the plugin refused to load into the list in the Plugin-MENU:
+- it's a remnant of a function from previous source code
+- the "requests" module was used to test the alternate function
+Design:
+- the list of selected satellites in the configuration menu has changed to abbreviated text with the number of selected satellites together
+- added unicode circle character (emptied / filled) in the selection of satellite positions, for their better visibility
+Localization:
+- added missing dot in one sentence, in translation files
+- improved Russian language (by @FRAP)
