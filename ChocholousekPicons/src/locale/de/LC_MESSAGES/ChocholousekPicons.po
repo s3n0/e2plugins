@@ -165,8 +165,8 @@ msgstr "Nach der Aktualisierung der Picons müssen Sie möglicherweise Enigma (G
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s hinzugefügt / %s geändert / %s gelöscht)"
 
-msgid "No picons added or changed"
-msgstr "Es wurden keine Picons hinzugefügt oder geändert"
+msgid "No picons added or changed."
+msgstr "Es wurden keine Picons hinzugefügt oder geändert."
 
 msgid "Download ID for file %s was not found!"
 msgstr "ID-Download %s nicht gefunden!"
@@ -256,3 +256,6 @@ msgstr ""
 
 msgid "Error ! Downloading plugin installation package failed !"
 msgstr "Fehler ! Das Herunterladen des Plugin-Installationspakets ist fehlgeschlagen !"
+
+msgid "selected"
+msgstr "ausgewählt"

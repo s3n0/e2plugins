@@ -94,8 +94,8 @@ msgstr "Brak połączenia z internetem!"
 msgid "No operation ! Picon update failed !"
 msgstr "Nic nie wykonano ! Aktualizacja picon nie udana !"
 
-msgid "No picons added or changed"
-msgstr "Žádné picony nebyly přidány nebo změněny"
+msgid "No picons added or changed."
+msgstr "Žádné picony nebyly přidány nebo změněny."
 
 msgid "No picons found for selected resolution and satellites !"
 msgstr "Nie znaleźiono picon dla wybranej pozycji SAT!"
@@ -257,3 +257,6 @@ msgstr ""
 
 msgid "Error ! Downloading plugin installation package failed !"
 msgstr "Błąd ! Pobieranie pakietu instalacyjnego wtyczki nie powiodło się !"
+
+msgid "selected"
+msgstr "wybranych"

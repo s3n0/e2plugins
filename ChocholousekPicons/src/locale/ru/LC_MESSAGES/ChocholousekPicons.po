@@ -268,3 +268,6 @@ msgstr "Распаковка файлов из архива..."
 #, python-format
 msgid "...%s picons were extracted from the archive."
 msgstr "...%s пиконы изъяты из архива."
+
+msgid "selected"
+msgstr "выбрано"

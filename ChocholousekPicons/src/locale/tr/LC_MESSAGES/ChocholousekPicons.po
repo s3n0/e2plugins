@@ -165,8 +165,8 @@ msgstr "Piconları güncelledikten sonra Enigma'yı (GUI) yeniden başlatmanız 
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s eklendi / %s değişti / %s silindi)"
 
-msgid "No picons added or changed"
-msgstr "Hiçbir piknik eklenmedi veya değiştirilmedi"
+msgid "No picons added or changed."
+msgstr "Hiçbir piknik eklenmedi veya değiştirilmedi."
 
 msgid "Download ID for file %s was not found!"
 msgstr "%s dosyası için indirme kimliği bulunamadı!"
@@ -256,3 +256,6 @@ msgstr ""
 
 msgid "Error ! Downloading plugin installation package failed !"
 msgstr "Hata ! Eklenti kurulum paketi indirilemedi !"
+
+msgid "selected"
+msgstr "seçildi"

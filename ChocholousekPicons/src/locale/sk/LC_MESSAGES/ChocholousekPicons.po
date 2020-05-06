@@ -165,8 +165,8 @@ msgstr "Po aktualizácii pikon bude zrejme potrebné reštartovať Enigmu (GUI).
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s pridaných / %s zmenených / %s odstránených)"
 
-msgid "No picons added or changed"
-msgstr "Žiadné pikony neboli pridané alebo zmenené"
+msgid "No picons added or changed."
+msgstr "Žiadné pikony neboli pridané alebo zmenené."
 
 msgid "Download ID for file %s was not found!"
 msgstr "ID pre stiahnutie súboru %s sa nepodarilo vyhladať!"
@@ -256,3 +256,6 @@ msgstr ""
 
 msgid "Error ! Downloading plugin installation package failed !"
 msgstr "Chyba ! Sťahovanie inštalačného balíčka pluginu zlyhalo !"
+
+msgid "selected"
+msgstr "vybratých"

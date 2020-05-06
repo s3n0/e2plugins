@@ -283,3 +283,6 @@ msgstr ""
 
 msgid "Error ! Downloading plugin installation package failed !"
 msgstr "Klaida ! Nepavyko atsisiųsti papildinio diegimo paketo !"
+
+msgid "selected"
+msgstr "pasirinkta"
