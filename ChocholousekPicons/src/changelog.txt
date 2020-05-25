@@ -123,3 +123,8 @@ Design:
 Localization:
 - added missing dot in one sentence, in translation files
 - improved Russian language (by @FRAP)
+
+2.1.200524
+Fixed bug in case of Enigma2 TeamBlue, on Gigablue devices - thanks to @dejanf.
+- there is a variable PACKAGE_VERSION imported from the module 'enigma', but instead of three values (version: major, minor, patch) it provides only two values and I don't know why
+
