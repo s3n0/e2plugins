@@ -589,6 +589,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if status == 0:
             return out.lower().replace('arch ','').replace('\n',' ')    # return architectures by the Enigma package manager, like as:  'mips32el 16 mipsel 46'
         
+        try:
+            from platform import machine
+        except:
+            pass
+        else:
+            return machine()                                            # return architectures from system, like as:  'mips'
+        
         status,out = runShell('uname -m')
         if status == 0:
             return out.lower()                                          # return architectures from system, like as:  'mips'
@@ -1509,18 +1516,19 @@ def newOE():
     return True ---- for commercial versions of Enigma2 core (OE 2.2+) - DreamElite, DreamOS, Merlin, ... etc.
     return False --- for open-source versions of Enigma2 core (OE 2.0 or OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
     '''
-    #return os.path.exists('/etc/dpkg')
+    ####return os.path.exists('/etc/dpkg')
     try:
         from enigma import PACKAGE_VERSION
         major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
         if major > 4 or (major == 4 and minor >= 2):    # if major > 4 or major == 4 and minor >= 2:
-            retval = True                               #### new enigma core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.2+ ====================== (c)Dreambox core
+            boo = True                                  #### new enigma core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.2+ ====================== (c)Dreambox core
         else:
-            retval = False                              #### old enigma core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source core
+            boo = False                                 #### old enigma core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source core
     except ImportError:
-        retval = False                                  #### on import error it means OE 2.0 core
-    
-    return retval
+        boo = False                                     #### ImportError means OE 2.0 core
+    except ValueError:
+        boo = False                                     #### ValueError, for example in the TeamBlue Enigma containing the PACKAGE_VERSION, which does not work properly (taking only 2 arguments, instead of 3 arguments)
+    return boo
 
 def runShell(cmd):
     try:
