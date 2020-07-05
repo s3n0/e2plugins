@@ -31,6 +31,7 @@ case "$1" in
         rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
         ;;
     *)
+        echo "Error ! Argument 'install|uninstall' was not found !"
         exit 1
         ;;
 esac
