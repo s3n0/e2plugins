@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -z "$1" ] && { echo "Error ! No 'install|uninstall' argument found !"; exit 1; }
+[ -z "$1" ] && { echo "Error ! No argument found !"; exit 1; }
 
 PKGNAME="enigma2-plugin-extensions-chocholousek-picons"
 
@@ -31,7 +31,7 @@ case "$1" in
         rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
         ;;
     *)
-        echo "Error ! Argument 'install|uninstall' was not found !"
+        echo "Error ! Please use only the install or uninstall arguments and no others !"
         exit 1
         ;;
 esac
