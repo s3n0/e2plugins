@@ -132,3 +132,7 @@ Fixed bug in case of Enigma2 TeamBlue, on Gigablue devices - thanks to @dejanf.
 Changed file-hosting server for downloading picon archives, thanks to Ellano (https://ellano.sk): from https://drive.google.com -> to -> https://picon.cz
 Fixed a bug that caused the satellite selection window to open slowly.
 
+3.1.200926
+Added a new option to quickly restart the Enigma (GUI) after updating the picons.
+
+

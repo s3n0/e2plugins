@@ -193,6 +193,9 @@ msgstr "Сделано !"
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s добавлено / %s изменено / %s удалено)"
 
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Перезапустить Enigma (GUI) сейчас ?"
+
 msgid "Internet connection is not available !"
 msgstr "Интернет соединение недоступно !"
 

@@ -165,6 +165,9 @@ msgstr "Nach der Aktualisierung der Picons müssen Sie möglicherweise Enigma (G
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s hinzugefügt / %s geändert / %s gelöscht)"
 
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Enigma (GUI) jetzt neu starten ?"
+
 msgid "No picons added or changed."
 msgstr "Es wurden keine Picons hinzugefügt oder geändert."
 

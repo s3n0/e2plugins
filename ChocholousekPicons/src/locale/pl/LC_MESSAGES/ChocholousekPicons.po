@@ -58,6 +58,9 @@ msgstr "Sprawdzam pobrane archiwum picon."
 msgid "Deleting unnecessary picons from local disk..."
 msgstr "Usuwam nie potrzebne picon z dysku lokalnego..."
 
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Zrestartować teraz Enigmę (GUI) ?"
+
 msgid "Done !"
 msgstr "Koniec!"
 

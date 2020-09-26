@@ -165,6 +165,9 @@ msgstr "Piconları güncelledikten sonra Enigma'yı (GUI) yeniden başlatmanız 
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s eklendi / %s değişti / %s silindi)"
 
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Enigma (GUI) şimdi yeniden başlatılsın mı ?"
+
 msgid "No picons added or changed."
 msgstr "Hiçbir piknik eklenmedi veya değiştirilmedi."
 

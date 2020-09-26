@@ -251,9 +251,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.list.append(getConfigListEntry( _('Picon update method')     ,  config.plugins.chocholousekpicons.method       ))
         s = config.plugins.chocholousekpicons.sats.value
         if len(s) > 40:
-            s = '%s.... (%s %s)' % (s[:40], len(s.split()), _('selected'))
+            s = '%s.... (%s %s)' % (s[:40], len(s.split()), _('selected') )
         else:
-            s = '%s (%s %s)' % ( s    , len(s.split()), _('selected'))
+            s = '%s (%s %s)' % ( s, len(s.split()), _('selected') )
         self.list.append(getConfigListEntry( _('Satellite positions')     ,  NoSave(ConfigSelection( choices = [s] ) )      ))      # for display purposes only, without the ability to configure this item as an object
         self.list.append(getConfigListEntry( _('Picon resolution')        ,  config.plugins.chocholousekpicons.resolution   ))
         self.list.append(getConfigListEntry( _('Picon background')        ,  config.plugins.chocholousekpicons.background   ))
@@ -1152,7 +1152,18 @@ class piconsUpdateJobScreen(Screen):
             else:
                 sleep(4)
             self['logWindow'].hide()                            # for smoother transition from MessageBox window to plugin initial menu (without flashing 'logWindow')
-            self.session.open(MessageBox, msg, type)            
+            if type != MessageBox.TYPE_ERROR and (self.piconCounters['added'] > 0 or self.piconCounters['changed'] > 0):
+                msg += '\n' + _('Restart the Enigma (GUI) now ?')
+                type = MessageBox.TYPE_YESNO
+                self.session.openWithCallback(self.messageBoxAnswer, MessageBox, msg, type)
+            else:
+                self.session.open(MessageBox, msg, type)
+                self.close()
+    
+    def messageBoxAnswer(self, answer):
+        if answer:
+            self.session.open(TryQuitMainloop, 3)   # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
+        else:
             self.close()
     
     def mainFunc(self):
@@ -1273,7 +1284,7 @@ class piconsUpdateJobScreen(Screen):
                 return
             url_link = 'https://picon.cz/download/%s/' % found[0]
             dwn_filename = found[1]     # .replace('(','_').replace(')','_')        # replace the filename mask by new original archive filename and replace the parentheses by underline characters
-
+        
         # 2. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
         self.writeLog(_('Trying download the file archive... %s') % dwn_filename)
         if not downloadFile(url_link, '/tmp/' + dwn_filename):
@@ -1289,7 +1300,7 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog(_('Error! No picons found in the downloaded archive file!'))
             return          # navratenie vykonavania kodu z tohto podprogramu pre spracovanie dalsieho archivu/suboru s piconami v poradi
         #self.storeVarInFile('SRC_in_Archive--%s' % dwn_filename, self.SRC_in_Archive)
-
+        
         # 4. Rozbalenie pikon zo stiahnutého archívu
         self.writeLog(_('Extracting files from the archive...'))
         
@@ -1312,6 +1323,7 @@ class piconsUpdateJobScreen(Screen):
             # ďalej budem prechádzať v cykle už iba cieľový SRC-zoznam a zisťovať, či je potrebné tieto pikony z archívu aj nakopírovať
             for src in M:
                 if src in self.SRC_in_HDD:                                  # ak uz sa pikona rozbalena z archivu nachadza na HDD, tak...
+                    print('MYDEBUGLOGLINE - compare two PNG files size - HDD:%s / Archive:%s' % (self.SRC_in_HDD[src], self.SRC_in_Archive[src])  )
                     if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]:    # porovnam este velkosti tychto dvoch pikon (Archiv VS. HDD) a ak su velkosti picon odlisne...
                         self.SRC_for_Extract.append(src)                    # tak pridam tuto pikonu na zoznam kopirovanych pikon (zoznam pikon na extrahovanie)
                         self.piconCounters['changed'] += 1
@@ -1360,14 +1372,18 @@ class piconsUpdateJobScreen(Screen):
                 first, last = indexes
                 tmp = {}
                 for line in out[first + 1 : last]:
-                    # processing files obtained from Shell output:
-                    # columns:   Date       Time     Attr  Size      Compressed Name
-                    # index:     0________________19 20_25 26_____38 39______52 53______________________________________________>
-                    # example1:  2019-12-05 10:16:06 ....A     26824      57902 filmbox-premium-freezeframe-400x240.png
-                    # example2:  2019-12-18 18:01:46 ....A     21028            filmbox-premium-black-220x132.png
-                    fsize, fpath = line[26:38].strip(), line[53:].strip()
-                    #if fattr[0] != 'D':                    # retreive all files with a full path, but no individual directories !
-                    tmp.update( {fpath.split('/')[-1].split('.')[0]  :  int(fsize)} )        # {"service_reference_code" : file_size}
+                    
+                    ### processing files obtained from Shell output:
+                    ### columns:   Date       Time     Attr  Size         SizeCompress  FileName
+                    ### index:     0_______10 11____19 20_25 26________38 39________51  53______________________________________________>
+                    
+                    # example1:    2019-12-05 10:16:06 ....A        26824        57902  filmbox-premium-freezeframe-400x240.png
+                    # example2:    2019-12-18 18:01:46 ....A        21028               filmbox-premium-black-220x132.png
+                    # example3:    2020-01-23 02:13:20 ....A         8877               1_0_16_105_F01_20CB_EEEE0000_0_0_0.png
+                    
+                    fields = line[26:].split()                      # fields ---- ['9769', '1847303', '1_0_16_1002_401_20CB_EEEE0000_0_0_0.png']
+                    size, path = fields[0], fields[-1]
+                    tmp.update({ path.split('/')[-1].split('.')[0] :  int(size) })      #  { "service_reference_code" :  file_size }
             else:
                 print('MYDEBUGLOGLINE - Error ! Could not find the beginning and end of the list in the "%s" archive when listing "*.png" files.' % archiveFile)
         else:

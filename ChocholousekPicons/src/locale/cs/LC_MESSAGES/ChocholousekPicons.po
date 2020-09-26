@@ -165,6 +165,9 @@ msgstr "Po aktualizaci piconů možná budete muset restartovat Enigmu (GUI)."
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s přidáno / %s změněno / %s smazáno)"
 
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Restartovat Enigmu (GUI) nyní ?"
+
 msgid "No picons added or changed."
 msgstr "Žádné picony nebyly přidány nebo změněny."
 

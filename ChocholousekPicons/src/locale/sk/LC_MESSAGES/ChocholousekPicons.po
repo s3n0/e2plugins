@@ -88,7 +88,7 @@ msgid ""
 "Do you want to save all changes now ?"
 msgstr ""
 "Zmenili ste konfiguráciu pluginu.\n"
-"Prejete si uložiť zmeny?"
+"Prajete si uložiť zmeny?"
 
 msgid ""
 "The 7-zip archiver was not found on your system.\n"
@@ -164,6 +164,9 @@ msgstr "Po aktualizácii pikon bude zrejme potrebné reštartovať Enigmu (GUI).
 
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s pridaných / %s zmenených / %s odstránených)"
+
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Reštartovať Enigmu (GUI) teraz ?"
 
 msgid "No picons added or changed."
 msgstr "Žiadné pikony neboli pridané alebo zmenené."
