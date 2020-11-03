@@ -403,7 +403,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         k = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
         current_file = k[0] if k else PLUGIN_PATH + 'foo-bar(000000).7z'            # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
         
-        if self.ver(new_file) > self.ver(current_file):                             # comparsion, for example as the following:  '191125' > '191013'
+        if self.parseVer(new_file) > self.parseVer(current_file):                             # comparsion, for example as the following:  '191125' > '191013'
             if not downloadFile(url, new_file):                                     # .7z archive with preview images (channel picons for the one and the same TV-channel)
                 print('Picons preview file download failed ! (URL = %s)' % url)
                 return
@@ -413,17 +413,17 @@ class mainConfigScreen(Screen, ConfigListScreen):
             status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
-                print('Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.ver(new_file))
+                print('Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file))
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
             elif status == 32512:
                 print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
                 self.deleteFiles(new_file)
             elif status == 512:
-                print('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, new_file) )
+                print('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\n' % (status, new_file) )
                 self.deleteFiles(new_file)
             else:
-                print('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
+                print('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s\n' % (status, out)  )
                 self.deleteFiles(new_file)
     
     def deleteFiles(self, mask):
@@ -433,7 +433,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             for file in lst:
                 os.remove(file)
     
-    def ver(self, filepath):
+    def parseVer(self, filepath):
         return int(re.findall(r'\d{6}', filepath)[-1])
     
     ###########################################################################
@@ -462,15 +462,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
         url  = 'https://picon.cz/download/7337/'                                                    # "id_for_permalinks191017.log" - means the chochoFile for the chochoContent value :)
         new_filename = downloadFile(url, '', False)                                                 # as the first, do a test the online file only ... and return their file name as a string (if online file will found)
         if new_filename:    # and ('unknown' not in new_filename):
-            if self.ver(new_filename) > self.ver(current_filename):
+            if self.parseVer(new_filename) > self.parseVer(current_filename):
                 result_file_path = downloadFile(url, PLUGIN_PATH)
                 if result_file_path:
                     self.deleteFiles(current_filename)
-                    print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.ver(current_filename), self.ver(new_filename)))
+                    print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.parseVer(current_filename), self.parseVer(new_filename)))
                 else:
                     print('MYDEBUGLOGLINE - Error ! File download failed ! file=%s, url=%s' % (result_file_path, url))
             else:
-                print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.ver(current_filename), self.ver(new_filename)))
+                print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.parseVer(current_filename), self.parseVer(new_filename)))
         else:
             print('MYDEBUGLOGLINE - Error ! File "id_for_permalinks*.log" was not found on the internet ! (url = %s)' % url)
     
@@ -1212,11 +1212,12 @@ class piconsUpdateJobScreen(Screen):
         if 'sync' in config.plugins.chocholousekpicons.method.value:
             # 5.A) Vytvorí sa zoznam serv.ref.kódov z patričných userbouquet súborov (podľa predvytvoreného zoznamu *.tv alebo aj *.radio) - sú poterbné pre synchronizáciu picon
             self.writeLog(_('Preparing a list of picons from userbouquet files...'))
-            s = ''
+            bq_contents = ''
             for bq_file in self.bouquet_files:
                 with open(bq_file, 'r') as f:
-                    s += f.read()
-            self.SRC_in_Bouquets = re.findall('.*#SERVICE\s([0-9a-fA-F]+_0_[0-9a-fA-F_]+0_0_0).*\n*', s.replace(":","_") )
+                    bq_contents += f.read()
+            self.SRC_in_Bouquets = re.findall('.*#SERVICE\s([0-9a-fA-F]+_0_[0-9a-fA-F_]+0_0_0).*\n*' , bq_contents.replace(":","_")  )
+            self.SRC_in_Bouquets = [ x.upper() for x in self.SRC_in_Bouquets ]
             self.SRC_in_Bouquets = list(set(self.SRC_in_Bouquets))              # remove duplicate items ---- converting to <set> and then again back to the <list>
             self.writeLog(_('...done.'))
         else:
@@ -1394,9 +1395,9 @@ class piconsUpdateJobScreen(Screen):
         if status == 32512:
             self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
         elif status == 512:
-            self.writeLog('Error %s !!! Archive file not found. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
+            self.writeLog('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
         else:
-            self.writeLog('Error %s !!! Can not execute 7-zip archiver in the command-line shell for unknown reason.\nShell output:\n%s\n' % (status, out)  )
+            self.writeLog('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s\n' % (status, out)  )
     
     def writeLog(self, text = ''):
         timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method

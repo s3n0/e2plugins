@@ -135,4 +135,8 @@ Fixed a bug that caused the satellite selection window to open slowly.
 3.1.200926
 Added a new option to quickly restart the Enigma (GUI) after updating the picons.
 
+3.1.201103
+Added support for non-standard userbouquet files (lowercase) in Enigma, after using the DreamSet application:
+- unfortunately, DreamSet uploads userbouquet files with lowercase characters to the set-top box and therefore no matching service reference codes are found
+- the process of comparing service reference codes from userbouquet files will no longer be case sensitive
 
