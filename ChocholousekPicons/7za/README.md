@@ -2,10 +2,10 @@ Binary executable files of the "7za" archiver, designed exclusively for Linux se
 
 v9.20:
 
-- mips32el (32bit / mipsel)
-- cortexa15hf-neon-vfpv4 (32bit / arm)
+- 7za_mips32el [32bit] - mipsel | mips32el | mips-el | ...
+- 7za_cortexa15hf-neon-vfpv4 [32bit] - arm | arm7l | armhf | ...
 
 v16.02:
 
-- aarch64 (64bit / arm)
-- sh4 (less common architecture)
+- 7za_aarch64 [64bit] - arm64
+- 7za_sh4 [32bit] - less common RISC processor (used in old game consoles for its graphics performance)
