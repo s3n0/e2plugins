@@ -1,4 +1,4 @@
-Binary executable files of the "7za" archiver, designed exclusively for Linux set-top-boxes, based on the Enigma2 system, for the following chipsets (for other chipsets these binaries are not intended !!!):
+Binary executable files of the "7za" archiver, designed exclusively only for Linux set-top boxes, based on the Enigma2 (GUI), for the following chipsets (intended only for the specified CPUs !!!):
 
 v9.20:
 
