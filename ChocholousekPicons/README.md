@@ -23,10 +23,11 @@
 
    >- **Automated online shell-script (automatic .ipk / .deb selection):**
    ```shell
-   # Install the latest version (the old version of the plugin will be uninstalled and the plugin configuration will be deleted !):
+   # To install the latest released version of the plugin:
+   # Warning: the old version of the plugin will be removed (if exists) and the plugin configuration will be deleted...
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
    
-   # Uninstall the current version:
+   # To uninstall the plugin from Enigma2:
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
 
