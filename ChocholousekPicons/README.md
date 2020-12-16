@@ -21,22 +21,22 @@
 
 ### **How to un/install (via Shell):**
 
-   >- **Automated un-installer for .ipk / .deb packages using an online shell script:**
+   >- **Automated online shell script (automatic .ipk / .deb selection):**
    ```shell
-   # Download and install the latest version (.deb / .ipk):
+   # Install the latest version (the old version of the plugin will be uninstalled and the plugin configuration will be deleted !):
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
    
-   # Uninstall (.deb / .ipk):
+   # Uninstall the current version:
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
 
-   >- **OE 2.0 / OE Alliance Core 4.x based Enigma (ATV, PLi, VTi, etc.) using the ".ipk" installation package:**
+   >- **Enigma2 based on OE2.0 and/or OE-Alliance core 4.x (ATV, PLi, BH, VTi, etc.) - using the ".ipk" installation package:**
    ```shell
    opkg remove <package_name>       # to uninstall package
    opkg install <package_name>      # to install package
    ```
    
-   >- **OE 2.2+ based Enigma (DreamElite, DreamOS, Merlin, etc.) using the ".deb" installation package:**
+   >- **Enigma2 based on OE2.2 core or newer (DreamElite, DreamOS, Merlin, etc.) - using the ".deb" installation package:**
    ```shell
    dpkg -r <package_name>           # to uninstall package
    dpkg -i <package_name>           # to install package
