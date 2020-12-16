@@ -19,9 +19,9 @@
    >    1. Download and install 7-zip via the package manager (i.e. attempt to install 7-zip from your Enigma feed server)
    >    2. Attempt to download a standalone `7za` binary file from the internet
 
-### **How to un/install (via Shell):**
+### **How to un/install plugin (via Shell):**
 
-   >- **Automated online shell script (automatic .ipk / .deb selection):**
+   >- **Automated online shell-script (automatic .ipk / .deb selection):**
    ```shell
    # Install the latest version (the old version of the plugin will be uninstalled and the plugin configuration will be deleted !):
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
@@ -30,14 +30,14 @@
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
 
-   >- **Enigma2 based on OE2.0 and/or OE-Alliance core 4.x (ATV, PLi, BH, VTi, etc.) - using the ".ipk" installation package:**
+   >- **Enigma2 based on OE 2.0 and OE Alliance 4.x core (ATV, PLi, BH, VTi, etc.) - using the ".ipk" installation package:**
    ```shell
-   opkg remove <package_name>       # to uninstall package
-   opkg install <package_name>      # to install package
+   opkg install <path_to_ipk-file>   # to install package
+   opkg remove <package_name>        # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
    ```
    
-   >- **Enigma2 based on OE2.2 core or newer (DreamElite, DreamOS, Merlin, etc.) - using the ".deb" installation package:**
+   >- **Enigma2 based on OE 2.2 core or newer (DreamElite, DreamOS, Merlin, etc.) - using the ".deb" installation package:**
    ```shell
-   dpkg -r <package_name>           # to uninstall package
-   dpkg -i <package_name>           # to install package
+   dpkg -i <path_to_deb-file>        # to install package
+   dpkg -r <package_name>            # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
    ```
