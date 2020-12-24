@@ -33,12 +33,12 @@
 
    >- **Enigma2 based on OE 2.0 and OE Alliance 4.x core (ATV, PLi, BH, VTi, etc.) - using the ".ipk" installation package:**
    ```shell
-   opkg install <path_to_ipk-file>   # to install package
-   opkg remove <package_name>        # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
+   opkg install <path_to_ipk-file>                             # to install package
+   opkg remove enigma2-plugin-extensions-chocholousek-picons   # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
    ```
    
    >- **Enigma2 based on OE 2.2 core or newer (DreamElite, DreamOS, Merlin, etc.) - using the ".deb" installation package:**
    ```shell
-   dpkg -i <path_to_deb-file>        # to install package
-   dpkg -r <package_name>            # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
+   dpkg -i <path_to_deb-file>                                  # to install package
+   dpkg -r enigma2-plugin-extensions-chocholousek-picons       # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
    ```
