@@ -20,7 +20,7 @@ from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import ConfigSubsection, config, configfile, getConfigListEntry, ConfigText, ConfigYesNo, ConfigClock, ConfigInteger
 ## ConfigNumber, ConfigDirectory, ConfigSubList, ConfigEnableDisable, ConfigPassword, ConfigSelection
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from os import path as os_path, remove as os_remove, system as os_system
 from enigma import eTimer
 
@@ -170,11 +170,11 @@ def epgDelete():
 def downloadFile(url, targetfile):
     #if os_system('wget --no-check-certificate -q -O %s %s > /dev/null 2>&1' % (targetfile, url)  ):
     try:
-        response = urllib2.urlopen(url)
+        response = urllib.request.urlopen(url)
         with open(targetfile, 'wb') as f:
             f.write(response.read())
     except Exception as err:
-        print('DEBUGLINE - epg file download failed - err:%s' % err)
+        print(('DEBUGLINE - epg file download failed - err:%s' % err))
         return False
     else:
         print('DEBUGLINE - epg file download successfully')
