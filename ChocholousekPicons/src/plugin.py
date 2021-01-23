@@ -24,7 +24,7 @@ from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK, NoSave, ConfigNothing
 ###########################################################################
 #import requests        # !!!! WARNING !!!! Some Enigma distributions do not have the "requests" Python module pre-installed, and this must be included in the dependencies in the so-called CONTROL script (in the .ipk / .deb installation package). Or reinstall manually: opkg install python-requests
-import urllib2, ssl, cookielib
+import urllib.request, urllib.error, urllib.parse, ssl, http.cookiejar
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
@@ -38,7 +38,7 @@ import glob
 import random
 ###########################################################################
 import os
-from commands import getstatusoutput                                        # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
+from subprocess import getstatusoutput                                        # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
 #from subprocess import check_output, CalledProcessError                     # unfortunately "subprocess" module is supported only in Python 2.4 or newer version ... some older Enigmas as example OpenPLi-4 contains only old Python (missing subprocess module)
 #from shlex import split as shlexSplit
 from datetime import datetime
@@ -405,7 +405,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         if self.parseVer(new_file) > self.parseVer(current_file):                             # comparsion, for example as the following:  '191125' > '191013'
             if not downloadFile(url, new_file):                                     # .7z archive with preview images (channel picons for the one and the same TV-channel)
-                print('Picons preview file download failed ! (URL = %s)' % url)
+                print(('Picons preview file download failed ! (URL = %s)' % url))
                 return
             self.deleteFiles(current_file)
             self.deleteFiles(PLUGIN_PATH + 'images/filmbox-premium-*.png')
@@ -413,21 +413,21 @@ class mainConfigScreen(Screen, ConfigListScreen):
             status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
-                print('Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file))
+                print(('Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file)))
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
             elif status == 32512:
-                print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
+                print(('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status))
                 self.deleteFiles(new_file)
             elif status == 512:
-                print('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\n' % (status, new_file) )
+                print(('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\n' % (status, new_file) ))
                 self.deleteFiles(new_file)
             else:
-                print('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s\n' % (status, out)  )
+                print(('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s\n' % (status, out)  ))
                 self.deleteFiles(new_file)
     
     def deleteFiles(self, mask):
-        print('MYDEBUGLOGLINE - deleting files by mask: %s' % mask)
+        print(('MYDEBUGLOGLINE - deleting files by mask: %s' % mask))
         lst = glob.glob(mask)
         if lst:
             for file in lst:
@@ -442,10 +442,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
         ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.getctime)
         if ls:
             self.chochoContent = open(ls[-1], 'r').read()                                            # glob returns a list type variable, so I need to  translate list to string
-            print('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
+            print(('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (PLUGIN_PATH + 'id_for_permalinks*.log')))
         else:
             self.chochoContent = ''
-            print('MYDEBUGLOGLINE - Warning ! The file %s was not found !' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
+            print(('MYDEBUGLOGLINE - Warning ! The file %s was not found !' % (PLUGIN_PATH + 'id_for_permalinks*.log')))
     
     def downloadChochoFile(self):
         '''
@@ -466,13 +466,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 result_file_path = downloadFile(url, PLUGIN_PATH)
                 if result_file_path:
                     self.deleteFiles(current_filename)
-                    print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.parseVer(current_filename), self.parseVer(new_filename)))
+                    print(('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.parseVer(current_filename), self.parseVer(new_filename))))
                 else:
-                    print('MYDEBUGLOGLINE - Error ! File download failed ! file=%s, url=%s' % (result_file_path, url))
+                    print(('MYDEBUGLOGLINE - Error ! File download failed ! file=%s, url=%s' % (result_file_path, url)))
             else:
-                print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.parseVer(current_filename), self.parseVer(new_filename)))
+                print(('MYDEBUGLOGLINE - File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.parseVer(current_filename), self.parseVer(new_filename))))
         else:
-            print('MYDEBUGLOGLINE - Error ! File "id_for_permalinks*.log" was not found on the internet ! (url = %s)' % url)
+            print(('MYDEBUGLOGLINE - Error ! File "id_for_permalinks*.log" was not found on the internet ! (url = %s)' % url))
     
     def changeAvailableBackgrounds(self):
         '''
@@ -615,11 +615,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.plugin_update_server = ''
         for url in server_list:
             try:
-                url_handle = urllib2.urlopen(url + '/src/version.txt')
-            except urllib2.URLError as err:
-                print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+                url_handle = urllib.request.urlopen(url + '/src/version.txt')
+            except urllib.error.URLError as err:
+                print(('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt')))
             except Exception as err:
-                print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+                print(('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt')))
             else:
                 self.plugin_ver_online = url_handle.read().strip()
                 global plugin_ver_local
@@ -648,14 +648,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
                         os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
                     
                     os.remove(dwn_file)
-                    print('New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
+                    print(('New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  ))
                     plugin_ver_local = self.plugin_ver_online
                     
                     message = _('The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?')
                     self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
                 
                 else:
-                    print('New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
+                    print(('New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  ))
                     message = _('Error ! Downloading plugin installation package failed !') + '\n' + dwn_url
                     self.session.open(MessageBox, message, type = MessageBox.TYPE_ERROR)
 
@@ -1023,7 +1023,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
     
     def deleteDir_FromCallBack(self, confirmed):
         if confirmed:
-            print('MYDEBUGLOGLINE - deleting directory: %s' % self.getDirAppointedToCursor())
+            print(('MYDEBUGLOGLINE - deleting directory: %s' % self.getDirAppointedToCursor()))
             err_num, std_out = runShell('rm -r %s' % self.getDirAppointedToCursor())
             #os.removedirs(self.getDirAppointedToCursor())
             self.rebuildConfigList()
@@ -1324,7 +1324,7 @@ class piconsUpdateJobScreen(Screen):
             # ďalej budem prechádzať v cykle už iba cieľový SRC-zoznam a zisťovať, či je potrebné tieto pikony z archívu aj nakopírovať
             for src in M:
                 if src in self.SRC_in_HDD:                                  # ak uz sa pikona rozbalena z archivu nachadza na HDD, tak...
-                    print('MYDEBUGLOGLINE - compare two PNG files size - HDD:%s / Archive:%s' % (self.SRC_in_HDD[src], self.SRC_in_Archive[src])  )
+                    print(('MYDEBUGLOGLINE - compare two PNG files size - HDD:%s / Archive:%s' % (self.SRC_in_HDD[src], self.SRC_in_Archive[src])  ))
                     if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]:    # porovnam este velkosti tychto dvoch pikon (Archiv VS. HDD) a ak su velkosti picon odlisne...
                         self.SRC_for_Extract.append(src)                    # tak pridam tuto pikonu na zoznam kopirovanych pikon (zoznam pikon na extrahovanie)
                         self.piconCounters['changed'] += 1
@@ -1386,7 +1386,7 @@ class piconsUpdateJobScreen(Screen):
                     size, path = fields[0], fields[-1]
                     tmp.update({ path.split('/')[-1].split('.')[0] :  int(size) })      #  { "service_reference_code" :  file_size }
             else:
-                print('MYDEBUGLOGLINE - Error ! Could not find the beginning and end of the list in the "%s" archive when listing "*.png" files.' % archiveFile)
+                print(('MYDEBUGLOGLINE - Error ! Could not find the beginning and end of the list in the "%s" archive when listing "*.png" files.' % archiveFile))
         else:
             self.writeLog7zipError(status, out, archiveFile)
         return tmp  # returns an empty string on error, otherwise returns the list of all file names without extension + file sizes
@@ -1402,7 +1402,7 @@ class piconsUpdateJobScreen(Screen):
     def writeLog(self, text = ''):
         timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method
         m = '[%s] %s' % (timestamp, text)
-        print('MYDEBUGLOGLINE - %s' % m)
+        print(('MYDEBUGLOGLINE - %s' % m))
         self.logWindowText += '\n' + m
     
     def logWindowUpdate(self):
@@ -1443,24 +1443,24 @@ def downloadFile(url, storagepath='', savefile=True):
     else:
         headers = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0' }
     
-    cookie_jar = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar))
-    urllib2.install_opener(opener)
+    cookie_jar = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
+    urllib.request.install_opener(opener)
     
     #ctx = ssl.create_default_context()                 # urllib2 does not verify server certificate by default - but this is not true anymore for Python 2.7.9 or newer versions !
     #ctx.check_hostname = False                         # .create_default_context() method does not work in versions earlier than Python 2.6 ! has been added since Python 2.6 and later
     #ctx.verify_mode = ssl.CERT_NONE                    # example of use:    handler = urllib2.urlopen(req, timeout=20, context=ctx)
     
     try:
-        req = urllib2.Request(url, data=None, headers=headers)
-        handler = urllib2.urlopen(req, timeout=15)
+        req = urllib.request.Request(url, data=None, headers=headers)
+        handler = urllib.request.urlopen(req, timeout=15)
         if 'drive.google' in url:
             for c in cookie_jar:
                 if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
-                    print('MYDEBUGLOGLINE - url: %s - "warning_message" detected' % url)
+                    print(('MYDEBUGLOGLINE - url: %s - "warning_message" detected' % url))
                     url = url.replace('&id=', '&confirm=%s&id=' % c.value)   # and then it's necessary to add a parameter with confirmation of the warning message
-                    req = urllib2.Request(url, data=None, headers=headers)
-                    handler = urllib2.urlopen(req, timeout=15)
+                    req = urllib.request.Request(url, data=None, headers=headers)
+                    handler = urllib.request.urlopen(req, timeout=15)
                     break
         
         if storagepath.endswith('/') or storagepath == '':
@@ -1476,11 +1476,11 @@ def downloadFile(url, storagepath='', savefile=True):
                 f.write(data)
     
     except Exception as e:
-        print('MYDEBUGLOGLINE - download failed - error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
+        print(('MYDEBUGLOGLINE - download failed - error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) ))
         storagepath = ''
     
     except:
-        print('MYDEBUGLOGLINE - download failed - URL: %s , storagepath: %s' % (url, storagepath) )
+        print(('MYDEBUGLOGLINE - download failed - URL: %s , storagepath: %s' % (url, storagepath) ))
         storagepath = ''
     
     return storagepath
