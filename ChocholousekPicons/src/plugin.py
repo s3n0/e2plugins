@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ###########################################################################
-#  Enigma2 plugin, ChocholousekPicons, written by s3n0, 2018-2020
+#  Enigma2 plugin, ChocholousekPicons, written by s3n0, 2018-2021
 ###########################################################################
 
 
