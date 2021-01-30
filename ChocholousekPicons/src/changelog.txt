@@ -140,3 +140,10 @@ Added support for non-standard userbouquet files (lowercase) in Enigma, after us
 - unfortunately, DreamSet uploads userbouquet files with lowercase characters to the set-top box and therefore no matching service reference codes are found
 - the process of comparing service reference codes from userbouquet files will no longer be case sensitive
 
+4.0.210129
+Source code modified to support both versions of Python 2 and 3 at the same time.
+Fixed description for the plugin:
+- picons are supported mainly for satellite positions from Europe
+- other satellite positions are less supported ... such as satellites in Russia (not all satellites from Russia are supported)
+
+

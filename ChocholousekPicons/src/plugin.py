@@ -23,8 +23,16 @@ from Components.Sources.StaticText import StaticText
 from Components.ConfigList import ConfigList, ConfigListScreen
 from Components.config import config, configfile, getConfigListEntry, ConfigSubsection, ConfigSelection, ConfigYesNo, ConfigText, KEY_OK, NoSave, ConfigNothing
 ###########################################################################
-#import requests        # !!!! WARNING !!!! Some Enigma distributions do not have the "requests" Python module pre-installed, and this must be included in the dependencies in the so-called CONTROL script (in the .ipk / .deb installation package). Or reinstall manually: opkg install python-requests
-import urllib2, ssl, cookielib
+from sys import version_info as py_version
+if py_version.major == 3:           # data of this object type:   sys.version_info(major=3, minor=8, micro=5, releaselevel='final', serial=0)
+    import urllib.request as urllib2
+    import http.cookiejar as cookielib
+else:
+    import urllib2
+    import cookielib
+    #import requests                # !!!! WARNING !!!! Some Enigma distributions do not have the "requests" Python module pre-installed, and this must be included in the dependencies in the so-called CONTROL script (in the .ipk / .deb installation package). Or reinstall manually: opkg install python-requests
+####################
+import ssl
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
@@ -38,8 +46,8 @@ import glob
 import random
 ###########################################################################
 import os
-from commands import getstatusoutput                                        # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
-#from subprocess import check_output, CalledProcessError                     # unfortunately "subprocess" module is supported only in Python 2.4 or newer version ... some older Enigmas as example OpenPLi-4 contains only old Python (missing subprocess module)
+#from commands import getstatusoutput                                        # unfortunately "commands" module is removed in Python 3.x and therefore in the future, it is better to use a more complicated "subprocess"
+#from subprocess import check_output, CalledProcessError                     # unfortunately "subprocess" module was added in Python 2.4+ versions ... some older Enigmas as example OpenPLi-4 contains only old Python (missing subprocess module)
 #from shlex import split as shlexSplit
 from datetime import datetime
 from time import sleep
@@ -195,7 +203,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.plugin_update_server = ''
         
         global plugin_ver_local
-        self['version_txt']  = Label('Chocholousek picons - plugin ver.%s' % plugin_ver_local)
+        self['version_txt']  = Label('Chocholousek picons - plugin v%s' % plugin_ver_local)
         self['author_txt']   = Label('(https://github.com/s3n0)')
         
         self['actions'] = ActionMap( ['ColorActions', 'DirectionActions', 'OkCancelActions'] ,
@@ -260,7 +268,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         listWidth = self['config'].l.getItemSize().width()
         self['config'].list = self.list
-        self['config'].l.setSeperation(listWidth / 3)                       # fix the size of seperator in some new SKINs (for example in OE 2.5)
+        self['config'].l.setSeperation(listWidth // 3)                      # fix the size of seperator in some new SKINs (for example in OE 2.5)
         self["config"].l.setList(self.list)
         
         #self['config'].list = self.list
@@ -397,13 +405,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
             url = 'https://picon.cz/download/' + fields[0]
             new_file = PLUGIN_PATH + fields[1]
         else:
-            print('Error ! The archive file name "filmbox-premium" (preview picons file) was not found in the contents of the file "id_for_permalinks*.log"!')
+            print('Error ! The archive file name "filmbox-premium" (preview picons file) was not found in the contents of the file "id_for_permalinks*.log" !')
             return
         
         k = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
         current_file = k[0] if k else PLUGIN_PATH + 'foo-bar(000000).7z'            # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
         
-        if self.parseVer(new_file) > self.parseVer(current_file):                             # comparsion, for example as the following:  '191125' > '191013'
+        if self.parseVer(new_file) > self.parseVer(current_file):                   # comparsion of two strings like of a two numbers, for example, as the following:   '191125' > '191013'
             if not downloadFile(url, new_file):                                     # .7z archive with preview images (channel picons for the one and the same TV-channel)
                 print('Picons preview file download failed ! (URL = %s)' % url)
                 return
@@ -453,8 +461,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         2. then the content from the saved file is loaded into memory
         -  the   new / online    file version will be retrieved from the HTTP header - helping with the downloadFile() function
         -  the  current / local  file version will be retrieved from the existing local file name
-        ---file name example:    "id_for_permalinks191017.log"
-        ---example of a line from inside the permalinks-file:    "1xmITO0SouVDTrATgh0JauEpIS7IfIQuB        piconblack-220x132-13.0E_by_chocholousek_(191016).7z       bin      16.3 MB      2018-09-07 19:40:54"
+        ---file name example:    "id_for_permalinks(210127).log"
+        ---example of a line from inside the permalinks-file:    "1087 picontransparent-220x132-7.0E_by_chocholousek.7z"
         '''        
         ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.getctime)
         current_filename = ls[-1] if ls else PLUGIN_PATH + 'id_for_permalinks(000000).log'          # null version is used to force update the file (if the file does not exists on local disk !)
@@ -535,25 +543,27 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
     
     def find7zip(self):
-        if os.path.isfile('/usr/bin/7za'):      # or os.path.islink('/usr/bin/7za'):
+        if os.path.isfile('/usr/bin/7za'):              # or os.path.islink('/usr/bin/7za'):
             self.bin7zip = '/usr/bin/7za'
-        elif os.path.isfile('/usr/bin/7z'):     # or os.path.islink('/usr/bin/7z'):
+        elif os.path.isfile('/usr/bin/7z'):             # or os.path.islink('/usr/bin/7z'):
             self.bin7zip = '/usr/bin/7z'
         else:
             self.bin7zip = ''
         return self.bin7zip
     
     def downNinst7zip(self, confirmed):
+        
         if confirmed:
-            if os.path.exists('/etc/dpkg') and not os.system('dpkg -l p7zip > /dev/null 2>&1'):                             # if no error received from os.system (package manager), then...
+            
+            if os.path.exists('/etc/dpkg') and not os.system('dpkg -l p7zip > /dev/null 2>&1'):                                 # if no error received from os.system (package manager), then...
                 os.system('dpkg -i p7zip')
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
-            elif os.path.exists('/etc/opkg') and not os.system('opkg update > /dev/null && opkg list | grep -q p7zip'):     # if no error received from os.system (package manager), then...
+            elif os.path.exists('/etc/opkg') and not os.system('opkg update > /dev/null 2>&1 && opkg list | grep -q p7zip'):    # if no error received from os.system (package manager), then...
                 os.system('opkg install p7zip')
                 message = _('The installation of the 7-zip archiver from the Enigma2\nfeed server was successful.')
             else:
                 arch = self.getChipsetArch()
-                if 'mips' in arch:                          # MIPS (always 32bit)
+                if 'mips' in arch:                          # MIPS - always 32bit
                     fname = '7za_mips32el'
                 elif 'aarch64' in arch or 'arm64' in arch:  # ARM 64bit (Aarch64)
                     fname = '7za_aarch64'
@@ -594,7 +604,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         except:
             pass
         else:
-            return machine()                                            # return architectures from system, like as:  'mips'
+            return machine().lower()                                    # return architectures from system, like as:  'mips'
         
         status,out = runShell('uname -m')
         if status == 0:
@@ -622,6 +632,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
             else:
                 self.plugin_ver_online = url_handle.read().strip()
+                if not isinstance(self.plugin_ver_online, str):         # in Python 3.x, from "urllib.urlopen.read()", is returned a variable of type bytes, not a string... so... we need to convert bytes to string
+                    self.plugin_ver_online = self.plugin_ver_online.decode()
                 global plugin_ver_local
                 if self.plugin_ver_online > plugin_ver_local:
                     self.plugin_update_server = url
@@ -756,13 +768,13 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             y2 = s[i+10 : i+13]
             s = s[:i] + 'size="' + y2 + s[i+9:]
             
-            x = str( (int(y1) - int(y2))  /  2 )
+            x = str( (int(y1) - int(y2))  //  2 )
             i = s.index('position=', s.index('name="config"'))  # and also change the WIDGET relative horizontal position ("center,0" does not work under NewNigma2 image, so I need use a relative horizontal position, instead of the "center" position for all widgets)
             s = s[:i+10] + x + s[i+12:]
             
             i = s.index('size=', s.index('name="frame_counter'))
             m = s[i+6 : i+8]
-            n = str( (int(y1) - int(m))  /  2 )
+            n = str( (int(y1) - int(m))  //  2 )
             i = s.index('position=', s.index('name="txt_counter'))
             s = s[:i+10] + n + s[i+13:]                         # replace "center" position to fixed value, in widget "txt_counter"
             i = s.index('position=', s.index('name="frame_counter'))
@@ -808,7 +820,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         self['config'].list = self.list
         listWidth = self['config'].l.getItemSize().width()
-        self['config'].l.setSeperation(listWidth / 2)                       # fix the size of seperator on config list in some new SKINs / OE2.5
+        self['config'].l.setSeperation(listWidth // 2)                      # fix the size of seperator on config list in some new SKINs / OE2.5
         self['config'].l.setList(self.list)
 
         #self['config'].list = self.list
@@ -992,7 +1004,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
         
         listWidth = self['config'].l.getItemSize().width()
         self['config'].list = self.list
-        self['config'].l.setSeperation(listWidth / 2)                  # fix the size of seperator in some new SKINs (for example in OE2.5)
+        self['config'].l.setSeperation(listWidth // 2)                 # fix the size of seperator in some new SKINs (for example in OE2.5)
         self["config"].l.setList(self.list)
         
         #self['config'].list = self.list
@@ -1168,9 +1180,9 @@ class piconsUpdateJobScreen(Screen):
     
     def mainFunc(self):
         
-        # 1) Ocheckuje sa internetové pripojenie
+        # 1) Ako prvé sa otestuje internetové pripojenie
         if os.system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr Enigma2 image ?!
-            return True, _("Internet connection is not available !")
+            return True, _('Internet connection is not available !')
         else:
             self.writeLog(_('Internet connection is OK.'))
         
@@ -1270,11 +1282,11 @@ class piconsUpdateJobScreen(Screen):
         
         # 1. Príprava downloadovaciej URL adresy + názvu súboru pre uloženie na disk
         if "://" in URL_or_File:
-            # (a) - ak sa jedná o alternatívny zdroj s pikonami:
+            # 1.a - ak sa jedná o alternatívny zdroj s pikonami:
             url_link = URL_or_File
             dwn_filename = URL_or_File.split('/')[-1]
         else:
-            # (b) - vyhľadanie ID kódu v "chochoContent" pre názov súboru (a pre potrebu jeho následovného stiahnutia z file-hosting online servera):
+            # 1.b - vyhľadanie ID kódu v "chochoContent" pre názov súboru (a pre potrebu jeho následovného stiahnutia z file-hosting online servera):
             found = []
             for line in self.chochoContent.splitlines():
                 if URL_or_File in line:
@@ -1501,21 +1513,21 @@ def newOE():
         else:
             boo = False                                 #### old enigma core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source core
     except ImportError:
-        boo = False                                     #### ImportError means OE 2.0 core
+        boo = False                                     #### ImportError means compatibility with OE 2.0 core
     except ValueError:
-        boo = False                                     #### ValueError, for example in the TeamBlue Enigma containing the PACKAGE_VERSION, which does not work properly (taking only 2 arguments, instead of 3 arguments)
+        boo = False                                     #### ValueError means compatibility with OE 2.0 core (some Enigma2 distributions, such as TeamBlue, returns only 2 arguments from the PACKAGE_VERSION value, instead of 3 arguments)
     return boo
 
-def runShell(cmd):
-    try:
-        t = getstatusoutput(cmd)
-    except Exception as e:
-        t = -1 , e.message
-    except:
-        t = -1 , ''
-    return t
+#def runShell(cmd):                     # commands.getstatusoutput() - works under Python 2.x.x only (does not work under Python 3.x.x)
+#    try:
+#        t = getstatusoutput(cmd)
+#    except Exception as e:
+#        t = -1 , e.message
+#    except:
+#        t = -1 , ''
+#    return t
 
-#def runShell(cmd):
+#def runShell(cmd):                     # subprocess.check_output() - works under Python 2.4.x - 3.x.x
 #    try:
 #        t =  0 , check_output(shlexSplit(cmd))
 #    except CalledProcessError as e:
@@ -1526,11 +1538,18 @@ def runShell(cmd):
 #        t = -1 , ''
 #    return t
 
-#def runShell(cmd):
-#    retCODE = os.system(cmd + ' > /tmp/redirected_output 2>&1')     # redirecting stdout and stderr to a temporary file
-#    retOUT = open('/tmp/redirected_output', 'r').read()
-#    os.remove('/tmp/redirected_output')
-#    return retCODE, retOUT
+def runShell(cmd):                      # os.system() - I use this primitive Shell output, for better compatibility with older versions of Python than 2.4.x (where the subsupport module is missing), as well as for newer versions of Python 3.x.x (where the commands.getstatusoutput is missing)
+    try:
+        retCode   = os.system(cmd + ' > /tmp/chocholousek-picons.tmp 2>&1')         # with redirecting stdout and stderr to a temporary file
+        retOutput = open('/tmp/chocholousek-picons.tmp', 'r').read()                # retrieving saved output from temporary file that was previously created via Shell
+        os.remove('/tmp/chocholousek-picons.tmp')
+    except Exception as e:
+        retCode   = -1
+        retOutput = e.message
+    except:
+        retCode   = -1
+        retOutput = ''
+    return retCode, retOutput
 
 
 
