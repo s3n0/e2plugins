@@ -31,7 +31,7 @@
    wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
    ```
 
-   >- **Enigma2 based on OE 2.0 and OE Alliance 4.x core (ATV, PLi, BH, VTi, etc.) - using the ".ipk" installation package:**
+   >- **Enigma2 based on OE 2.0 and OE Alliance 4.x core (ATV, PLi, VTi, BlackHole, TeamBlue, etc.) - using the ".ipk" installation package:**
    ```shell
    opkg install <path_to_ipk-file>                             # to install package
    opkg remove enigma2-plugin-extensions-chocholousek-picons   # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
