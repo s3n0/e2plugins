@@ -146,4 +146,5 @@ Fixed description for the plugin:
 - picons are supported mainly for satellite positions from Europe
 - other satellite positions are less supported ... such as satellites in Russia (not all satellites from Russia are supported)
 
-
+4.0.210130
+For the needs of OpenATV-6.5 alpha version (based on Python 3.8.x), ".py" files are inserted into the installation package instead of ".pyo" files.
