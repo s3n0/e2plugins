@@ -123,10 +123,16 @@ msgid "Installation of 7-zip archiver failed!"
 msgstr "Instalace archivátoru 7-zip se nezdařila!"
 
 msgid "Internet connection is not available !"
-msgstr "Připojení k internetu není k dispozici!"
+msgstr "Připojení k internetu není k dispozici !"
 
 msgid "Internet connection is OK."
 msgstr "Připojení k internetu je v pořádku."
+
+msgid "Connection to the picon server is not available !"
+msgstr "Připojení k serveru s piconami není k dispozici !"
+
+msgid "Connection to the picon server is OK."
+msgstr "Připojení k serveru s piconami je v pořádku."
 
 msgid ""
 "No userbouquet files found !\n"
@@ -135,7 +141,7 @@ msgstr ""
 "Nebyly nalezeny žádné soubory userbouquet!\n"
 "Zkontrolujte složku /etc/enigma2, zda obsahuje soubory userbouquet."
 
-msgid "Preparing a list of picons from the picon directory on the local disk."
+msgid "Preparing a list of picons from the picon directory on the local disk..."
 msgstr "Příprava seznamu piconů z adresáře picon na lokálním disku..."
 
 msgid "Preparing a list of picons from userbouquet files..."
@@ -174,8 +180,8 @@ msgstr "Žádné picony nebyly přidány nebo změněny."
 msgid "Download ID for file %s was not found!"
 msgstr "ID ke stažení souboru %s není nalezeno!"
 
-msgid "Trying download the file archive... %s"
-msgstr "Pokus o stažení archivu... %s"
+msgid "Trying download the file archive..."
+msgstr "Pokus o stažení archivu..."
 
 msgid "...file download failed !!!"
 msgstr "...soubor se nezdařilo stáhnout !!!"

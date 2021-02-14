@@ -128,6 +128,12 @@ msgstr "İnternet bağlantısı mevcut değil!"
 msgid "Internet connection is OK."
 msgstr "İnternet bağlantısı iyi."
 
+msgid "Connection to the picon server is not available !"
+msgstr "Picon sunucusuna bağlantı mevcut değil !"
+
+msgid "Connection to the picon server is OK."
+msgstr "Picon sunucusuna bağlantı tamam."
+
 msgid ""
 "No userbouquet files found !\n"
 "Please check the folder /etc/enigma2 for the userbouquet files."
@@ -135,11 +141,11 @@ msgstr ""
 "Userbouquet dosyası bulunamadı!\n"
 "Lütfen userbouquet dosyaları için /etc/enigma2 klasörünü kontrol edin."
 
-msgid "Preparing a list of picons from the picon directory on the local disk."
-msgstr "Yerel diskteki picon dizininden bir piknik listesi hazırlama."
+msgid "Preparing a list of picons from the picon directory on the local disk..."
+msgstr "Yerel diskteki picon dizininden bir piknik listesi hazırlama ..."
 
 msgid "Preparing a list of picons from userbouquet files..."
-msgstr "userbouquet dosyalarından bir piknik listesi hazırlanıyor ..."
+msgstr "Userbouquet dosyalarından bir piknik listesi hazırlanıyor ..."
 
 msgid "...done."
 msgstr "... bitti."
@@ -174,8 +180,8 @@ msgstr "Hiçbir piknik eklenmedi veya değiştirilmedi."
 msgid "Download ID for file %s was not found!"
 msgstr "%s dosyası için indirme kimliği bulunamadı!"
 
-msgid "Trying download the file archive... %s"
-msgstr "%s dosya arşivini indirmeye çalışıyorum..."
+msgid "Trying download the file archive..."
+msgstr "Dosya arşivini indirmeye çalışıyorum..."
 
 msgid "...file download failed !!!"
 msgstr "...dosya indirilemedi !!!"

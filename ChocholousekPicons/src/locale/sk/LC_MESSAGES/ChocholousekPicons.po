@@ -128,6 +128,12 @@ msgstr "Pripojenie k internetu nie je k dispozícii!"
 msgid "Internet connection is OK."
 msgstr "Pripojenie k internetu je OK."
 
+msgid "Connection to the picon server is not available !"
+msgstr "Pripojenie k serveru s pikonami nie je k dispozícii !"
+
+msgid "Connection to the picon server is OK."
+msgstr "Pripojenie k serveru s pikonami je OK."
+
 msgid ""
 "No userbouquet files found !\n"
 "Please check the folder /etc/enigma2 for the userbouquet files."
@@ -135,8 +141,8 @@ msgstr ""
 "Neboli nájdené žiadne súbory \"userbouquet\"!\n"
 "Skontrolujte prítomnosť súborov \"userbouquet\" v zložke \"/etc/enigma2\"."
 
-msgid "Preparing a list of picons from the picon directory on the local disk."
-msgstr "Príprava zoznamu pikon zo zložky na lokálnom disku."
+msgid "Preparing a list of picons from the picon directory on the local disk..."
+msgstr "Príprava zoznamu pikon z adresára s pikonami na lokálnom disku..."
 
 msgid "Preparing a list of picons from userbouquet files..."
 msgstr "Príprava zoznamu pikon z \"userbouquet\" súborov..."
@@ -174,8 +180,8 @@ msgstr "Žiadné pikony neboli pridané alebo zmenené."
 msgid "Download ID for file %s was not found!"
 msgstr "ID pre stiahnutie súboru %s sa nepodarilo vyhladať!"
 
-msgid "Trying download the file archive... %s"
-msgstr "Pokus o stiahnutie súboru s archívom... %s"
+msgid "Trying download the file archive..."
+msgstr "Pokus o stiahnutie súboru s archívom..."
 
 msgid "...file download failed !!!"
 msgstr "...súbor se nepodarilo stiahnúť !!!"

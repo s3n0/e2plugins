@@ -128,6 +128,12 @@ msgstr "Internetverbindung ist nicht verfügbar !"
 msgid "Internet connection is OK."
 msgstr "Die Internetverbindung ist in Ordnung."
 
+msgid "Connection to the picon server is not available !"
+msgstr "Eine Verbindung zum Picon-Server ist nicht verfügbar !"
+
+msgid "Connection to the picon server is OK."
+msgstr "Die Verbindung zum Picon-Server ist in Ordnung."
+
 msgid ""
 "No userbouquet files found !\n"
 "Please check the folder /etc/enigma2 for the userbouquet files."
@@ -135,7 +141,7 @@ msgstr ""
 "Keine userbouquet Dateien gefunden!\n"
 "Überprüfen Sie den Ordner /etc/enigma2, um festzustellen, ob er Userbouquet-Dateien enthält."
 
-msgid "Preparing a list of picons from the picon directory on the local disk."
+msgid "Preparing a list of picons from the picon directory on the local disk..."
 msgstr "Die Picon-Liste aus dem Picon-Verzeichnis auf der lokalen Festplatte wird vorbereitet..."
 
 msgid "Preparing a list of picons from userbouquet files..."
@@ -174,8 +180,8 @@ msgstr "Es wurden keine Picons hinzugefügt oder geändert."
 msgid "Download ID for file %s was not found!"
 msgstr "ID-Download %s nicht gefunden!"
 
-msgid "Trying download the file archive... %s"
-msgstr "Archiv wird heruntergeladen... %s"
+msgid "Trying download the file archive..."
+msgstr "Archiv wird heruntergeladen..."
 
 msgid "...file download failed !!!"
 msgstr "...datei konnte nicht heruntergeladen werden !!!"

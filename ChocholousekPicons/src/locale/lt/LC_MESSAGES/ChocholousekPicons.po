@@ -102,6 +102,12 @@ msgstr "Interneto ryšys yra geras."
 msgid "Internet connection is not available !"
 msgstr "Nėra interneto ryšio !"
 
+msgid "Connection to the picon server is OK."
+msgstr "Prisijungimas prie „picon“ serverio yra tinkamas."
+
+msgid "Connection to the picon server is not available !"
+msgstr "Prisijungimas prie „picon“ serverio negalimas !"
+
 msgid ""
 "New plugin version found: %s\n"
 "Do you want to install it now ?"
@@ -155,8 +161,8 @@ msgstr ""
 "\n"
 "Įdiegta versija: %s"
 
-msgid "Preparing a list of picons from the picon directory on the local disk."
-msgstr "Ruošiamas logotipų sąrašas iš logotipų katalogo vietiniame diske."
+msgid "Preparing a list of picons from the picon directory on the local disk..."
+msgstr "Ruošiamas logotipų sąrašas iš logotipų katalogo vietiniame diske..."
 
 msgid "Preparing a list of picons from userbouquet files..."
 msgstr "Ruošiamas logotipų sąrašas iš vartotojo paketų failų..."
@@ -211,8 +217,8 @@ msgstr ""
 msgid "The process started..."
 msgstr "Procesas prasidėjo..."
 
-msgid "Trying download the file archive... %s"
-msgstr "Bandoma atsisiųsti failų archyvą... %s"
+msgid "Trying download the file archive..."
+msgstr "Bandoma atsisiųsti failų archyvą..."
 
 msgid "Update picons"
 msgstr "Naujinti logotipus"

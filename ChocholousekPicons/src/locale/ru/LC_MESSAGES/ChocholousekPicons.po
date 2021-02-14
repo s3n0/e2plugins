@@ -202,6 +202,12 @@ msgstr "Интернет соединение недоступно !"
 msgid "Internet connection is OK."
 msgstr "Интернет соединение OK."
 
+msgid "Connection to the picon server is not available !"
+msgstr "Подключение к серверу picon недоступно!"
+
+msgid "Connection to the picon server is OK."
+msgstr "Подключение к серверу picon в порядке."
+
 #, python-format
 msgid ""
 "Error creating directory %s:\n"
@@ -217,8 +223,8 @@ msgstr ""
 "Файлы userbouquet не найдены !\n"
 "Проверьте папку /etc/enigma2 для файлов userbouquet."
 
-msgid "Preparing a list of picons from the picon directory on the local disk."
-msgstr "Подготовка списка пиконов из каталога пиконов на локальном диске."
+msgid "Preparing a list of picons from the picon directory on the local disk..."
+msgstr "Подготовка списка пиконов из каталога пиконов на локальном диске..."
 
 msgid "Preparing a list of picons from userbouquet files..."
 msgstr "Подготовка списка пиконов из файлов букета..."
@@ -253,8 +259,8 @@ msgid "Download ID for file %s was not found!"
 msgstr "Скачиваемый ID файла %s не найден!"
 
 #, python-format
-msgid "Trying download the file archive... %s"
-msgstr "Пробую скачать архив файлов... %s"
+msgid "Trying download the file archive..."
+msgstr "Пробую скачать архив файлов..."
 
 msgid "...file download failed !!!"
 msgstr "...файл скачать не удалось !!!"

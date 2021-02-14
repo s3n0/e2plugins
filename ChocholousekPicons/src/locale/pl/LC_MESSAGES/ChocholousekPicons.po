@@ -94,6 +94,12 @@ msgstr "Dobre połączenie z internetem."
 msgid "Internet connection is not available !"
 msgstr "Brak połączenia z internetem!"
 
+msgid "Connection to the picon server is OK."
+msgstr "Połączenie z serwerem picon jest OK."
+
+msgid "Connection to the picon server is not available !"
+msgstr "Brak połączenia z serwerem Picon !"
+
 msgid "No operation ! Picon update failed !"
 msgstr "Nic nie wykonano ! Aktualizacja picon nie udana !"
 
@@ -131,8 +137,8 @@ msgstr ""
 "\n"
 "Zainstalowana wersja: %s"
 
-msgid "Preparing a list of picons from the picon directory on the local disk."
-msgstr "Przygotowuje liste picon z folderu dysku lokalnego..."
+msgid "Preparing a list of picons from the picon directory on the local disk..."
+msgstr "Przygotowanie listy pikonów z katalogu picon na dysku lokalnym..."
 
 msgid "Preparing a list of picons from userbouquet files..."
 msgstr "Przygotowuje listę picon z plików userbouquet..."
@@ -195,8 +201,8 @@ msgstr ""
 msgid "The process started..."
 msgstr "Uruchomiono proces..."
 
-msgid "Trying download the file archive... %s"
-msgstr "Próba pobrania archiwum... %s"
+msgid "Trying download the file archive..."
+msgstr "Próba pobrania archiwum..."
 
 msgid "Update picons"
 msgstr "Pobrać picony"

@@ -148,3 +148,11 @@ Fixed description for the plugin:
 
 4.0.210130
 For the needs of OpenATV-6.5 alpha version (based on Python 3.8.x), ".py" files are inserted into the installation package instead of ".pyo" files.
+
+4.0.210214
+Add log output to the file "/tmp/chocholousek-picons.log", while updating picons.
+Added testing of the connection to the server, which contains picon packages, after testing the internet connection.
+Minor syntax modification according to PEP8 E251.
+Renaming some functions (source code) to make them clearer.
+
+

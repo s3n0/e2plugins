@@ -187,7 +187,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.onChangedEntry = []
         self.list = []
         
-        ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
+        ConfigListScreen.__init__(self, self.list, session=self.session, on_change=self.changedEntry)
         
         self.lineHeight = 1                     # for text height auto-correction on dmm-enigma2 (1 = enable auto-correction ; 0 = disable auto-correction)
         self.lineheight = 1
@@ -325,12 +325,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def keyToPluginUpdate(self):
         if self.findHostnameAndNewPlugin():
             message = _("New plugin version found: %s\nDo you want to install it now ?") % self.plugin_ver_online
-            self.session.openWithCallback(self.downNinstPlugin, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
+            self.session.openWithCallback(self.downNinstPlugin, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
         else:
             global plugin_ver_local
             message = _("Plugin version is up to date.\n\n"
                         "Installed version: %s") % (plugin_ver_local)
-            self.session.open(MessageBox, message, type = MessageBox.TYPE_INFO, timeout = 10)
+            self.session.open(MessageBox, message, type=MessageBox.TYPE_INFO, timeout=10)
     
     def exitWithSave(self):
         self.exitWithConditionalSave(True)
@@ -341,7 +341,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def keyToExit(self):
         if self['txt_green'].getText().endswith('*'):       # plugin configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings in the plugin configuration
             message = _("You have changed the plugin configuration.\nDo you want to save all changes now ?")
-            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
+            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type=MessageBox.TYPE_YESNO, timeout=0, default=True)
         else:
             self.exitWithConditionalSave(False)
     
@@ -373,7 +373,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if self.getCursorTitle() != _('User defined folder'):
             self.rebuildConfigList()                        # config list rebuild - is allowed only if the cursor is not at ConfigText (picon folder configuration by user input), because left/arrow RCU buttons are neccessary to move the cursor inside ConfigText
     
-    def restartEnigmaOrCloseScreen(self, answer = None):
+    def restartEnigmaOrCloseScreen(self, answer=None):
         if answer:
             self.session.open(TryQuitMainloop, 3)   # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
         else:
@@ -540,7 +540,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def check7zip(self):
         if not self.find7zip():
             message = _('The 7-zip archiver was not found on your system.\nThere is possible to update the 7-zip archiver now in two steps:\n\n(1) try to install via the Enigma package manager\n...or...\n(2) try to download the binary file "7za" (standalone archiver) from the internet\n\nDo you want to try it now?')
-            self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
+            self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
     
     def find7zip(self):
         if os.path.isfile('/usr/bin/7za'):              # or os.path.islink('/usr/bin/7za'):
@@ -585,9 +585,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             if self.find7zip():
                 self.downloadPreviewPicons()                    # !!!! if the installation of the 7-zip archiver was successful, I will try again to download the preview picons (.7z file from the internet), because at the beginning of the class it wasn't possible to download the preview picons - because of the non-existent 7-zip archiver
                 self.showPreviewImage()                         # the Screen layer is already up, so, I may show the image into the screen widget
-                self.session.open(MessageBox, message, type = MessageBox.TYPE_INFO)             # MessageBox with message about successful installation - either a standalone binary file or an ipk package
+                self.session.open(MessageBox, message, type=MessageBox.TYPE_INFO)             # MessageBox with message about successful installation - either a standalone binary file or an ipk package
             else:
-                self.session.open(MessageBox, _('Installation of 7-zip archiver failed!'), type = MessageBox.TYPE_ERROR)
+                self.session.open(MessageBox, _('Installation of 7-zip archiver failed!'), type=MessageBox.TYPE_ERROR)
     
     def getChipsetArch(self):
         '''
@@ -664,12 +664,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     plugin_ver_local = self.plugin_ver_online
                     
                     message = _('The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?')
-                    self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type = MessageBox.TYPE_YESNO, default = True)
+                    self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
                 
                 else:
                     print('New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
                     message = _('Error ! Downloading plugin installation package failed !') + '\n' + dwn_url
-                    self.session.open(MessageBox, message, type = MessageBox.TYPE_ERROR)
+                    self.session.open(MessageBox, message, type=MessageBox.TYPE_ERROR)
 
 
 
@@ -723,7 +723,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         self.onChangedEntry = []
         self.list = []
         
-        ConfigListScreen.__init__(self, self.list, session = self.session, on_change = self.changedEntry)
+        ConfigListScreen.__init__(self, self.list, session=self.session, on_change=self.changedEntry)
         
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
         self.lineheight = 1
@@ -841,7 +841,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
     def keyToExit(self):
         if self['txt_green'].getText().endswith('*'):                       # satellites configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings
             message = _('You have changed the selection of satellites.\nApply these changes ?')
-            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
+            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type=MessageBox.TYPE_YESNO, timeout=0, default=True)
         else:
             self.exitWithConditionalSave(False)
     
@@ -902,14 +902,14 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
             <widget  render="Label" source="txt_blue"         position="605,560" size="200,40" halign="left" valign="center" font="Regular;22" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
     
-    def __init__(self, session, start_dir = '/'):
+    def __init__(self, session, start_dir='/'):
         
         Screen.__init__(self, session)
         
         self.onChangedEntry = []
         self.list = []
         
-        ConfigListScreen.__init__(self, self.list, session = self.session)      # , on_change = self.changedEntry)
+        ConfigListScreen.__init__(self, self.list, session=self.session)      # , on_change = self.changedEntry)
         
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
         self.lineheight = 1
@@ -1012,7 +1012,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
     
     
     def keyToYellow(self):
-        self.session.openWithCallback(self.createDir_FromCallBack, InputBox, title = _('Please enter a name for the new directory:'), text = '')
+        self.session.openWithCallback(self.createDir_FromCallBack, InputBox, title=_('Please enter a name for the new directory:'), text='')
     
     def createDir_FromCallBack(self, dirname):
         if dirname:
@@ -1031,7 +1031,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
         if dir_content:
             message += '\n' + _('Note: This directory is not empty - it contains %s item(s).') % len(dir_content)
         message += '\n\n' + dir_to_del
-        self.session.openWithCallback(self.deleteDir_FromCallBack, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
+        self.session.openWithCallback(self.deleteDir_FromCallBack, MessageBox, message, type=MessageBox.TYPE_YESNO, timeout=0, default=True)
     
     def deleteDir_FromCallBack(self, confirmed):
         if confirmed:
@@ -1053,7 +1053,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
     def keyToExit(self):
         if self['txt_green'].getText().endswith('*'):                 # satellites configuration changed...? if so, then I invoke the MessageBox with the option to save or restore the original settings
             message = _('You have changed the path to the picon folder.\nAccept changed path ?') + '\n\n' + self.shown_dir
-            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type = MessageBox.TYPE_YESNO, timeout = 0, default = True)
+            self.session.openWithCallback(self.exitWithConditionalSave, MessageBox, message, type=MessageBox.TYPE_YESNO, timeout=0, default=True)
         else:
             self.exitWithConditionalSave(False)
     
@@ -1124,12 +1124,16 @@ class piconsUpdateJobScreen(Screen):
         self.th.start()
         
         # it is necessary to run a thread completion test cycle (the cycle is timed to run every second):
-        self.thStopCheckingTimer = eTimer()
+        self.thCancellationTimer = eTimer()
         if newOE():
-            self.thStopCheckingTimer_conn = self.thStopCheckingTimer.timeout.connect(self.thStopChecking)   # eTimer for new version of Enigma2 core (OE 2.2+)
+            self.thCancellationTimer_conn = self.thCancellationTimer.timeout.connect(self.thCancellation)   # eTimer for new version of Enigma2 core (OE 2.2+)
         else:
-            self.thStopCheckingTimer.callback.append(self.thStopChecking)                                   # eTimer for old version of Enigma2 core (OE 2.0 / OE-Alliance 4.? open-source core)
-        self.thStopCheckingTimer.start(1000, False)
+            self.thCancellationTimer.callback.append(self.thCancellation)                                   # eTimer for old version of Enigma2 core (OE 2.0 / OE-Alliance 4.? open-source core)
+        self.thCancellationTimer.start(1000, False)
+        
+        self.tmpLogFile = '/tmp/chocholousek-picons.log'
+        if os.path.isfile(self.tmpLogFile):
+            os.remove(self.tmpLogFile)
         
         #self.onShown.append(self.func_name)
         #self.onLayoutFinish.append(self.func_name)
@@ -1152,10 +1156,10 @@ class piconsUpdateJobScreen(Screen):
         self.piconUpdateReturn = msg, type
         #### end of the thread process
     
-    def thStopChecking(self):
+    def thCancellation(self):
         if not self.th.is_alive():
             self.logWindowTimer.stop()
-            self.thStopCheckingTimer.stop()                     # if self.thStopCheckingTimer.isActive(): .....
+            self.thCancellationTimer.stop()                     # if self.thCancellationTimer.isActive(): .......
             self.th.join()                                      # close the finished "th" thread
             msg, type = self.piconUpdateReturn
             self.writeLog(msg)
@@ -1178,15 +1182,37 @@ class piconsUpdateJobScreen(Screen):
         else:
             self.close()
     
+    #def internetConnection(self):
+        #err_code = os.system('ping -c 1 www.google.com > /dev/null 2>&1'):    # removed the argument -w 1 due to incompatibility with SatDreamGr Enigma2 image ?!
+        #return 0 == err_code                                                  # return True, if err_code from linux shell == 0
+        #######
+        #try:
+        #    tmp = urllib2.urlopen('http://www.google.com', None, 3)
+        #    return True
+        #except:
+        #    return False
+    
     def mainFunc(self):
         
-        # 1) Ako prvé sa otestuje internetové pripojenie
-        if os.system('ping -c 1 www.google.com > /dev/null 2>&1'):          #  removed the argument -w 1 due to incompatibility with SatDreamGr Enigma2 image ?!
-            return True, _('Internet connection is not available !')
-        else:
+        # 1.a) Ako prvé sa otestuje internetové pripojenie
+        err = os.system('ping -c 1 www.google.com > /dev/null 2>&1')
+        if err == 0:
             self.writeLog(_('Internet connection is OK.'))
+        else:
+            msg = _('Internet connection is not available !') + ' (ERROR: %s)' % err
+            self.writeLog(msg)
+            return True, msg
         
-        # 2) Skontroluje sa existencia zložky s pikonami na lokalnom disku (ak zložka neexistuje, vytvorí sa nová !)
+        # 1.b) Zároveň sa otestuje spojenie s online úložiskom (umiestnenie 7zip balíčkov s pikonami)
+        err = os.system('ping -c 1 picon.cz > /dev/null 2>&1')
+        if err == 0:
+            self.writeLog(_('Connection to the picon server is OK.'))
+        else:
+            msg = _('Connection to the picon server is not available !') + ' (ERROR: %s)' % err
+            self.writeLog(msg)
+            return True, msg
+        
+        # 2) Skontroluje sa existencia zložky s pikonami na lokálnom disku (ak zložka neexistuje, vytvorí sa nová !)
         if config.plugins.chocholousekpicons.picon_folder.value == 'user_defined':
             self.piconDIR = config.plugins.chocholousekpicons.picon_folder_user.value.strip()
             if self.piconDIR.endswith('/'):
@@ -1212,18 +1238,19 @@ class piconsUpdateJobScreen(Screen):
         #self.storeVarInFile('bouquet_files', self.bouquet_files)
         
         # 4) Vytvorí sa zoznam picon umiestnených na lokálnom disku (v internom flash-disku alebo na externom USB/HDD) - včetne veľkostí týchto súborov !
-        self.writeLog(_('Preparing a list of picons from the picon directory on the local disk.'))
+        self.writeLog( _('Preparing a list of picons from the picon directory on the local disk...') + ' "%s/*.png"' % self.piconDIR )
         self.SRC_in_HDD = {}
         dir_list = glob.glob(self.piconDIR + '/*.png')
         if dir_list:
             for path_N_file in dir_list:
                 self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os.path.getsize(path_N_file))  } )
+        self.writeLog(_('...done.'))
         #self.storeVarInFile('SRC_in_HDD', self.SRC_in_HDD)
         
         # 5) Vytvorenie zoznamu SRC kódov z userbouquet súborov
         if 'sync' in config.plugins.chocholousekpicons.method.value:
             # 5.A) Vytvorí sa zoznam serv.ref.kódov z patričných userbouquet súborov (podľa predvytvoreného zoznamu *.tv alebo aj *.radio) - sú poterbné pre synchronizáciu picon
-            self.writeLog(_('Preparing a list of picons from userbouquet files...'))
+            self.writeLog( _('Preparing a list of picons from userbouquet files...') + ' "/etc/enigma2/userbouquet.*.{tv,radio}"' )
             bq_contents = ''
             for bq_file in self.bouquet_files:
                 with open(bq_file, 'r') as f:
@@ -1299,7 +1326,7 @@ class piconsUpdateJobScreen(Screen):
             dwn_filename = found[1]     # .replace('(','_').replace(')','_')        # replace the filename mask by new original archive filename and replace the parentheses by underline characters
         
         # 2. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
-        self.writeLog(_('Trying download the file archive... %s') % dwn_filename)
+        self.writeLog(_('Trying download the file archive...') + ' "%s"' % dwn_filename)
         if not downloadFile(url_link, '/tmp/' + dwn_filename):
             self.writeLog(_('...file download failed !!!'))
             return
@@ -1411,11 +1438,13 @@ class piconsUpdateJobScreen(Screen):
         else:
             self.writeLog('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s\n' % (status, out)  )
     
-    def writeLog(self, text = ''):
+    def writeLog(self, text=''):
         timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method
         m = '[%s] %s' % (timestamp, text)
         print('MYDEBUGLOGLINE - %s' % m)
         self.logWindowText += '\n' + m
+        with open(self.tmpLogFile, 'a') as f:
+            f.write(m + '\n')
     
     def logWindowUpdate(self):
         '''
@@ -1440,13 +1469,19 @@ class piconsUpdateJobScreen(Screen):
 
 
 
-def downloadFile(url, storagepath='', savefile=True):
+def downloadFile(url, target_filename='', save_to_disk=True):
     '''
     Download files from the internet to the destination, taking into account the Drive.Google server (warning window with virus scan).
-    If the storagepath variable (a destination) of the downloaded file ENDS WITH A "/", then this directory will be used as the destination of the downloaded file. Otherwise folder "/tmp" will be used.
-    If the storagepath variable (a destination) of the downloaded file not contains some file name, then the algorithm looks for the file name in Cookies and if the name cannot be found, it is invented as "unknown_file_<random-num>".
-    The savefile variable determines whether the file is saved (True) to the local disk or not (False). If not, it only means testing the existence of the online file (the function "" returns on error or the path to the file if the online file exists).
-    When the download fails, function returns an empty string "". Otherwise, it returns the path + name of the downloaded file.
+    
+    target_filename :
+        ENDS WITH "/" CHARACTER................the specified target path will used + filename will sets by Cookies OR as a random number
+        IS EQUAL TO "" (IS EMPTY)..............the "/tmp" target path will used + filename will sets by Cookies OR as a random number
+        -------- in both cases, the file name will retrieved from Cookies and if the name cannot be retrieved, it is invented as "unknown_file_<random-num>"
+        CONTAINS SOMETHING (IS NOT EMPTY)......the specified target "/path/filename" (with specified file name) will be used to save the file on local disk
+    
+    The save_to_disk variable determines whether the file is saved (=True) to the local disk or not (=False).
+    It only means testing purpose of the existence the online file (then this function returns "" on error OR returns the path + file name if the online file exists).
+    When the download fails, function returns an empty string "". Otherwise, it returns the path + file name of the downloaded file.
     '''
     if 'picon.cz' in url:
         global plugin_ver_local
@@ -1468,36 +1503,41 @@ def downloadFile(url, storagepath='', savefile=True):
         handler = urllib2.urlopen(req, timeout=15)
         if 'drive.google' in url:
             for c in cookie_jar:
-                if c.name.startswith('download_warning'):                    # in case of drive.google download a virus warning message is possible (for some downloads)
+                if c.name.startswith('download_warning'):                           # in case of drive.google download a virus warning message is possible (for some downloads)
                     print('MYDEBUGLOGLINE - url: %s - "warning_message" detected' % url)
-                    url = url.replace('&id=', '&confirm=%s&id=' % c.value)   # and then it's necessary to add a parameter with confirmation of the warning message
+                    url = url.replace('&id=', '&confirm=%s&id=' % c.value)          # and then it's necessary to add a parameter with confirmation of the warning message
                     req = urllib2.Request(url, data=None, headers=headers)
                     handler = urllib2.urlopen(req, timeout=15)
                     break
         
-        if storagepath.endswith('/') or storagepath == '':
+        # add file name (if necessary):
+        if target_filename == '' or target_filename.endswith('/'):
             if 'content-disposition' in handler.headers:
-                storagepath += handler.headers['content-disposition'].split('"')[1]                 # get filename from html header
+                fname = handler.headers['content-disposition'].split('"')[1]        # get filename from html header
             else:
-                storagepath = '/tmp/unknown_file_' + datetime.now().strftime('%s')                  # unix-timestamp: '/tmp/unknown_file_1586625400'
-                #storagepath = '/tmp/unknown_file_{:0>6}____'.format(random.randint(0,150000))      # random number
+                fname = 'unknown_filename_' + datetime.now().strftime('%s')         # filename with unix-timestamp at the end:  'unknown_file_1586625400'
+                #fname = 'unknown_filename_{:0>6}____'.format(random.randint(0,150000))             # random number
+            if target_filename == '':
+                target_filename = '/tmp/'
+            target_filename += fname
         
-        if savefile:        # download file from the internet + save file to local disk
+        # save file to local disk (according to the boolean flag in the save_to_disk variable)
+        if save_to_disk:
             data = handler.read()
-            with open(storagepath, 'wb') as f:
+            with open(target_filename, 'wb') as f:
                 f.write(data)
     
     except Exception as e:
-        print('MYDEBUGLOGLINE - download failed - error: %s , URL: %s , storagepath: %s' % (str(e), url, storagepath) )
-        storagepath = ''
+        print('MYDEBUGLOGLINE - download failed - error: %s , URL: %s , target_filename: %s' % (str(e), url, target_filename) )
+        target_filename = ''
     
     except:
-        print('MYDEBUGLOGLINE - download failed - URL: %s , storagepath: %s' % (url, storagepath) )
-        storagepath = ''
+        print('MYDEBUGLOGLINE - download failed - URL: %s , target_filename: %s' % (url, target_filename) )
+        target_filename = ''
     
-    return storagepath
+    return target_filename
     # return the path+filename, if all done (file was found and/or was also stored on disk)
-    # return the empty string, if the download fails
+    # return the empty string, if the download fails or if online file does not exist
 
 def newOE():
     '''
