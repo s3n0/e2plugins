@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: ChocholousekPicons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-05-04 22:12+0300\n"
-"PO-Revision-Date: 2020-05-06 17:58+0300\n"
+"PO-Revision-Date: 2021-02-16 09:15+0200\n"
 "Last-Translator: Audronis Grincevicius <adga45@gmail.com>\n"
 "Language-Team: \n"
 "Language: lt_LT\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && (n%100<11 || n%100>19) ? 0 : n%10>=2 && n%10<=9 && (n%100<11 || n%100>19) ? 1 : 2);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 msgid "(%s added / %s changed / %s removed)"
@@ -50,6 +50,12 @@ msgstr "Patvirtinti"
 msgid "Cancel"
 msgstr "Atšaukti"
 
+msgid "Connection to the picon server is OK."
+msgstr "Ryšys su logotipų serveriu yra geras."
+
+msgid "Connection to the picon server is not available !"
+msgstr "Ryšys su logotipų serveriu negalimas!"
+
 msgid "Create directory"
 msgstr "Kurti katalogą"
 
@@ -58,9 +64,6 @@ msgstr "Trinti katalogą"
 
 msgid "Deleting unnecessary picons from local disk..."
 msgstr "Naikinami nereikalingi logotipai iš vietinio disko..."
-
-msgid "Restart the Enigma (GUI) now ?"
-msgstr "Iš naujo paleisti „Enigma“ (GUI) dabar ?"
 
 msgid "Do you want to delete this directory ?"
 msgstr "Ar norite ištrinti šį katalogą?"
@@ -101,12 +104,6 @@ msgstr "Interneto ryšys yra geras."
 
 msgid "Internet connection is not available !"
 msgstr "Nėra interneto ryšio !"
-
-msgid "Connection to the picon server is OK."
-msgstr "Prisijungimas prie „picon“ serverio yra tinkamas."
-
-msgid "Connection to the picon server is not available !"
-msgstr "Prisijungimas prie „picon“ serverio negalimas !"
 
 msgid ""
 "New plugin version found: %s\n"
@@ -150,7 +147,7 @@ msgid "Picon update method"
 msgstr "Logotipų naujinimo metodas"
 
 msgid "Please enter a name for the new directory:"
-msgstr "Prašome įrašyti naujo katalogo pavadinimą"
+msgstr "Prašome įrašyti naujo katalogo pavadinimą:"
 
 msgid ""
 "Plugin version is up to date.\n"
@@ -166,6 +163,9 @@ msgstr "Ruošiamas logotipų sąrašas iš logotipų katalogo vietiniame diske..
 
 msgid "Preparing a list of picons from userbouquet files..."
 msgstr "Ruošiamas logotipų sąrašas iš vartotojo paketų failų..."
+
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Paleisti grafinę aplinką iš naujo dabar?"
 
 msgid "Satellite positions"
 msgstr "Palydovai"
