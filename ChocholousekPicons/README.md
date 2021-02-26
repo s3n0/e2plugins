@@ -7,10 +7,10 @@
 * Unfortunately, not all picon styles exist for all resolutions or vice versa - not all resolutions exist for every picon style (background). All picon styles are available only in picon resolution 220x132 (which can be considered the most used).
    
 * In the new version of the plugin you can choose the method of updating the picons:
+  * Sync with TV channel lists (userbouquet.\*.tv files)
+  * Sync with TV+RADIO channel lists (userbouquet.\*.tv|\*.radio files)
   * Copy all picons: Delete all current picons as first
-  * Copy all picons: Incremental update (copy only new picons or picons with different file size)
-  * Sync with TV channel lists (userbouquet files)
-  * Sync with TV+RADIO channel lists (userbouquet files)
+  * Copy all picons: Incremental update (copy only new picons or replace picons only with a different file size)
    
 * If the archiver is not found on the system, it will be attempted to install it in two steps:
   * 1.Download and install 7-zip via the package manager (i.e. attempt to install 7-zip from your Enigma feed server)
