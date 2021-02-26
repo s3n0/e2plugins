@@ -1,4 +1,4 @@
-## **Chocholousek Picons**
+## **Chocholousek Picons - Enigma2 plugin**
 
 * Plugin was developed for downloading + updating Chocholousek's picons in Enigma2 set-top box
 
