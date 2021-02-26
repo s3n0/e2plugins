@@ -6,10 +6,10 @@ PKGNAME="enigma2-plugin-extensions-chocholousek-picons"
 
 case "$1" in
     install)
-        # retrieve the online version number and download file
+        # retrieve the latest version number
         VER="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
         [ -z "$VER" ] && { echo "Error ! The online version was not recognized !"; exit 1; }
-        # download the latest version from internet
+        # download the plugin installation package from internet
         FNAME="${PKGNAME}_${VER}_all.$([ -d /etc/dpkg ] && echo -n 'deb' || echo -n 'ipk')"
         wget -qO "/tmp/${FNAME}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${FNAME}" || { echo "Error ! File download failed !"; exit 1; }
         # re-install
