@@ -155,4 +155,12 @@ Added testing of the connection to the server, which contains picon packages, af
 Minor syntax modification according to PEP8 E251.
 Renaming some functions (source code) to make them clearer.
 
-
+4.0.210301
+Improved Lithuanian language from 2021-02-16 (thx to @Adga).
+Fixed a minor bug in the sorting of database files in a folder:
+- the error could theoretically cause the database update of available picons to be stuck
+- so sorting files by algorithm is now alphabetical, not by creation date
+Created and added a new bb-recipe to OpenATV feeds (thx to @Nicker):
+- https://github.com/nickersk/oe-alliance-core/commit/28b8f38765f77da37ac1297ae3d724713dad54b9
+- https://github.com/oe-alliance/oe-alliance-core/blob/4.4/meta-oe/recipes-distros/openatv/image/openatv-feeds.bb
+- https://github.com/oe-alliance/oe-alliance-core/blob/4.4/meta-oe/recipes-oe-alliance/enigma2-plugins/enigma2-plugin-extensions-chocholousek-picons.bb

@@ -447,9 +447,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
     ###########################################################################
     
     def loadChochoContent(self):
-        ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.getctime)
+        ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.basename)        # key=os.path.getctime
         if ls:
-            self.chochoContent = open(ls[-1], 'r').read()                                            # glob returns a list type variable, so I need to  translate list to string
+            self.chochoContent = open(ls[-1], 'r').read()           # glob returns a list variable (however, a string is needed, so we only extract the last index from the list variable)
             print('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
         else:
             self.chochoContent = ''
@@ -459,12 +459,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
         '''
         1. check if there is a new version of the file on the internet and download if so
         2. then the content from the saved file is loaded into memory
-        -  the   new / online    file version will be retrieved from the HTTP header - helping with the downloadFile() function
+        -  the      new / online file version will be retrieved from the HTTP header - helping with the downloadFile() function
         -  the  current / local  file version will be retrieved from the existing local file name
         ---file name example:    "id_for_permalinks(210127).log"
         ---example of a line from inside the permalinks-file:    "1087 picontransparent-220x132-7.0E_by_chocholousek.7z"
         '''        
-        ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.getctime)
+        ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.basename)        # key=os.path.getctime
         current_filename = ls[-1] if ls else PLUGIN_PATH + 'id_for_permalinks(000000).log'          # null version is used to force update the file (if the file does not exists on local disk !)
         
         url  = 'https://picon.cz/download/7337/'                                                    # "id_for_permalinks191017.log" - means the chochoFile for the chochoContent value :)
@@ -1449,7 +1449,7 @@ class piconsUpdateJobScreen(Screen):
     def logWindowUpdate(self):
         '''
         A note regarding to NewNigma2 with OE2.0 core :
-        ScrollLabel as the GUI Component uses a eTimer for each refresh of its content, which causes the system to crash --- FATAL!: addTimer must be called from thread 3261 but is called from thread 3680
+        ScrollLabel as the GUI Component uses a eTimer for each refresh of its content, which causes the system to crash, for example: "FATAL! addTimer must be called from thread 3261 but is called from thread 3680"
         ScrollLabel uses eTimer as one of the GUI components to update its content ... if we invoke ScrollLabel (which is currently updating its content) from some separate thread in Python, it will cause a system-crash in some cases (probably a bug in some C-libraries in some Enigma distributions)
         Therefore, it's necessary to update the content of the ScrollLabel "logWindow" via a separate eTimer - outside of the running thread (thProcess and mainFunc) in the background
         '''
@@ -1473,11 +1473,11 @@ def downloadFile(url, target_filename='', save_to_disk=True):
     '''
     Download files from the internet to the destination, taking into account the Drive.Google server (warning window with virus scan).
     
-    target_filename :
-        ENDS WITH "/" CHARACTER................the specified target path will used + filename will sets by Cookies OR as a random number
-        IS EQUAL TO "" (IS EMPTY)..............the "/tmp" target path will used + filename will sets by Cookies OR as a random number
-        -------- in both cases, the file name will retrieved from Cookies and if the name cannot be retrieved, it is invented as "unknown_file_<random-num>"
-        CONTAINS SOMETHING (IS NOT EMPTY)......the specified target "/path/filename" (with specified file name) will be used to save the file on local disk
+    target_filename variable:
+        - if ends with an "/"....................the specified target path will used + the file name will be set according to Cookies OR as a random number
+        - if equal to "".........................the "/tmp" target path will used + the file name will be set according to Cookies OR as a random number
+        ------ in both cases, the file name will retrieved from Cookies and if the name cannot be retrieved, it is invented as "unknown_file_<random-num>"
+        - if contains some other characters......the specified target "/path/filename" (the file name is already specified in the input variable) will be set to save the file on local disk
     
     The save_to_disk variable determines whether the file is saved (=True) to the local disk or not (=False).
     It only means testing purpose of the existence the online file (then this function returns "" on error OR returns the path + file name if the online file exists).
@@ -1558,7 +1558,7 @@ def newOE():
         boo = False                                     #### ValueError means compatibility with OE 2.0 core (some Enigma2 distributions, such as TeamBlue, returns only 2 arguments from the PACKAGE_VERSION value, instead of 3 arguments)
     return boo
 
-#def runShell(cmd):                     # commands.getstatusoutput() - works under Python 2.x.x only (does not work under Python 3.x.x)
+#def runShell(cmd):         # commands.getstatusoutput() - works under Python 2.x.x only (does not work under Python 3.x.x)
 #    try:
 #        t = getstatusoutput(cmd)
 #    except Exception as e:
@@ -1567,7 +1567,7 @@ def newOE():
 #        t = -1 , ''
 #    return t
 
-#def runShell(cmd):                     # subprocess.check_output() - works under Python 2.4.x - 3.x.x
+#def runShell(cmd):         # subprocess.check_output() - works under Python 2.4.x - 3.x.x
 #    try:
 #        t =  0 , check_output(shlexSplit(cmd))
 #    except CalledProcessError as e:
@@ -1578,7 +1578,7 @@ def newOE():
 #        t = -1 , ''
 #    return t
 
-def runShell(cmd):                      # os.system() - I use this primitive Shell output, for better compatibility with older versions of Python than 2.4.x (where the subsupport module is missing), as well as for newer versions of Python 3.x.x (where the commands.getstatusoutput is missing)
+def runShell(cmd):          # os.system() - I use this primitive Shell output, for better compatibility with older versions of Python than 2.4.x (where the subsupport module is missing), as well as for newer versions of Python 3.x.x (where the commands.getstatusoutput is missing)
     try:
         retCode   = os.system(cmd + ' > /tmp/chocholousek-picons.tmp 2>&1')         # with redirecting stdout and stderr to a temporary file
         retOutput = open('/tmp/chocholousek-picons.tmp', 'r').read()                # retrieving saved output from temporary file that was previously created via Shell
