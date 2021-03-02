@@ -1,0 +1,270 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ChocholousekPicons Greek translation\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-12-08 18:00+0100\n"
+"PO-Revision-Date: 2021-03-01 23:37+0200\n"
+"Last-Translator: MCelliotG <mcelliotg@gmail.com>\n"
+"Language-Team: MCelliotG\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.4.2\n"
+
+msgid "Save & Exit"
+msgstr "Αποθήκευση & έξοδος"
+
+msgid "Update plugin"
+msgstr "Ενημέρωση πρόσθετου"
+
+msgid "Update picons"
+msgstr "Ενημέρωση λογότυπων"
+
+msgid "Picon folder"
+msgstr "Φάκελος λογότυπων"
+
+msgid "User defined folder"
+msgstr "Φάκελος ορισμένος από τον χρήστη"
+
+msgid "Picon update method"
+msgstr "Μέθοδος ενημέρωσης λογότυπων"
+
+msgid "copy all: current will deleted"
+msgstr "αντιγραφή όλων: τα τρέχοντα θα διαγραφούν"
+
+msgid "copy all: incremental update"
+msgstr "αντιγραφή όλων: ενημέρωση όσων διαφέρουν"
+
+msgid "sync with TV userbouquets"
+msgstr "συγχρονισμός με τα μπουκέτα χρήστη TV"
+
+msgid "sync with TV+RADIO userbouquets"
+msgstr "συγχρονισμός με τα μπουκέτα χρήστη TV+ΡΑΔΙΟ"
+
+msgid "Satellite positions"
+msgstr "Θέσεις δορυφόρων"
+
+msgid "Select satellites:"
+msgstr "Επιλογή δορυφόρων:"
+
+msgid ""
+"You have changed the selection of satellites.\n"
+"Apply these changes ?"
+msgstr ""
+"Έχετε αλλάξει την επιλογή των δορυφόρων.\n"
+"Να εφαρμοστούν οι αλλαγές;"
+
+msgid "Picon resolution"
+msgstr "Ανάλυση λογότυπων"
+
+msgid "Picon background"
+msgstr "Φόντο λογότυπων"
+
+msgid "(user defined)"
+msgstr "(ορισμένο από το χρήστη)"
+
+msgid ""
+"Plugin version is up to date.\n"
+"\n"
+"Installed version: %s"
+msgstr ""
+"Το πρόσθετο είναι ενημερωμένο.\n"
+"\n"
+"Εγκατεστημένη έκδοση: %s"
+
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Το πρόσθετο ενημερώθηκε στη νέα έκδοση.\n"
+"Απαιτείται επανεκκίνηση της επιφάνειας χρήστη.\n"
+"Να γίνει τώρα;"
+
+msgid ""
+"You have changed the plugin configuration.\n"
+"Do you want to save all changes now ?"
+msgstr ""
+"Έχετε αλλάξει τις ρυθμίσεις του πρόσθετου.\n"
+"Θέλετε να γίνει αποθήκευση των αλλαγών τώρα;"
+
+msgid ""
+"The 7-zip archiver was not found on your system.\n"
+"There is possible to update the 7-zip archiver now in two steps:\n"
+"\n"
+"(1) try to install via the Enigma package manager\n"
+"...or...\n"
+"(2) try to download the binary file \"7za\" (standalone archiver) from the internet\n"
+"\n"
+"Do you want to try it now?"
+msgstr ""
+"Ο διαχειριστής αρχείων 7-zip δεν βρέθηκε στο σύστημά σας.\n"
+"Μπορείτε να ενημερώσετε το διαχειρστή 7-zip σε δύο βήματα:\n"
+"\n"
+"(1) προσπαθήστε να τον εγκαταστήσετε μέσω των πακέτων του Enigma2\n"
+"...ή...\n"
+"(2) κατεβάστε το αρχείο \"7za\" από το διαδίκτυο\n"
+"\n"
+"Θέλετε να προσπαθήσετε τώρα;"
+
+msgid ""
+"The installation of the 7-zip archiver from the Enigma2\n"
+"feed server was successful."
+msgstr ""
+"Η εγκατάσταση του διαχειριστή 7-zip από τις πηγές\n"
+"του Enigma2 ήταν επιτυχής."
+
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr "Η εγκατάσταση του αρχείου \"7za\" (7-zip) ήταν επιτυχής."
+
+msgid "Installation of 7-zip archiver failed!"
+msgstr "Η εγκατάσταση του διαχειριστή 7-zip απέτυχε!"
+
+msgid "Internet connection is not available !"
+msgstr "Η σύνδεση στο διαδίκτυο δεν είναι διαθέσιμη!"
+
+msgid "Internet connection is OK."
+msgstr "Η σύνδεση στο διαδίκτυο είναι ΟΚ."
+
+msgid "Connection to the picon server is not available !"
+msgstr "Η σύνδεση στο διακομιστή λογότυπων δεν είναι διαθέσιμη!"
+
+msgid "Connection to the picon server is OK."
+msgstr "Η σύνδεση στο διακομιστή λογότυπων είναι ΟΚ."
+
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Δεν βρέθηκαν αρχεία μπουκέτων χρήστη!\n"
+"Παρακαλώ ελέγξτε το φάκελο /etc/enigma2 για τα αρχεία μπουκέτων χρήστη."
+
+msgid "Preparing a list of picons from the picon directory on the local disk..."
+msgstr "Προετοιμασία λίστας από το φάκελο λογότυπων στον τοπικό δίσκο..."
+
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Προετοιμασία λίστας λογότυπων από τα αρχεία μπουκέτων χρήστη..."
+
+msgid "...done."
+msgstr "...ολοκληρώθηκε."
+
+msgid "Deleting unnecessary picons from local disk..."
+msgstr "Διαγραφή αχρείαστων λογότυπων από τον τοπικό δίσκο..."
+
+msgid "...%s picons deleted."
+msgstr "… διαγράφτηκαν %s λογότυπα."
+
+msgid "The process started..."
+msgstr "Η διαδικασία ξεκίνησε..."
+
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(λήψη και εξαγωγή όλων των απαραίτητων λογότυπων)"
+
+msgid "...the process is complete."
+msgstr "...η διαδικασία ολοκληρώθηκε."
+
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Μετά την ενημέρωση ενδέχεται να απαιτείται επανεκκίνηση της επιφάνειας χρήστη."
+
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(%s προστέθηκαν / %s άλλαξαν / %s αφαιρέθηκαν)"
+
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Να γίνει επανεκκίνηση της επιφάνειας χρήστη τώρα;"
+
+msgid "No picons added or changed."
+msgstr "Καμία προσθήκη ή αλλαγή λογότυπων."
+
+msgid "Download ID for file %s was not found!"
+msgstr "Το ID λήψης για το αρχείο %s δεν βρέθηκε!"
+
+msgid "Trying download the file archive..."
+msgstr "Προσπάθεια λήψης του αρχείου..."
+
+msgid "...file download failed !!!"
+msgstr "...η λήψη του αρχείου απέτυχε!!!"
+
+msgid ""
+"Download failed!\n"
+"File: %s\n"
+"URL: %s"
+msgstr ""
+"Αποτυχία λήψης!\n"
+"Αρχείο: %s\n"
+"URL: %s"
+
+msgid "...file download successful."
+msgstr "...επιτυχής λήψη αρχείου."
+
+msgid "Browse the contents of the downloaded archive file."
+msgstr "Πλοήγηση στα περιεχόμενα του λαμβανόμενου αρχείου."
+
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Σφάλμα! Δεν βρέθηκαν λογότυπα στο αρχείο που λήφθηκε!"
+
+msgid "...%s picons were extracted from the archive."
+msgstr "...έγινε εξαγωγή %s λογότυπων από το αρχείο."
+
+msgid "Extracting files from the archive..."
+msgstr "Εξαγωγή αρχείων από το αρχείο zip..."
+
+msgid "Some errors has occurred !"
+msgstr "Προέκυψαν κάποια σφάλματα!"
+
+msgid "Done !"
+msgstr "Ολοκληρώθηκε!"
+
+msgid "Apply"
+msgstr "Εφαρμογή"
+
+msgid "Accept"
+msgstr "Αποδοχή"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "No operation ! Picon update failed !"
+msgstr "Χωρίς διεργασία! Η ενημέρωση των λογότυπων απέτυχε!"
+
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Δεν βρέθηκαν λογότυπα για την επιλεγμένη ανάλυση και δορυφόρο!"
+
+msgid "Path to the picon folder:"
+msgstr "Διαδρομή φακέλου λογότυπων:"
+
+msgid "Create directory"
+msgstr "Δημιουργία φακέλου"
+
+msgid "Delete directory"
+msgstr "Διαγραφή φακέλου"
+
+msgid "Please enter a name for the new directory:"
+msgstr "Παρακαλώ εισάγετε ένα όνομα για το νέο φάκελο:"
+
+msgid "Do you want to delete this directory ?"
+msgstr "Θέλετε να διαγραφεί αυτός ο φάκελος;"
+
+msgid "Note: This directory is not empty - it contains %s item(s)."
+msgstr "Σημείωση: Αυτός ο φάκελος δεν είναι άδειος - περιέχει %s αντικείμενο(α)."
+
+msgid ""
+"You have changed the path to the picon folder.\n"
+"Accept changed path ?"
+msgstr ""
+"Έχετε αλλάξει τη διαδρομή του φάκελου λογότυπων.\n"
+"Αποδοχή της νέας διαδρομής;"
+
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Βρέθηκε νέα έκδοση του πρόσθετου: %s\n"
+"Θέλετε να την εγκαταστήσετε τώρα;"
+
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Σφάλμα! Η λήψη του πακέτου εγκατάστασης του πρόσθετου απέτυχε!"
+
+msgid "selected"
+msgstr "επιλεγμένα"
