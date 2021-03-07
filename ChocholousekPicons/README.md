@@ -18,24 +18,25 @@
 
 ## **How to un/install plugin (via Shell)**
 
-### **Automated online shell-script (automatic .ipk / .deb selection):**
+### **Online shell-script (automatic .ipk / .deb selection):**
   ```shell
-  # To install the latest released version of the plugin:
-  # Warning: the old version of the plugin will be removed (if exists) and the plugin configuration will be deleted...
+  # install - the latest released version of the plugin:  (warning ! the plugin configuration will be deleted !)
   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
   
-  # To uninstall the plugin from Enigma2:
+  # uninstall:
   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s uninstall
   ```
 
 ### **Enigma2 based on OE 2.0 and OE Alliance 4.x core (ATV, PLi, VTi, BlackHole, TeamBlue, etc.) - using the ".ipk" installation package:**
   ```shell
-  opkg install <path_to_ipk-file>                             # to install package
-  opkg remove enigma2-plugin-extensions-chocholousek-picons   # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
+  opkg install <path_to_ipk-file>                             # install the package
+  
+  opkg remove enigma2-plugin-extensions-chocholousek-picons   # uninstall the package (the plugin package name is 'enigma2-plugin-extensions-chocholousek-picons')
   ```
   
 ### **Enigma2 based on OE 2.2 core or newer (DreamElite, DreamOS, Merlin, etc.) - using the ".deb" installation package:**
   ```shell
-  dpkg -i <path_to_deb-file>                                  # to install package
-  dpkg -r enigma2-plugin-extensions-chocholousek-picons       # to uninstall package (plugin package name = enigma2-plugin-extensions-chocholousek-picons)
+  dpkg -i <path_to_deb-file>                                  # install the package
+  
+  dpkg -r enigma2-plugin-extensions-chocholousek-picons       # uninstall the package (the plugin package name is 'enigma2-plugin-extensions-chocholousek-picons')
   ```
