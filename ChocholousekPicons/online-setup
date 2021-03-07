@@ -27,9 +27,9 @@ e2_restart() {
     # enigma2 fast restart + delete all ChocholousekPicons settings (plugin configuration)
     echo "Enigma2 (GUI) is now restarting."
     if [ -d /etc/dpkg ]; then
-        systemctl stop enigma2; sleep 5; plugin_cfg_del; systemctl start enigma2
+        systemctl stop enigma2; sleep 5; systemctl start enigma2
     else
-        init 4; sleep 5; plugin_cfg_del; init 3
+        init 4; sleep 5; init 3
     fi
 }
 
