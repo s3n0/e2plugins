@@ -1,6 +1,41 @@
 #!/bin/bash
 
-[ -z "$1" ] && { echo "Error ! No argument found !"; exit 1; }
+##########################################################################################
+
+show_man_page() {
+    echo "===== Chocholousek Picons - online installation script ====="
+    echo "USAGE:"
+    echo "      wget -qO- --no-check-certificate 'https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup' | bash -s <ARGUMENT>"
+    echo "ARGUMENT:"
+    echo "      install ....... install the plugin (with the Enigma2 fast restart)"
+    echo "      uninstall ..... uninstall the plugin (with the Enigma2 fast restart)"
+    echo "      del-config .... delete the plugin configuration only + exit the script"
+    echo "      del-plugin .... delete the plugin directory only + exit the script"
+}
+
+plugin_cfg_del() {
+    sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings
+    echo "The plugin configuration was removed from the 'settings' file - '/etc/enigma2/settings'"
+}
+
+plugin_dir_del() {
+    rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
+    echo "The plugin directory was removed from the Enigma2 - '/usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/'"
+}
+
+e2_restart() {
+    # enigma2 fast restart + delete all ChocholousekPicons settings (plugin configuration)
+    echo "Enigma2 (GUI) is now restarting."
+    if [ -d /etc/dpkg ]; then
+        systemctl stop enigma2; sleep 5; plugin_cfg_del; systemctl start enigma2
+    else
+        init 4; sleep 5; plugin_cfg_del; init 3
+    fi
+}
+
+##########################################################################################
+
+[ -z "$1" ] && { show_man_page; echo -e "\nError ! No argument found !"; exit 1; }
 
 PKGNAME="enigma2-plugin-extensions-chocholousek-picons"
 
@@ -21,6 +56,8 @@ case "$1" in
             opkg install /tmp/$FNAME
         fi
         rm -f "/tmp/${FNAME}"
+        plugin_cfg_del
+        e2_restart
         ;;
     uninstall)
         if [ -d /etc/dpkg ]; then
@@ -28,19 +65,20 @@ case "$1" in
         else
             opkg remove $PKGNAME
         fi
-        rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
+        plugin_cfg_del
+        plugin_dir_del
+        e2_restart
+        ;;
+    del-config)
+        plugin_cfg_del
+        ;;
+    del-plugin)
+        plugin_dir_del
         ;;
     *)
-        echo "Error ! Please use only the install or uninstall arguments and no others !"
+        show_man_page
         exit 1
         ;;
 esac
-
-# enigma2 fast restart + delete all ChocholousekPicons settings (plugin configuration)
-if [ -d /etc/dpkg ]; then
-    systemctl stop enigma2; sleep 5; sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings; systemctl start enigma2
-else
-    init 4; sleep 5; sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings; init 3
-fi
 
 exit 0
