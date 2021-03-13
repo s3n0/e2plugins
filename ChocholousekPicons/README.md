@@ -12,7 +12,7 @@
   * Copy all picons: Delete all current picons as first
   * Copy all picons: Incremental update (copy only new picons or replace picons only with a different file size)
    
-* If the archiver is not found on the system, it will be attempted to install it in two steps:
+* If the 7-zip archiver is not found in your Enigma2, it will be attempted to install it in two steps:
   * 1.Download and install 7-zip via the package manager (i.e. attempt to install 7-zip from your Enigma feed server)
   * 2.Attempt to download a standalone `7za` binary file from the internet
 
