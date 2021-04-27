@@ -164,3 +164,13 @@ Created and added a new bb-recipe to OpenATV feeds (thx to @Nicker):
 - https://github.com/nickersk/oe-alliance-core/commit/28b8f38765f77da37ac1297ae3d724713dad54b9
 - https://github.com/oe-alliance/oe-alliance-core/blob/4.4/meta-oe/recipes-distros/openatv/image/openatv-feeds.bb
 - https://github.com/oe-alliance/oe-alliance-core/blob/4.4/meta-oe/recipes-oe-alliance/enigma2-plugins/enigma2-plugin-extensions-chocholousek-picons.bb
+
+4.0.210302
+Added Greek language (by @MCelliotG).
+
+4.0.210427
+Fixed a minor bug in the list of picons loaded from local disk:
+- the list of file names on the local disk was created incorrectly, including SRN file names
+- the plugin only works with SRC file names, so deleting "unnecessary" SRN file names is undesirable
+- the plugin from this version or later will completely ignore files named as SRN
+- thx to @manuel06

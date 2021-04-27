@@ -1237,10 +1237,10 @@ class piconsUpdateJobScreen(Screen):
             return True, _('No userbouquet files found !\nPlease check the folder /etc/enigma2 for the userbouquet files.')
         #self.storeVarInFile('bouquet_files', self.bouquet_files)
         
-        # 4) Vytvorí sa zoznam picon umiestnených na lokálnom disku (v internom flash-disku alebo na externom USB/HDD) - včetne veľkostí týchto súborov !
+        # 4) Vytvorí sa zoznam všetkých picon, umiestnených na lokálnom disku (v internom flash-disku alebo na externom USB/HDD) - včetne veľkostí týchto súborov
         self.writeLog( _('Preparing a list of picons from the picon directory on the local disk...') + ' "%s/*.png"' % self.piconDIR )
         self.SRC_in_HDD = {}
-        dir_list = glob.glob(self.piconDIR + '/*.png')
+        dir_list = glob.glob(self.piconDIR + '/[0-65535]_0_*.png')                      # as a precaution against including the Service Reference Name in the list (which might otherwise be deleted!)
         if dir_list:
             for path_N_file in dir_list:
                 self.SRC_in_HDD.update( { path_N_file[:-4].split("/")[-1]  :  int(os.path.getsize(path_N_file))  } )
