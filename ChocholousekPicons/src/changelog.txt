@@ -180,3 +180,6 @@ Fixed path to non-traditional picons directories:
 - the letter "s" was missing at the end of the "ZZPicon" and "XPicon" directory names
 - in the case of the "/media/hdd" and "/media/usb" subdirectories
 - thx to @steiff
+
+4.0.210429
+Fixed typo: "XPpicons" to "XPicons"

@@ -71,7 +71,7 @@ config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
             ('/media/hdd/XPicons/picon'         , '/media/hdd/XPicons/picon'),
             ('/media/hdd/ZZPicons/picon'        , '/media/hdd/ZZPicons/picon'),
             ('/media/usb/picon'                 , '/media/usb/picon'),
-            ('/media/usb/XPpicons/picon'        , '/media/usb/XPpicons/picon'),
+            ('/media/usb/XPicons/picon'         , '/media/usb/XPicons/picon'),
             ('/media/usb/ZZPicons/picon'        , '/media/usb/ZZPicons/picon'),
             ('/media/sdcard/picon'              , '/media/sdcard/picon'),
             ('/media/mmc/picon'                 , '/media/mmc/picon'),
@@ -80,9 +80,11 @@ config.plugins.chocholousekpicons.picon_folder = ConfigSelection(
             ('user_defined'                     ,_('(user defined)')  )
           ]
         )   # ---> paths are based on source code from here:  https://github.com/openatv/MetrixHD/blob/master/usr/lib/enigma2/python/Components/Renderer/MetrixHDXPicon.py
+
+# change the default picon directory (on the first plugin start) if some picons (.PNG files) was found in some folder :
 for picdir in config.plugins.chocholousekpicons.picon_folder.choices:
     if glob.glob(picdir[0] + '/*.png'):
-        config.plugins.chocholousekpicons.picon_folder.default = picdir[0]   # change the default picon directory (on the first plugin start) if some picons (.PNG files) was found in some folder
+        config.plugins.chocholousekpicons.picon_folder.default = picdir[0]
         break
 
 config.plugins.chocholousekpicons.picon_folder_user = ConfigText(default = '/', fixed_size = False)
@@ -101,6 +103,7 @@ config.plugins.chocholousekpicons.sats = ConfigText(default = '19.2E 23.5E', fix
 
 limitedRes = [ 
                 ('50x30'   ,      '"MiniPicons"   50x30'),
+                ('96x64'   ,            '"OLED"   96x64'),
                 ('100x60'  ,  '"InfobarPicons"   100x60'),
                 ('150x90'  ,        '"HDGLASS"   150x90'),
                 ('220x132' ,       '"XPicons"   220x132'),
