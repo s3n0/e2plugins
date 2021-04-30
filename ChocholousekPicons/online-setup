@@ -9,8 +9,8 @@ show_man_page() {
     echo "ARGUMENT:"
     echo "      install ....... install the plugin (with the Enigma2 fast restart)"
     echo "      uninstall ..... uninstall the plugin (with the Enigma2 fast restart)"
-    echo "      del-config .... delete the plugin configuration only + exit the script"
-    echo "      del-plugin .... delete the plugin directory only + exit the script"
+    echo "      del-config .... delete the plugin configuration only & exit the script"
+    echo "      del-plugin .... delete the plugin directory only & exit the script"
 }
 
 plugin_cfg_del() {
