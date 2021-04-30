@@ -14,7 +14,16 @@ show_man_page() {
 }
 
 plugin_cfg_del() {
-    sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings
+    echo "Enigma2 (GUI) is now restarting."
+    if [ -d /etc/dpkg ]; then
+        systemctl stop enigma2; sleep 5
+        sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings
+        systemctl start enigma2
+    else
+        init 4; sleep 5
+        sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings
+        init 3
+    fi
     echo "The plugin configuration was removed from the 'settings' file - '/etc/enigma2/settings'"
 }
 
