@@ -13,6 +13,18 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 2.3\n"
 
+msgid "Configuration profile"
+msgstr "Profil konfiguracji"
+
+msgid "Allow profile processing"
+msgstr "Zezwól na przetwarzanie profilu"
+
+msgid "Profile reset"
+msgstr "Resetowanie profilu"
+
+msgid "Reset the current configuration profile (%s) to the default settings ?"
+msgstr "Zresetować bieżący profil konfiguracji (%s) do ustawień domyślnych ?"
+
 msgid "(%s added / %s changed / %s removed)"
 msgstr "(%s dodane / %s zmienione / %s usunięte)"
 
@@ -145,9 +157,6 @@ msgstr "Przygotowuje listę picon z plików userbouquet..."
 
 msgid "Satellite positions"
 msgstr "Pozycja SAT"
-
-msgid "Save & Exit"
-msgstr "Zapisz & Zamknij"
 
 msgid "Select satellites:"
 msgstr "Wybór pozycji SAT:"

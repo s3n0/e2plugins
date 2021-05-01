@@ -16,6 +16,18 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
+msgid "Configuration profile"
+msgstr "Профиль конфигурации"
+
+msgid "Allow profile processing"
+msgstr "Разрешить обработку профиля"
+
+msgid "Profile reset"
+msgstr "Сброс профиля"
+
+msgid "Reset the current configuration profile (%s) to the default settings ?"
+msgstr "Сбросить текущий профиль конфигурации (%s) на настройки по умолчанию ?"
+
 msgid "(user defined)"
 msgstr "(пользовательский)"
 
@@ -36,9 +48,6 @@ msgstr "сперва выберите спутники"
 
 msgid "Exit"
 msgstr "Выxод"
-
-msgid "Save & Exit"
-msgstr "Сохранить & Выйти"
 
 msgid "Update plugin"
 msgstr "Обновить плагин"

@@ -13,8 +13,17 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 2.2.1\n"
 
-msgid "Save & Exit"
-msgstr "Kaydet ve Çık"
+msgid "Configuration profile"
+msgstr "Konfigürasyon profili"
+
+msgid "Allow profile processing"
+msgstr "Profil işlemeye izin ver"
+
+msgid "Profile reset"
+msgstr "Profil sıfırlama"
+
+msgid "Reset the current configuration profile (%s) to the default settings ?"
+msgstr "Mevcut konfigürasyon profili (%s) varsayılan ayarlara sıfırlansın mı ?"
 
 msgid "Update plugin"
 msgstr "Eklentiyi Güncelle"

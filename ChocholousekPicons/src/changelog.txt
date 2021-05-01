@@ -183,3 +183,37 @@ Fixed path to non-traditional picons directories:
 
 4.0.210429
 Fixed typo: "XPpicons" to "XPicons"
+Added OLED 96x64 picons for the front display of some devices.
+
+5.0.210501
+Added multiple configuration profiles:
+- since there has also been a change in the system file "/etc/enigma2/settings",
+  it is recommended to delete "chocholousekpicons" old configuration entries, for example using an online script:
+     wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s del-config
+The ability to check and save the plugin configuration is removed:
+- the plugin configuration is SAVED AUTOMATICALLY and immediately after each change
+- the red "Exit" button has been replaced by "Profile reset" for this purpose
+- the green button is used to exit the plugin
+New option to add default picon directories, for Enigma2 administrators and developers:
+- create a text file "/etc/enigma2/chocholousekpicons.cfg" (Unix/Linux newlines)
+- insert the configuration section [picon_dir] into the file and insert the required directories to the picons below it (one line = one directory)
+- note: this file will also be used instead of the original file "/etc/enigma2/3rd_party_picons.ini",
+  which was intended for downloading external archives 7z with picons (for example SRN picons) - only under configuration profile number 1 !!!,
+  just add a configuration section named [picon_url]
+- comments are allowed with a "#" sign at the beginning of the line
+- example file content:
+
+# /etc/enigma2/chocholousekpicons.cfg
+
+[picon_dir]
+### picon directories - for PurE2 needs:
+/media/ppmedia/picon
+/media/ppmedia/picon_50x30
+/data/picon_100x60
+### picon directories - for Ellano.sk needs:
+/usr/share/enigma2/hdg17_files/picon
+
+#[picon_url]
+#http://download.test.net/files/my_picons.7z
+#http://example.com/files/iptv-special-picons.7z
+
