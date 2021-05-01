@@ -163,12 +163,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget name="previewImage" position="100,390" size="500,300"  zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="280,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="320,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="500,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="840,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
 
             <widget render="Label" source="txt_red"           position="65,755"  size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_green"         position="320,755" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"         position="360,755" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
             <widget render="Label" source="txt_yellow"        position="540,755" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
             <widget render="Label" source="txt_blue"          position="880,755" size="300,46" halign="left" valign="center" font="Regular;30" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
@@ -184,12 +184,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
             <widget name="previewImage" position="70,225"  size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="20,560"  size="30,40" transparent="1" alphatest="on" zPosition="1" />
-            <ePixmap pixmap="skin_default/buttons/green.png"  position="210,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
+            <ePixmap pixmap="skin_default/buttons/green.png"  position="215,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/yellow.png" position="370,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/blue.png"   position="605,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
 
             <widget render="Label" source="txt_red"           position="55,560"  size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-            <widget render="Label" source="txt_green"         position="245,560" size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+            <widget render="Label" source="txt_green"         position="250,560" size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
             <widget render="Label" source="txt_yellow"        position="405,560" size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
             <widget render="Label" source="txt_blue"          position="640,560" size="200,40" halign="left" valign="center" font="Regular;20" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
         </screen>'''
