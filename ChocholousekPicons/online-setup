@@ -13,33 +13,25 @@ show_man_page() {
     echo "      del-plugin .... delete the plugin directory only & exit the script"
 }
 
+e2_stop() {
+    echo "Enigma2 stops"
+    [ -d /etc/dpkg ] && systemctl stop enigma2 || init 4
+    sleep 5
+}
+
+e2_start() {
+    echo "Enigma2 starts"
+    [ -d /etc/dpkg ] && systemctl start enigma2 || init 3
+}
+
 plugin_cfg_del() {
-    echo "Enigma2 (GUI) is now restarting."
-    if [ -d /etc/dpkg ]; then
-        systemctl stop enigma2; sleep 5
-        sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings
-        systemctl start enigma2
-    else
-        init 4; sleep 5
-        sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings
-        init 3
-    fi
+    sed -i '/config\.plugins\.chocholousekpicons/d' /etc/enigma2/settings
     echo "The plugin configuration was removed from the 'settings' file - '/etc/enigma2/settings'"
 }
 
 plugin_dir_del() {
     rm -rf /usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/
     echo "The plugin directory was removed from the Enigma2 - '/usr/lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/'"
-}
-
-e2_restart() {
-    # enigma2 fast restart + delete all ChocholousekPicons settings (plugin configuration)
-    echo "Enigma2 (GUI) is now restarting."
-    if [ -d /etc/dpkg ]; then
-        systemctl stop enigma2; sleep 5; systemctl start enigma2
-    else
-        init 4; sleep 5; init 3
-    fi
 }
 
 ##########################################################################################
@@ -65,8 +57,9 @@ case "$1" in
             opkg install /tmp/$FNAME
         fi
         rm -f "/tmp/${FNAME}"
+        e2_stop
         plugin_cfg_del
-        e2_restart
+        e2_start
         ;;
     uninstall)
         if [ -d /etc/dpkg ]; then
@@ -74,15 +67,20 @@ case "$1" in
         else
             opkg remove $PKGNAME
         fi
+        e2_stop
         plugin_cfg_del
         plugin_dir_del
-        e2_restart
+        e2_start
         ;;
     del-config)
+        e2_stop
         plugin_cfg_del
+        e2_start
         ;;
     del-plugin)
+        e2_stop
         plugin_dir_del
+        e2_start
         ;;
     *)
         show_man_page
