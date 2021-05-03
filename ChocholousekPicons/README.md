@@ -20,7 +20,8 @@
 
 ### **Online shell-script (automatic .ipk / .deb selection):**
   ```shell
-  # install - the latest released version of the plugin:  (warning ! the plugin configuration will be deleted !)
+  # install - the latest released version of the plugin:
+  # (warning ! the plugin configuration will be deleted !)
   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s install
   
   # uninstall:
