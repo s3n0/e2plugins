@@ -465,13 +465,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
             elif status == 32512:
-                print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
+                print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".' % status)
                 self.deleteFiles(new_file)
             elif status == 512:
-                print('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\n' % (status, new_file) )
+                print('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s' % (status, new_file) )
                 self.deleteFiles(new_file)
             else:
-                print('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s\n' % (status, out)  )
+                print('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out)  )
                 self.deleteFiles(new_file)
     
     def deleteFiles(self, mask):
@@ -1491,11 +1491,11 @@ class piconsUpdateJobScreen(Screen):
     
     def writeLog7zipError(self, status, out, archiveFile):
         if status == 32512:
-            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\n' % status)
+            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".' % status)
         elif status == 512:
-            self.writeLog('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\n' % (status, archiveFile) )
+            self.writeLog('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s' % (status, archiveFile) )
         else:
-            self.writeLog('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s\n' % (status, out)  )
+            self.writeLog('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out)  )
     
     def writeLog(self, text=''):
         timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method
