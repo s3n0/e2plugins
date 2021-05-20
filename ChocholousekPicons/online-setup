@@ -50,10 +50,10 @@ case "$1" in
         wget -qO "/tmp/${FNAME}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${FNAME}" || { echo "Error ! File download failed !"; exit 1; }
         # re-install
         if [ -d /etc/dpkg ]; then
-            dpkg -r $PKGNAME                # dpkg -r ${FNAME%%_*}
+            dpkg -r $PKGNAME                # dpkg -r "${FNAME%%_*}"
             dpkg -i /tmp/$FNAME
         else
-            opkg remove $PKGNAME            # opkg remove ${FNAME%%_*}
+            opkg remove $PKGNAME            # opkg remove "${FNAME%%_*}"
             opkg install /tmp/$FNAME
         fi
         rm -f "/tmp/${FNAME}"
