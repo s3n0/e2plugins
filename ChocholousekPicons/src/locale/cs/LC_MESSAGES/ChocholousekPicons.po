@@ -13,6 +13,9 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 2.2.4\n"
 
+msgid "Updating plugin... please wait."
+msgstr "Plugin se aktualizuje... prosím čekejte."
+
 msgid "Configuration profile"
 msgstr "Konfigurační profil"
 

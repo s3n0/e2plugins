@@ -14,6 +14,9 @@ msgstr ""
 "X-Generator: Poedit 2.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
+msgid "Updating plugin... please wait."
+msgstr "Atnaujinamas papildinys... palaukite."
+
 msgid "Configuration profile"
 msgstr "Konfigūracijos profilis"
 

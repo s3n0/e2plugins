@@ -242,17 +242,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
         else:
             self.skin = mainConfigScreen.skin
         
-        self.layoutFinishTimer = eTimer()
-        if newOE():
-            self.layoutFinishTimer_conn = self.layoutFinishTimer.timeout.connect(self.prepareSetup)     # eTimer for new version of Enigma2 core (OE 2.2+)
-        else:
-            self.layoutFinishTimer.callback.append(self.prepareSetup)                                   # eTimer for old version of Enigma2 core (OE 2.0 / OE-Alliance 4.? open-source core)
-        self.layoutFinishTimer.start(200, True)
+        self.delayed(self.prepareSetupScreen)
         
         #self.onShown.append(self.rebuildConfigList)
-        #self.onLayoutFinish.append(self.prepareSetup)
+        #self.onLayoutFinish.append(self.prepareSetupScreen)
     
-    def prepareSetup(self):
+    def prepareSetupScreen(self):
         self.check7zip()                        # 1.
         
         if self.bin7zip:
@@ -353,7 +348,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def keyToPluginUpdate(self):
         if self.findHostnameAndNewPlugin():
             message = _("New plugin version found: %s\nDo you want to install it now ?") % self.plugin_ver_online
-            self.session.openWithCallback(self.downNinstPlugin, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
+            self.session.openWithCallback(self.delayedStartPluginUpdate, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
         else:
             global plugin_ver_local
             message = _("Plugin version is up to date.\n\n"
@@ -414,9 +409,12 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     def restartEnigmaOrCloseScreen(self, answer=None):
         if answer:
-            self.session.open(TryQuitMainloop, 3)           # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
+            self.delayed(self.e2restart)
         else:
             self.close()
+    
+    def e2restart(self):
+        self.session.open(TryQuitMainloop, 3)           # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
     
     def showPreviewImage(self):
         self['previewImage'].instance.setPixmapFromFile(self.getPreviewImagePath())
@@ -432,11 +430,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     def downloadPreviewPicons(self):
         '''
-        download preview picons if neccessary, i.e. download archive file into the plugin folder and extract all preview picons
-        the online file version will be detected from the current chochoContent (from the preloaded "id_for_permalinks*.log" file on the plugin-configuration Screen initialization)
-        the  local file version will be detected from the existing local file
-        - archive filename example:          filmbox-premium-(all)_by_chocholousek_(191020).7z
-        - files inside the archive file:     filmbox-premium-transparent-220x132.png  ;  filmbox-premium-gray-400x240.png  ;   ...
+        download preview picons, i.e. download archive file into the plugin folder and extract all preview picons (.png files)
+        the online version will be detected from the current chochoContent (from the preloaded "id_for_permalinks*.log" file on the plugin-configuration Screen initialization)
+        the  local version will be detected from the existing local file
+        -archive filename example:          filmbox-premium-(all)_by_chocholousek_(191020).7z
+        -files inside the archive file:     filmbox-premium-transparent-220x132.png  ;   filmbox-premium-gray-400x240.png  ;   ...
         '''
         
         row = [ line for line in self.chochoContent.splitlines() if 'filmbox-premium' in line ]
@@ -483,6 +481,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     def parseVer(self, filepath):
         return int(re.findall(r'\d{6}', filepath)[-1])
+    
+    def delayed(self, x):
+        self.delayTimer = eTimer()
+        if newOE():
+            self.delayTimer_conn = self.delayTimer.timeout.connect(x)           # eTimer for new version of Enigma2 core (OE 2.2+)
+        else:
+            self.delayTimer.callback.append(x)                                  # eTimer for old version of Enigma2 core (OE 2.0 / OE-Alliance 4.? open-source core)
+        self.delayTimer.start(200, True)
     
     ###########################################################################
     
@@ -681,36 +687,41 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     break # to start the plugin update process
         return self.plugin_update_server
     
-    def downNinstPlugin(self, confirm):
-        if confirm:
+    def downNinstPlugin(self):
+        
+        global plugin_ver_local
+        
+        if self.plugin_update_server and (self.plugin_ver_online > plugin_ver_local):
+        
+            pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + self.plugin_ver_online + ('_all.deb' if os.path.exists('/etc/dpkg') else '_all.ipk')
+            dwn_url   =  self.plugin_update_server + '/released_build/' + pckg_name
+            dwn_file  = '/tmp/' + pckg_name
             
-            global plugin_ver_local
+            if downloadFile(dwn_url, dwn_file):
             
-            if self.plugin_update_server and (self.plugin_ver_online > plugin_ver_local):
-                
-                pckg_name = 'enigma2-plugin-extensions-chocholousek-picons_' + self.plugin_ver_online + ('_all.deb' if os.path.exists('/etc/dpkg') else '_all.ipk')
-                dwn_url   =  self.plugin_update_server + '/released_build/' + pckg_name
-                dwn_file  = '/tmp/' + pckg_name
-                
-                if downloadFile(dwn_url, dwn_file):
-                
-                    if pckg_name.endswith('.deb'):
-                        os.system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
-                        os.system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
-                    else:
-                        os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
-                    
-                    os.remove(dwn_file)
-                    print('New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
-                    plugin_ver_local = self.plugin_ver_online
-                    
-                    message = _('The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?')
-                    self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
-                
+                if pckg_name.endswith('.deb'):
+                    os.system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
+                    os.system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
                 else:
-                    print('New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
-                    message = _('Error ! Downloading plugin installation package failed !') + '\n' + dwn_url
-                    self.session.open(MessageBox, message, type=MessageBox.TYPE_ERROR)
+                    os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
+                
+                os.remove(dwn_file)
+                print('New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
+                plugin_ver_local = self.plugin_ver_online
+                
+                message = _('The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?')
+                self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
+            
+            else:
+                print('New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
+                message = _('Error ! Downloading plugin installation package failed !') + '\n' + dwn_url
+                self.session.open(MessageBox, message, type=MessageBox.TYPE_ERROR)
+    
+    def delayedStartPluginUpdate(self, confirm):          # the function is used for a short delay before starting the plugin update, so that MsgBox manages to change in the Enigma2 GUI
+        if confirm:
+            message = _('Updating plugin... please wait.')
+            self.session.open(MessageBox, message, type=MessageBox.TYPE_INFO, timeout=3)
+            self.delayed(self.downNinstPlugin)
 
 
 

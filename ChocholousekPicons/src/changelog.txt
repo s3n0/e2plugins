@@ -217,3 +217,7 @@ New option to add default picon directories, for Enigma2 administrators and deve
 #http://download.test.net/files/my_picons.7z
 #http://example.com/files/iptv-special-picons.7z
 
+5.0.210523
+Minor fix when displaying information (MessageBox) after running plugin update
+
+

@@ -16,6 +16,9 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
+msgid "Updating plugin... please wait."
+msgstr "Плагин обновляется... подождите."
+
 msgid "Configuration profile"
 msgstr "Профиль конфигурации"
 
