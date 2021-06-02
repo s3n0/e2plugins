@@ -414,7 +414,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.close()
     
     def e2restart(self):
-        self.session.open(TryQuitMainloop, 3)           # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
+        self.session.open(TryQuitMainloop, 3)               # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
     
     def showPreviewImage(self):
         self['previewImage'].instance.setPixmapFromFile(self.getPreviewImagePath())
@@ -443,15 +443,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
             url = 'https://picon.cz/download/' + fields[0]
             new_file = PLUGIN_PATH + fields[1]
         else:
-            print('Error ! The archive file name "filmbox-premium" (preview picons file) was not found in the contents of the file "id_for_permalinks*.log" !')
+            print('MYDEBUGLOGLINE - Error ! The archive file name "filmbox-premium" (preview picons file) was not found in the contents of the file "id_for_permalinks*.log" !')
             return
         
         k = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
         current_file = k[0] if k else PLUGIN_PATH + 'foo-bar(000000).7z'            # version 000000 as very low version means to download a preview images from internet in next step (if the files does not exists on HDD)
         
         if self.parseVer(new_file) > self.parseVer(current_file):                   # comparsion of two strings like of a two numbers, for example, as the following:   '191125' > '191013'
-            if not downloadFile(url, new_file):                                     # .7z archive with preview images (channel picons for the one and the same TV-channel)
-                print('Picons preview file download failed ! (URL = %s)' % url)
+            if not downloadFile(url, new_file):                                     # the ".7z" archive-file with preview images (channel picons for the one and the same TV channel)
+                print('MYDEBUGLOGLINE - Picons preview file download failed ! (URL = %s , target file = %s)' % (url, new_file))
                 return
             self.deleteFiles(current_file)
             self.deleteFiles(PLUGIN_PATH + 'images/filmbox-premium-*.png')
@@ -459,17 +459,17 @@ class mainConfigScreen(Screen, ConfigListScreen):
             status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
-                print('Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file))
+                print('MYDEBUGLOGLINE - Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file))
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
-            elif status == 32512:
-                print('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".' % status)
+            elif status == 32512:           # exit code = 127  (32512 / 256) = system : shell-command is missing OR executable file was not found
+                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".' % status)
                 self.deleteFiles(new_file)
-            elif status == 512:
-                print('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s' % (status, new_file) )
+            elif status == 512:             # exit code = 2    (512 / 256)   =  7-zip : FATAL ERROR
+                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s' % (status, new_file) )
                 self.deleteFiles(new_file)
             else:
-                print('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out)  )
+                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out)  )
                 self.deleteFiles(new_file)
     
     def deleteFiles(self, mask):
@@ -493,13 +493,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
     ###########################################################################
     
     def loadChochoContent(self):
-        ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.basename)        # key=os.path.getctime
-        if ls:
-            self.chochoContent = open(ls[-1], 'r').read()           # glob returns a list variable (however, a string is needed, so we only extract the last index from the list variable)
-            print('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
+        dir_list = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.basename)          # key=os.path.getctime
+        if dir_list:
+            self.chochoContent = open(dir_list[-1], 'r').read()                 # glob returns a list variable (however, a string is needed, so we only extract the last index from the list variable)
+            print('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (dir_list[-1]) )
         else:
             self.chochoContent = ''
-            print('MYDEBUGLOGLINE - Warning ! The file %s was not found !' % (PLUGIN_PATH + 'id_for_permalinks*.log'))
+            print('MYDEBUGLOGLINE - Warning ! The file %s was not found !' % (PLUGIN_PATH + 'id_for_permalinks*.log') )
     
     def downloadChochoFile(self):
         '''
@@ -510,19 +510,19 @@ class mainConfigScreen(Screen, ConfigListScreen):
         ---file name example:    "id_for_permalinks(210127).log"
         ---example of a line from inside the permalinks-file:    "1087 picontransparent-220x132-7.0E_by_chocholousek.7z"
         '''        
-        ls = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.basename)        # key=os.path.getctime
-        current_filename = ls[-1] if ls else PLUGIN_PATH + 'id_for_permalinks(000000).log'          # null version is used to force update the file (if the file does not exists on local disk !)
+        dir_list = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.basename)          # key=os.path.getctime
+        current_filename = dir_list[-1] if dir_list else PLUGIN_PATH + 'id_for_permalinks(000000).log'      # null version is used to force update the file (if the file does not exists on local disk !)
         
-        url  = 'https://picon.cz/download/7337/'                                                    # "id_for_permalinks191017.log" - means the chochoFile for the chochoContent value :)
-        new_filename = downloadFile(url, '', False)                                                 # as the first, do a test the online file only ... and return their file name as a string (if online file will found)
+        url = 'https://picon.cz/download/7337/'                                                             # a filename such as "id_for_permalinks191017.log" - means the chochoFile - for the chochoContent variable)
+        new_filename = downloadFile(url, '', False)                                                         # as the first, do a test the online file only ... and return their file name as a string (if online file will found), to test the new version
         if new_filename:    # and ('unknown' not in new_filename):
             if self.parseVer(new_filename) > self.parseVer(current_filename):
-                result_file_path = downloadFile(url, PLUGIN_PATH)
-                if result_file_path:
+                downloaded_file = downloadFile(url, PLUGIN_PATH)
+                if downloaded_file:
                     self.deleteFiles(current_filename)
                     print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.parseVer(current_filename), self.parseVer(new_filename)))
                 else:
-                    print('MYDEBUGLOGLINE - Error ! File download failed ! file=%s, url=%s' % (result_file_path, url))
+                    print('MYDEBUGLOGLINE - Error ! File download failed ! file=%s, url=%s' % (downloaded_file, url))
             else:
                 print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.parseVer(current_filename), self.parseVer(new_filename)))
         else:
@@ -674,9 +674,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             try:
                 url_handle = urllib2.urlopen(url + '/src/version.txt')
             except urllib2.URLError as err:
-                print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+                print('MYDEBUGLOGLINE - Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
             except Exception as err:
-                print('Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+                print('MYDEBUGLOGLINE - Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
             else:
                 self.plugin_ver_online = url_handle.read().strip()
                 if not isinstance(self.plugin_ver_online, str):         # in Python 3.x, from "urllib.urlopen.read()", is returned a variable of type bytes, not a string... so... we need to convert bytes to string
@@ -706,14 +706,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
                 
                 os.remove(dwn_file)
-                print('New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
+                print('MYDEBUGLOGLINE - New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
                 plugin_ver_local = self.plugin_ver_online
                 
                 message = _('The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?')
                 self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
             
             else:
-                print('New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
+                print('MYDEBUGLOGLINE - New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
                 message = _('Error ! Downloading plugin installation package failed !') + '\n' + dwn_url
                 self.session.open(MessageBox, message, type=MessageBox.TYPE_ERROR)
     
@@ -1089,7 +1089,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
     def deleteDir_FromCallBack(self, confirmed):
         if confirmed:
             print('MYDEBUGLOGLINE - deleting directory: %s' % self.getDirAppointedToCursor())
-            err_num, std_out = runShell('rm -r %s' % self.getDirAppointedToCursor())
+            err, out = runShell('rm -r %s' % self.getDirAppointedToCursor())
             #os.removedirs(self.getDirAppointedToCursor())
             self.rebuildConfigList()
     
@@ -1365,7 +1365,7 @@ class piconsUpdateJobScreen(Screen):
         # 7) Ďalej sa v cykle stiahnú z internetu a spracujú sa všetky používateľom zafajknuté archívy s piconami - spracuvávajú sa po jednom (pre viac družíc - postupne každý jeden archív sa stiahne a spracuje)
         self.writeLog('=' * 50)
         self.writeLog(_('The process started...') + ' ' + _('(downloading and extracting all necessary picons)')  )
-        for count,fname in enumerate(self.filesForDownload, 1):
+        for count, fname in enumerate(self.filesForDownload, 1):
             s = ' %s / %s ' % (count, len(self.filesForDownload))
             self.writeLog(s.center(50,'-'))
             self.proceedArchiveFile(fname, profile_id)
@@ -1373,53 +1373,58 @@ class piconsUpdateJobScreen(Screen):
         self.writeLog(_('...the process is complete.') + ' ' + _('(downloading and extracting all necessary picons)')  )
         self.writeLog('=' * 50)
     
-    def proceedArchiveFile(self, URL_or_File, profile_id):
+    def proceedArchiveFile(self, chochoFile_or_URL, profile_id):
         
         # 1. Príprava downloadovaciej URL adresy + názvu súboru pre uloženie na disk
-        if "://" in URL_or_File:
+        if "://" in chochoFile_or_URL:
             # 1.a - ak sa jedná o alternatívny zdroj s pikonami:
-            url_link = URL_or_File
-            dwn_filename = URL_or_File.split('/')[-1]
+            url_link = chochoFile_or_URL
+            dwn_file = '/tmp/' + chochoFile_or_URL.split('/')[-1]
         else:
             # 1.b - vyhľadanie ID kódu v "chochoContent" pre názov súboru (a pre potrebu jeho následovného stiahnutia z file-hosting online servera):
             found = []
             for line in self.chochoContent.splitlines():
-                if URL_or_File in line:
+                if chochoFile_or_URL in line:
                     found = line.split()
                     break
             if not found:
-                self.writeLog(_('Download ID for file %s was not found!') % URL_or_File)
+                self.writeLog(_('Download ID for file %s was not found!') % chochoFile_or_URL)
                 return
             url_link = 'https://picon.cz/download/%s/' % found[0]
-            dwn_filename = found[1]     # .replace('(','_').replace(')','_')        # replace the filename mask by new original archive filename and replace the parentheses by underline characters
+            dwn_file = '/tmp/' + found[1]
         
         # 2. Stiahnutie archívu z internetu (súboru s piconami) do zložky "/tmp"
-        self.writeLog(_('Trying download the file archive...') + ' "%s"' % dwn_filename)
-        if not downloadFile(url_link, '/tmp/' + dwn_filename):
+        self.writeLog(_('Trying download the file archive...') + ' "%s"' % dwn_file.split('/')[-1])         # v GUI užívateľa zobrazím len skrátený tvar dwn_file - t.j. iba názov súboru, bez adresára
+        if not downloadFile(url_link, dwn_file):
             self.writeLog(_('...file download failed !!!'))
             return
-        else:
-            self.writeLog(_('...file download successful.'))
+        self.writeLog(_('...file download successful.'))
         
-        # 3. Načítanie zoznamu všetkých .png súborov z archívu, včetne ich atribútov (veľkostí súborov)
+        # 3. Kontrola stiahnutého súboru na jeho obsah - jedná sa o formát 7-zip alebo HTML ? a v prípade HTML obsahuje tiež oznámenie o chybe ?
+        if not self.fileHeader7z(dwn_file):
+            add_msg = ' ' + _('Possible cause:') + ' VPN interface' if self.checkVPNerror(dwn_file) else ''
+            self.writeLog(_('Error! The downloaded file is not in 7-zip format!') + add_msg)
+            return
+        
+        # 4. Načítanie zoznamu všetkých .png súborov z archívu, včetne ich atribútov (veľkostí súborov)
         #self.writeLog(_('Browse the contents of the downloaded archive file.'))
-        self.SRC_in_Archive = self.getPiconListFromArchive('/tmp/' + dwn_filename)
+        self.SRC_in_Archive = self.getPiconListFromArchive(dwn_file)
         if not self.SRC_in_Archive:
             self.writeLog(_('Error! No picons found in the downloaded archive file!'))
             return          # navratenie vykonavania kodu z tohto podprogramu pre spracovanie dalsieho archivu/suboru s piconami v poradi
-        #self.storeVarInFile('SRC_in_Archive--%s' % dwn_filename, self.SRC_in_Archive)
+        #self.storeVarInFile('SRC_in_Archive--%s' % dwn_file, self.SRC_in_Archive)
         
-        # 4. Rozbalovanie pikon zo stiahnutého archívu
+        # 5. Rozbalovanie pikon zo stiahnutého archívu
         self.writeLog(_('Extracting files from the archive...'))
         
-        # 4-A. ak sa jedná o "://" download link z externého zdroja (nie archív od Chocholouška) ako je napr. archív so SRN pikonami, tak tento archív kompletne rozbalíme (bez porovnávania SRC kódov) a hodíme tam potom return ;-)
+        # 6-A. ak sa jedná o "://" download link z externého zdroja (nie archív od Chocholouška) ako je napr. archív so SRN pikonami, tak tento archív kompletne rozbalíme (bez porovnávania SRC kódov) a hodíme tam potom return ;-)
         #      alebo ak používateľ zvolil v plugin-konfigurácii metódu zmazania všetkých pikon a nahratia všetkých nových pikon (metóda 'all'), tak ...
         if 'all' == config.plugins.chocholousekpicons[profile_id].method.value \
-        or '://' in URL_or_File:
+        or '://' in chochoFile_or_URL:
             self.piconCounters['added'] += len(self.SRC_in_Archive)
-            self.extractAllPiconsFromArchive('/tmp/' + dwn_filename)
+            self.extractAllPiconsFromArchive(dwn_file)
             self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_in_Archive))
-        # 4-B. ináč pokračujem na rozbalovanie pikon - podľa užívateľom nakonfigurovanej metódy:
+        # 6-B. ináč pokračujem na rozbalovanie pikon - podľa užívateľom nakonfigurovanej metódy:
         # v prípade metód synchronizačných / kontrolovaných t.j. 'sync_tv', 'sync_tv_radio' alebo 'all_inc' prebehne rozbalenie a prepísanie iba patričných picon (podľa predvytvoreneho zoznamu)
         else:
             self.SRC_for_Extract = []
@@ -1443,15 +1448,32 @@ class piconsUpdateJobScreen(Screen):
             
             # Extrahovanie vybraných pikon (len v prípade, že sa našli nejaké pikony pre extrahovanie)
             if self.SRC_for_Extract:
-                self.extractCertainPiconsFromArchive('/tmp/' + dwn_filename , self.SRC_for_Extract)
+                self.extractCertainPiconsFromArchive(dwn_file , self.SRC_for_Extract)
                 # subory, ktore budu teraz pridane alebo prepisane z archivu do HDD, uz viac krat nebudem musiet kopirovat a zistovat v dalsich cykloch (v dalsich rozbalenych balickoch s pikonami),
                 # preto tieto subory aktualizujem aj v zozname SRC_in_HDD pre urychlenie procesu, aby sa v dalsich cykloch tieto subory ignorovali (budu vyrozumene ako existujuci subor na HDD so zhodnou velkostou)
                 for k in self.SRC_for_Extract:
                     self.SRC_in_HDD[k] = self.SRC_in_Archive[k]             #self.SRC_in_Bouquets.remove(k)
             self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_for_Extract))
         
-        #self.storeVarInFile('SRC_for_Extract--%s' % dwn_filename, self.SRC_for_Extract)
-        os.remove('/tmp/' + dwn_filename)
+        #self.storeVarInFile('SRC_for_Extract--%s' % dwn_file, self.SRC_for_Extract)
+        os.remove(dwn_file)
+    
+    def fileHeader7z(self, f_path):
+        with open(f_path, 'rb') as f:
+            f_header = f.read(4)
+        if f_header == '7z\xbc\xaf':                                        # check the 7-zip file header (the first 4 bytes from file)
+            return True
+        else:
+            return False
+    
+    def checkVPNerror(self, f_path):
+        with open(f_path, 'r') as f:
+            f_content = f.read()
+        err,out = runShell('ifconfig -a | grep -q tun0')
+        if f_content.startswith('<!doctype html>') and ('//picon.cz/error' in f_content) and (err == 0):
+            return True
+        else:
+            return False
     
     def extractCertainPiconsFromArchive(self, archiveFile, SRC_list):
         with open('/tmp/picons-to-extraction.txt', 'w') as f:
@@ -1501,9 +1523,9 @@ class piconsUpdateJobScreen(Screen):
         return tmp  # returns an empty string on error, otherwise returns the list of all file names without extension + file sizes
     
     def writeLog7zipError(self, status, out, archiveFile):
-        if status == 32512:
+        if status == 32512:           # exit code = 127  (32512 / 256) = system : shell-command is missing OR executable file was not found
             self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".' % status)
-        elif status == 512:
+        elif status == 512:           # exit code = 2    (512 / 256)   =  7-zip : FATAL ERROR
             self.writeLog('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s' % (status, archiveFile) )
         else:
             self.writeLog('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out)  )
@@ -1546,12 +1568,15 @@ def downloadFile(url, target_filename='', save_to_disk=True):
     target_filename variable:
         - if ends with an "/"....................the specified target path will used + the file name will be set according to Cookies OR as a random number
         - if equal to "".........................the "/tmp" target path will used + the file name will be set according to Cookies OR as a random number
-        ------ in both cases, the file name will retrieved from Cookies and if the name cannot be retrieved, it is invented as "unknown_file_<random-num>"
+        ------ in both cases, the file name will retrieved from Cookies and if the name cannot be retrieved, it is invented as "unknown_filename_<random-num>"
         - if contains some other characters......the specified target "/path/filename" (the file name is already specified in the input variable) will be set to save the file on local disk
     
     The save_to_disk variable determines whether the file is saved (=True) to the local disk or not (=False).
     It only means testing purpose of the existence the online file (then this function returns "" on error OR returns the path + file name if the online file exists).
-    When the download fails, function returns an empty string "". Otherwise, it returns the path + file name of the downloaded file.
+    
+    When the download fails, function returns an empty string "". 
+    Otherwise, it returns the path + file name of the downloaded file.
+    If the server did not provide a filename, the name "unknown_filename_<random-num>" will be used.
     '''
     if 'picon.cz' in url:
         global plugin_ver_local
@@ -1580,12 +1605,12 @@ def downloadFile(url, target_filename='', save_to_disk=True):
                     handler = urllib2.urlopen(req, timeout=15)
                     break
         
-        # add file name (if necessary):
+        # specifying the file name (if necessary)
         if target_filename == '' or target_filename.endswith('/'):
             if 'content-disposition' in handler.headers:
                 fname = handler.headers['content-disposition'].split('"')[1]        # get filename from html header
             else:
-                fname = 'unknown_filename_' + datetime.now().strftime('%s')         # filename with unix-timestamp at the end:  'unknown_file_1586625400'
+                fname = 'unknown_filename_' + datetime.now().strftime('%s')         # filename with unix-timestamp at the end:  'unknown_filename_1586625400'
                 #fname = 'unknown_filename_{:0>6}____'.format(random.randint(0,150000))             # random number
             if target_filename == '':
                 target_filename = '/tmp/'
@@ -1606,6 +1631,7 @@ def downloadFile(url, target_filename='', save_to_disk=True):
         target_filename = ''
     
     return target_filename
+
     # return the path+filename, if all done (file was found and/or was also stored on disk)
     # return the empty string, if the download fails or if online file does not exist
 
@@ -1650,9 +1676,9 @@ def newOE():
 
 def runShell(cmd):          # os.system() - I use this primitive Shell output, for better compatibility with older versions of Python than 2.4.x (where the subsupport module is missing), as well as for newer versions of Python 3.x.x (where the commands.getstatusoutput is missing)
     try:
-        retCode   = os.system(cmd + ' > /tmp/chocholousek-picons.tmp 2>&1')         # with redirecting stdout and stderr to a temporary file
-        retOutput = open('/tmp/chocholousek-picons.tmp', 'r').read()                # retrieving saved output from temporary file that was previously created via Shell
-        os.remove('/tmp/chocholousek-picons.tmp')
+        retCode   = os.system(cmd + ' > /tmp/chocholousekpicons-cmd.log 2>&1')      # with redirecting stdout and stderr to a temporary LOG file
+        retOutput = open('/tmp/chocholousekpicons-cmd.log', 'r').read()             # retrieving saved output from temporary file that was previously created via Shell
+        os.remove('/tmp/chocholousekpicons-cmd.log')
     except Exception as e:
         retCode   = -1
         retOutput = e.message

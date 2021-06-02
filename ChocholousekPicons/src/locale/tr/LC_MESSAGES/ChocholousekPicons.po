@@ -13,6 +13,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 2.2.1\n"
 
+msgid "Error! The downloaded file is not in 7-zip format!"
+msgstr "Hata! İndirilen dosya 7-zip formatında değil!"
+
+msgid "Possible cause:"
+msgstr "Muhtemel neden:"
+
 msgid "Updating plugin... please wait."
 msgstr "Eklenti güncelleniyor... lütfen bekleyin."
 

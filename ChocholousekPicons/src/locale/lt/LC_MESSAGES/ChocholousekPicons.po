@@ -14,6 +14,12 @@ msgstr ""
 "X-Generator: Poedit 2.4.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
+msgid "Error! The downloaded file is not in 7-zip format!"
+msgstr "Klaida! Atsisiųstas failas nėra 7 ZIP formato!"
+
+msgid "Possible cause:"
+msgstr "Galima priežastis:"
+
 msgid "Updating plugin... please wait."
 msgstr "Atnaujinamas papildinys... palaukite."
 

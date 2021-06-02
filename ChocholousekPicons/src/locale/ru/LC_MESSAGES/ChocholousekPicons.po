@@ -16,6 +16,12 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
+msgid "Error! The downloaded file is not in 7-zip format!"
+msgstr "Ошибка! Загруженный файл имеет формат не 7-zip!"
+
+msgid "Possible cause:"
+msgstr "Возможная причина:"
+
 msgid "Updating plugin... please wait."
 msgstr "Плагин обновляется... подождите."
 

@@ -220,4 +220,8 @@ New option to add default picon directories, for Enigma2 administrators and deve
 5.0.210523
 Minor fix when displaying information (MessageBox) after running plugin update
 
+5.0.210602
+When downloading 7z archives with picons via VPN, there is always an error. From now on, this will be reported as a specific error.
+
+
 
