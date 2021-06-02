@@ -1461,7 +1461,7 @@ class piconsUpdateJobScreen(Screen):
     def fileHeader7z(self, f_path):
         with open(f_path, 'rb') as f:
             f_header = f.read(4)
-        if f_header == '7z\xbc\xaf':                                        # check the 7-zip file header (the first 4 bytes from file)
+        if f_header == b'7z\xbc\xaf':                                       # check the 7-zip file header (the first 4 bytes from file)
             return True
         else:
             return False
