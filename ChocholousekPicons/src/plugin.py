@@ -1467,10 +1467,10 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def checkVPNerror(self, f_path):
-        with open(f_path, 'r') as f:
-            f_content = f.read()
         err,out = runShell('ifconfig -a | grep -q tun0')
-        if f_content.startswith('<!doctype html>') and ('//picon.cz/error' in f_content) and (err == 0):
+        with open(f_path, 'rb') as f:                                       # I use the "bytes" file format because the content doesn't have to be just text / string data (for Python 3.x purpose)
+            f_content = f.read()
+        if f_content.startswith('<!doctype html>'.encode()) and ('//picon.cz/error'.encode() in f_content) and (err == 0):
             return True
         else:
             return False
