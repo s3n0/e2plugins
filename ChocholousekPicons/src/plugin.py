@@ -1421,38 +1421,41 @@ class piconsUpdateJobScreen(Screen):
         #      alebo ak používateľ zvolil v plugin-konfigurácii metódu zmazania všetkých pikon a nahratia všetkých nových pikon (metóda 'all'), tak ...
         if 'all' == config.plugins.chocholousekpicons[profile_id].method.value \
         or '://' in chochoFile_or_URL:
-            self.piconCounters['added'] += len(self.SRC_in_Archive)
-            self.extractAllPiconsFromArchive(dwn_file)
-            self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_in_Archive))
+            if self.extractAllPiconsFromArchive(dwn_file):
+                self.piconCounters['added'] += len(self.SRC_in_Archive)
+                self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_in_Archive))
         # 6-B. ináč pokračujem na rozbalovanie pikon - podľa užívateľom nakonfigurovanej metódy:
         # v prípade metód synchronizačných / kontrolovaných t.j. 'sync_tv', 'sync_tv_radio' alebo 'all_inc' prebehne rozbalenie a prepísanie iba patričných picon (podľa predvytvoreneho zoznamu)
         else:
             self.SRC_for_Extract = []
-            # Zaujímam len o tie picony z archívu, ktoré sa nachádzajú zároveň v zozname SRC_in_Bouquets a zároveň v zozname SRC_in_Archive,
-            # takže vytvorím zoznam zhodných prvkov pomocou operácie s množinami:   set(A) & set(B)
+            # V prípade 'sync' sa zaujímam len o tie picony z archívu, ktoré sa nachádzajú zároveň v zozname SRC_in_Bouquets a zároveň v zozname SRC_in_Archive,
+            # takže vytvorím zoznam zhodných prvkov, pomocou operácie s množinami:    set(A) & set(B)
             if 'sync' in config.plugins.chocholousekpicons[profile_id].method.value:
                 M = set(self.SRC_in_Archive) & set(self.SRC_in_Bouquets)
             # V prípade metódy inkrementalného kopírovania 'all_inc', budem prechádzať úplne všetky rozbalované pikony a testovať, či sa už nachádzajú na HDD a ak áno, zistím, či je potrebné ich kopírovať (rozdielná veľkosť oboch súborov)
             elif 'all_inc' == config.plugins.chocholousekpicons[profile_id].method.value:
                 M = self.SRC_in_Archive
-            # ďalej budem prechádzať v cykle už iba cieľový SRC-zoznam a zisťovať, či je potrebné tieto pikony z archívu aj nakopírovať
+            # ďalej budem prechádzať v cykle už iba cieľový SRC-zoznam a zisťovať, či je potrebné tieto pikony z archívu vôbec nakopírovať do HDD v set-top boxe
+            count_changed = 0
+            count_added = 0
             for src in M:
-                if src in self.SRC_in_HDD:                                  # ak uz sa pikona rozbalena z archivu nachadza na HDD, tak...
-                    print('MYDEBUGLOGLINE - compare two PNG files size - HDD:%s / Archive:%s' % (self.SRC_in_HDD[src], self.SRC_in_Archive[src])  )
-                    if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]:    # porovnam este velkosti tychto dvoch pikon (Archiv VS. HDD) a ak su velkosti picon odlisne...
-                        self.SRC_for_Extract.append(src)                    # tak pridam tuto pikonu na zoznam kopirovanych pikon (zoznam pikon na extrahovanie)
-                        self.piconCounters['changed'] += 1
-                else:                                                       # ak sa pikona zo zoznamu "potrebnych" este nenachadza na HDD, tak...
+                if src in self.SRC_in_HDD:                                  # ak sa uz pikona z archivu nachadza na HDD, tak...
+                    #print('MYDEBUGLOGLINE - compare two PNG files size - HDD:%s / Archive:%s' % (self.SRC_in_HDD[src], self.SRC_in_Archive[src])  )
+                    if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]:        # porovnam este velkosti tychto dvoch pikon (Archive VS. HDD) a ak su velkosti picon odlisne...
+                        self.SRC_for_Extract.append(src)                        # tak pridam tuto pikonu na zoznam kopirovanych pikon (zoznam pikon na extrahovanie, z dovodu odlisnej velkosti suboru)
+                        count_changed += 1
+                else:                                                       # ak sa pikona zo zoznamu "potrebnych" vobec nenachadza na HDD, tak...
                     self.SRC_for_Extract.append(src)                        # tiez musim tuto pikonu pridat na zoznam kopirovanych (zoznam pikon na extrahovanie)
-                    self.piconCounters['added'] += 1
-            
+                    count_added += 1
             # Extrahovanie vybraných pikon (len v prípade, že sa našli nejaké pikony pre extrahovanie)
             if self.SRC_for_Extract:
-                self.extractCertainPiconsFromArchive(dwn_file , self.SRC_for_Extract)
-                # subory, ktore budu teraz pridane alebo prepisane z archivu do HDD, uz viac krat nebudem musiet kopirovat a zistovat v dalsich cykloch (v dalsich rozbalenych balickoch s pikonami),
-                # preto tieto subory aktualizujem aj v zozname SRC_in_HDD pre urychlenie procesu, aby sa v dalsich cykloch tieto subory ignorovali (budu vyrozumene ako existujuci subor na HDD so zhodnou velkostou)
-                for k in self.SRC_for_Extract:
-                    self.SRC_in_HDD[k] = self.SRC_in_Archive[k]             #self.SRC_in_Bouquets.remove(k)
+                if self.extractCertainPiconsFromArchive(dwn_file, self.SRC_for_Extract):
+                    # subory, ktore budu teraz pridane alebo prepisane zo 7-zip archivu do HDD, uz viac krat nebudem musiet kopirovat a testovat v dalsich cykloch (v dalsich rozbalenych balickoch s pikonami),
+                    # preto tieto pikony aktualizujem / doplnim hned aj v aktualnom zozname SRC_in_HDD, pre urychlenie procesu, aby sa v dalsich cykloch tieto pikony odignorovali (t.j. budu vyrozumene ako existujuce subory na HDD - so zhodnou velkostou)
+                    for k in self.SRC_for_Extract:
+                        self.SRC_in_HDD[k] = self.SRC_in_Archive[k]
+                    self.piconCounters['added']   += count_added
+                    self.piconCounters['changed'] += count_changed
             self.writeLog(_('...%s picons were extracted from the archive.') % len(self.SRC_for_Extract))
         
         #self.storeVarInFile('SRC_for_Extract--%s' % dwn_file, self.SRC_for_Extract)
