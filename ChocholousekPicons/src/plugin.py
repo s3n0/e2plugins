@@ -153,14 +153,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
     
     if desktopX > 1900:    # Full-HD or higher
         skin = '''
-        <screen name="mainConfigScreen" position="center,center" size="1200,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
+        <screen name="mainScreen"       position="center,center" size="1200,800" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
             <widget name="version_txt"  position="0,0"     size="1200,60"  font="Regular;42" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="author_txt"   position="0,60"    size="1200,40"  font="Regular;28" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
             <widget name="config"       position="50,100"  size="1100,600" font="Regular;30" itemHeight="34" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
-            <widget name="previewImage" position="100,390" size="500,300"  zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="previewImage" position="100,400" size="500,300"  zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="25,755"  size="30,46" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="320,755" size="30,46" transparent="1" alphatest="on" zPosition="1" />
@@ -174,14 +174,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
         </screen>'''
     else:                   # HD-ready or lower
         skin = '''
-        <screen name="mainConfigScreen" position="center,center" size="850,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
+        <screen name="mainScreen"       position="center,center" size="850,600" title="Chocholousek picons" flags="wfNoBorder" backgroundColor="#44000000">
 
             <widget name="version_txt"  position="0,0"     size="850,40" font="Regular;26" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
             <widget name="author_txt"   position="0,40"    size="850,30" font="Regular;16" foregroundColor="yellow" transparent="1" halign="center" valign="center" />
 
             <widget name="config"       position="25,70"   size="800,460" font="Regular;22" itemHeight="24" scrollbarMode="showOnDemand" backgroundColor="#1F000000" enableWrapAround="1" />
 
-            <widget name="previewImage" position="70,225"  size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
+            <widget name="previewImage" position="70,230"  size="500,300" zPosition="1" alphatest="blend" transparent="1" backgroundColor="transparent" />
 
             <ePixmap pixmap="skin_default/buttons/red.png"    position="20,560"  size="30,40" transparent="1" alphatest="on" zPosition="1" />
             <ePixmap pixmap="skin_default/buttons/green.png"  position="215,560" size="30,40" transparent="1" alphatest="on" zPosition="1" />
@@ -272,6 +272,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.list.append(getConfigListEntry( _('Configuration profile')       ,  config.plugins.chocholousekpicons_id               ))
         id = config.plugins.chocholousekpicons_id.getValue()
         self.list.append(getConfigListEntry( _('Allow profile processing')    ,  config.plugins.chocholousekpicons[id].allowed      ))
+        
         if config.plugins.chocholousekpicons[id].allowed.getValue():
             self.list.append(getConfigListEntry( _('Picon folder')            ,  config.plugins.chocholousekpicons[id].picon_folder ))
             if config.plugins.chocholousekpicons[id].picon_folder.value == 'user_defined':
@@ -287,9 +288,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.list.append(getConfigListEntry( _('Picon background')        ,  config.plugins.chocholousekpicons[id].background   ))
             
             self.showPreviewImage()
-            self['previewImage'].show()
+        
         else:
-            self['previewImage'].hide()
+            self.hidePreviewImage()
         
         listWidth = self['config'].l.getItemSize().width()
         self['config'].list = self.list
@@ -419,6 +420,16 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def showPreviewImage(self):
         self['previewImage'].instance.setPixmapFromFile(self.getPreviewImagePath())
         self['previewImage'].instance.setScale(0)
+        id = config.plugins.chocholousekpicons_id.getValue()
+        imgSize = config.plugins.chocholousekpicons[id].resolution.getValue().split("x")
+        imgWidth, imgHeight = int(imgSize[0]), int(imgSize[1])
+        plgScreenSize = self.instance.size()
+        cfgScreenPosition = self['config'].getPosition()
+        self['previewImage'].setPosition(  (plgScreenSize.width() - imgWidth) // 2  ,   plgScreenSize.height() - imgHeight - cfgScreenPosition[1]  )
+        self['previewImage'].show()
+    
+    def hidePreviewImage(self):
+        self['previewImage'].hide()
     
     def getPreviewImagePath(self):
         id = config.plugins.chocholousekpicons_id.getValue()
@@ -462,14 +473,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 print('MYDEBUGLOGLINE - Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file))
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
-            elif status == 32512:           # exit code = 127  (32512 / 256) = system : shell-command is missing OR executable file was not found
-                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".' % status)
+            elif status == 127:             # exit code = 127  (32512 // 256) = system : shell-command is missing OR executable file was not found
+                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\nShell output:\n%s' % (status, out))
                 self.deleteFiles(new_file)
-            elif status == 512:             # exit code = 2    (512 / 256)   =  7-zip : FATAL ERROR
-                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s' % (status, new_file) )
+            elif status == 2:               # exit code = 2    (512 // 256)   =  7-zip : FATAL ERROR
+                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\nShell output:\n%s' % (status, new_file, out))
                 self.deleteFiles(new_file)
             else:
-                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out)  )
+                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out))
                 self.deleteFiles(new_file)
     
     def deleteFiles(self, mask):
@@ -590,9 +601,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             self.session.openWithCallback(self.downNinst7zip, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
     
     def find7zip(self):
-        if os.path.isfile('/usr/bin/7za'):              # or os.path.islink('/usr/bin/7za'):
+        if os.path.isfile('/usr/bin/7za'):
             self.bin7zip = '/usr/bin/7za'
-        elif os.path.isfile('/usr/bin/7z'):             # or os.path.islink('/usr/bin/7z'):
+        elif os.path.isfile('/usr/bin/7z'):
             self.bin7zip = '/usr/bin/7z'
         else:
             self.bin7zip = ''
@@ -642,7 +653,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         mips32el, armv7l, armv7a-neon, armv7ahf, armv7ahf-neon, cortexa9hf-neon, cortexa15hf-neon-vfpv4, aarch64, sh4, sh_4
         '''
         cmd = 'dpkg --print-architecture' if os.path.exists('/etc/dpkg') else 'opkg print-architecture'
-        status,out = runShell(cmd + ' | grep -iE "mips|arm|aarch64|cortex|sh4|sh_4"')           # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
+        status, out = runShell(cmd + ' | grep -iE "mips|arm|aarch64|cortex|sh4|sh_4"')      # returns a pair of data, the first is an error code (0 if there are no problems) and the second is std.output (complete command-line / Shell text output)
         if status == 0:
             return out.lower().replace('arch ','').replace('\n',' ')    # return architectures by the Enigma package manager, like as:  'mips32el 16 mipsel 46'
         
@@ -653,7 +664,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         else:
             return machine().lower()                                    # return architectures from system, like as:  'mips'
         
-        status,out = runShell('uname -m')
+        status, out = runShell('uname -m')
         if status == 0:
             return out.lower()                                          # return architectures from system, like as:  'mips'
         
@@ -1400,7 +1411,7 @@ class piconsUpdateJobScreen(Screen):
             return
         self.writeLog(_('...file download successful.'))
         
-        # 3. Kontrola stiahnutého súboru na jeho obsah - jedná sa o formát 7-zip alebo HTML ? a v prípade HTML obsahuje tiež oznámenie o chybe ?
+        # 3. Kontrola stiahnutého súboru na jeho obsah - jedná sa o formát 7-zip alebo HTML ? Nieje to ERROR ?! A v prípade HTML súboru, je tam obsahnutý tiež oznam o chybe ?
         if not self.fileHeader7z(dwn_file):
             add_msg = ' ' + _('Possible cause:') + ' VPN interface' if self.checkVPNerror(dwn_file) else ''
             self.writeLog(_('Error! The downloaded file is not in 7-zip format!') + add_msg)
@@ -1470,7 +1481,7 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def checkVPNerror(self, f_path):
-        err,out = runShell('ifconfig -a | grep -q tun0')
+        err, out = runShell('ifconfig -a | grep -q tun0')
         with open(f_path, 'rb') as f:                                       # I use the "bytes" file format because the content doesn't have to be just text / string data (for Python 3.x purpose)
             f_content = f.read()
         if f_content.startswith('<!doctype html>'.encode()) and ('//picon.cz/error'.encode() in f_content) and (err == 0):
@@ -1526,12 +1537,12 @@ class piconsUpdateJobScreen(Screen):
         return tmp  # returns an empty string on error, otherwise returns the list of all file names without extension + file sizes
     
     def writeLog7zipError(self, status, out, archiveFile):
-        if status == 32512:           # exit code = 127  (32512 / 256) = system : shell-command is missing OR executable file was not found
-            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".' % status)
-        elif status == 512:           # exit code = 2    (512 / 256)   =  7-zip : FATAL ERROR
-            self.writeLog('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s' % (status, archiveFile) )
+        if status == 127:               # exit code = 127  (32512 // 256) = system : shell-command is missing OR executable file was not found
+            self.writeLog('Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\nShell output:\n%s' % (status, out))
+        elif status == 2:               # exit code = 2    (512 // 256)   =  7-zip : FATAL ERROR
+            self.writeLog('Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\nShell output:\n%s' % (status, archiveFile, out))
         else:
-            self.writeLog('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out)  )
+            self.writeLog('Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out))
     
     def writeLog(self, text=''):
         timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method
@@ -1660,27 +1671,28 @@ def newOE():
 #def runShell(cmd):         # commands.getstatusoutput() - works under Python 2.x.x only (does not work under Python 3.x.x)
 #    try:
 #        t = getstatusoutput(cmd)
+#        t = t[0] // 256, t[1]
 #    except Exception as e:
-#        t = -1 , e.message
+#        t = -1, e.message
 #    except:
-#        t = -1 , ''
+#        t = -1, ''
 #    return t
 
 #def runShell(cmd):         # subprocess.check_output() - works under Python 2.4.x - 3.x.x
 #    try:
-#        t =  0 , check_output(shlexSplit(cmd))
+#        t =  0, check_output(shlexSplit(cmd))
 #    except CalledProcessError as e:
-#        t = e.returncode , e.message
+#        t =  e.returncode, e.message
 #    except Exception as e:
-#        t = -1 , e.message
+#        t = -1, e.message
 #    except:
-#        t = -1 , ''
+#        t = -1, ''
 #    return t
 
 def runShell(cmd):          # os.system() - I use this primitive Shell output, for better compatibility with older versions of Python than 2.4.x (where the subsupport module is missing), as well as for newer versions of Python 3.x.x (where the commands.getstatusoutput is missing)
     try:
-        retCode   = os.system(cmd + ' > /tmp/chocholousekpicons-cmd.log 2>&1')      # with redirecting stdout and stderr to a temporary LOG file
-        retOutput = open('/tmp/chocholousekpicons-cmd.log', 'r').read()             # retrieving saved output from temporary file that was previously created via Shell
+        retCode   = os.system(cmd + ' > /tmp/chocholousekpicons-cmd.log 2>&1') // 256   # with redirecting stdout and stderr to a temporary LOG file
+        retOutput = open('/tmp/chocholousekpicons-cmd.log', 'r').read()                 # retrieving saved output from temporary file that was previously created via Shell
         os.remove('/tmp/chocholousekpicons-cmd.log')
     except Exception as e:
         retCode   = -1

@@ -227,4 +227,12 @@ When downloading 7z archives with picons via VPN, there is always an error. From
 Fixed minor BUG:
 - after a 7zip archiver error occurred, the plugin algorithm continued to execute, despite the error
 
+5.0.210717
+Fixed minor BUGs:
+- added shell console output to LOGs - only in case of errors extracting 7zip archives
+- updated error code returned from the shell (divided by 256)
+- adjusted position of the preview picon (to the center of the configuration window)
+
+
+
 
