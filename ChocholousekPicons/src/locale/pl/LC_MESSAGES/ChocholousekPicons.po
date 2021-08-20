@@ -128,7 +128,7 @@ msgid "No picons added or changed."
 msgstr "Nie dodano ani nie zmieniono żadnych picon."
 
 msgid "No picons found for selected resolution and satellites !"
-msgstr "Nie znaleziiono picon dla wybranych rozdzielczości oraz  satelit!"
+msgstr "Nie znaleziiono picon dla wybranych rozdzielczości oraz satelit!"
 
 msgid ""
 "No userbouquet files found !\n"
