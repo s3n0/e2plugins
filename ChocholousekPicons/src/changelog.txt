@@ -233,6 +233,8 @@ Fixed minor BUGs:
 - updated error code returned from the shell (divided by 256)
 - adjusted position of the preview picon (to the center of the configuration window)
 
+5.0.210820
+Minor corrections in Polish translation - thx to @lareq
 
 
 
