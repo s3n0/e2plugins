@@ -709,7 +709,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             dwn_file  = '/tmp/' + pckg_name
             
             if downloadFile(dwn_url, dwn_file):
-            
+                
                 if pckg_name.endswith('.deb'):
                     os.system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
                     os.system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
@@ -1276,6 +1276,13 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog(msg)
             return True, msg
         
+        # Skontroluje sa voľná RAM aspoň 45 kB a potom, ak to bude možné, sa uvoľní trochu RAM, používanej ako cache / buffer v Linux systéme
+        # Voľná RAM je potrebná pre dekompresiu predovšetkým niektorých väčších 7z-balíčkov (ERROR: Can't allocate required memory!)
+        fRAM = self.freeRAM()
+        if (fRAM != -1) and (fRAM < 45000) and os.path.isfile('/proc/sys/vm/drop_caches'):
+            os.system('sync; echo 1 > /proc/sys/vm/drop_caches')
+            self.writeLog( _('Attempting to free RAM by clearing the system cache (before: %s / after: %s).') % (fRAM, self.freeRAM()) )
+        
         # Postupne prejdem a spracujem všetky konfiguračné profily
         for id in range(0,4):
             if config.plugins.chocholousekpicons[id].allowed.getValue():
@@ -1488,6 +1495,16 @@ class piconsUpdateJobScreen(Screen):
             return True
         else:
             return False
+    
+    def freeRAM(self):
+        free_memory = -1
+        if os.path.isfile('/proc/meminfo'):
+            with open('/proc/meminfo') as f:
+                for line in f:
+                    if 'memfree' in line.lower():
+                        free_memory = int(line.split()[1])
+                        break
+        return free_memory                      # return free memory (in bytes)
     
     def extractCertainPiconsFromArchive(self, archiveFile, SRC_list):
         with open('/tmp/picons-to-extraction.txt', 'w') as f:
