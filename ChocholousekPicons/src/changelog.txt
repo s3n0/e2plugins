@@ -241,4 +241,8 @@ Added a simple function:
 - the 7-zip error "Can't allocate required memory!" may occur on some devices with 256MB or less of RAM installed
 - from now, free RAM is checked before downloading packages from the internet, then if possible, if necessary, some RAM (buffer / cache in Linux) will be freed - for the purpose of decompressing 7z packages
 
+5.0.211125
+Minor corrections in Polish translation - thx to @lareq
+
+
 
