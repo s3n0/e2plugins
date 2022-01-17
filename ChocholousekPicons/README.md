@@ -16,7 +16,7 @@
   * 1.Download and install 7-zip via the package manager (i.e. attempt to install 7-zip from your Enigma feed server)
   * 2.Attempt to download a standalone `7za` binary file from the internet
 
-* The plugin also works in Python 2 and also in Python 3 Enigma distributions.
+* The plugin source code supports Python 2 + Python 3.
 
 ## **How to un/install plugin (via Shell)**
 
