@@ -244,5 +244,9 @@ Added a simple function:
 5.0.211125
 Minor corrections in Polish translation - thx to @lareq
 
+5.0.220121
+Restoration of the old, albeit primitive, method for detecting the newer Enigma2 core (OE 2.2+):
+- this should solve constant problems on some new Enigma2 distributions
+- more precisely, this is a problem with changing the font type and size in the configuration menu (AttributeError: 'eListbox' object has no attribute 'setFont')
 
 

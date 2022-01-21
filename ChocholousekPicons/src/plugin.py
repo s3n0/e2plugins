@@ -1671,19 +1671,19 @@ def newOE():
     return True ---- for commercial versions of Enigma2 core (OE 2.2+) - DreamElite, DreamOS, Merlin, ... etc.
     return False --- for open-source versions of Enigma2 core (OE 2.0 or OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
     '''
-    ####return os.path.exists('/etc/dpkg')
-    try:
-        from enigma import PACKAGE_VERSION
-        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
-        if major > 4 or (major == 4 and minor >= 2):    # if major > 4 or major == 4 and minor >= 2:
-            boo = True                                  #### new enigma core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.2+ ====================== (c)Dreambox core
-        else:
-            boo = False                                 #### old enigma core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source core
-    except ImportError:
-        boo = False                                     #### ImportError means compatibility with OE 2.0 core
-    except ValueError:
-        boo = False                                     #### ValueError means compatibility with OE 2.0 core (some Enigma2 distributions, such as TeamBlue, returns only 2 arguments from the PACKAGE_VERSION value, instead of 3 arguments)
-    return boo
+    return os.path.exists('/etc/dpkg')
+#    try:
+#        from enigma import PACKAGE_VERSION
+#        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
+#        if major > 4 or (major == 4 and minor >= 2):    # if major > 4 or major == 4 and minor >= 2:
+#            boo = True                                  #### new enigma core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.2+ ====================== (c)Dreambox core
+#        else:
+#            boo = False                                 #### old enigma core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source core
+#    except ImportError:
+#        boo = False                                     #### ImportError means compatibility with OE 2.0 core
+#    except ValueError:
+#        boo = False                                     #### ValueError means compatibility with OE 2.0 core (some Enigma2 distributions, such as TeamBlue, returns only 2 arguments from the PACKAGE_VERSION value, instead of 3 arguments)
+#    return boo
 
 #def runShell(cmd):         # commands.getstatusoutput() - works under Python 2.x.x only (does not work under Python 3.x.x)
 #    try:
