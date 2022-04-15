@@ -6,7 +6,7 @@
 
 * Unfortunately, not all picon styles exist for all resolutions or vice versa - not all resolutions exist for every picon style (background). All picon styles are available only in picon resolution 220x132 (which can be considered the most used).
    
-* In the new version of the plugin you can choose the method of updating the picons:
+* In the Chocholousek Picons plugin, you can choose one of the following ways to update the picons:
   * Sync with TV channel lists (userbouquet.\*.tv files)
   * Sync with TV+RADIO channel lists (userbouquet.\*.tv|\*.radio files)
   * Copy all picons: Delete all current picons as first
@@ -16,7 +16,7 @@
   * 1.Download and install 7-zip via the package manager (i.e. attempt to install 7-zip from your Enigma feed server)
   * 2.Attempt to download a standalone `7za` binary file from the internet
 
-* The plugin source code supports Python 2 + Python 3.
+* The plugin works on Enigma2 distributions based on both Python 2 and Python 3.
 
 ## **How to un/install plugin (via Shell)**
 
