@@ -248,24 +248,38 @@ class mainConfigScreen(Screen, ConfigListScreen):
         #self.onLayoutFinish.append(self.prepareSetupScreen)
     
     def prepareSetupScreen(self):
-        self.check7zip()                        # 1.
+        self.check7zip()                        ### 1.
         
         if self.bin7zip:
-            self.downloadChochoFile()           # 2.
+            self.downloadChochoFile()           ### 2.
         
-        self.loadChochoContent()                # 3.
+        self.loadChochoContent()                ### 3.
         
         if self.bin7zip:
-            self.downloadPreviewPicons()        # 4.
+            self.downloadPreviewPicons()        ### 4.
         
-        id_backup = config.plugins.chocholousekpicons_id.getValue()       # 5.
-        for id in range(0,4):
+        all_SAT = self.getAllSat()              ### 5.
+        id_backup = config.plugins.chocholousekpicons_id.getValue()
+        for id in range(0, 4):
+            #### filling data for all available picon-backgrounds, in all user-configuration profiles:
             config.plugins.chocholousekpicons_id.setValue(id)
-            self.changeAvailableBackgrounds()   # fill data for all available backgrounds, in all configuration profiles
+            self.changeAvailableBackgrounds()
+            #### verify that the picon package support has not ended for a satellite position, in the user's saved configuration:
+            user_SAT = config.plugins.chocholousekpicons[id].sats.getValue()
+            if user_SAT:
+                user_SAT = user_SAT.split()
+                lost_SAT = list(  set(user_SAT) - set(all_SAT)  )
+                if lost_SAT:
+                    user_SAT = list(  set(user_SAT) - set(lost_SAT)  )
+                    config.plugins.chocholousekpicons[id].sats.setValue(' '.join(user_SAT))
+                    config.plugins.chocholousekpicons[id].sats.save()
+                    print('MYDEBUGLOGLINE - these satellites are no longer supported (non-existent picon packages): %s' % (' '.join(lost_SAT)))
+                    message = _('Sorry, the following picon packages no longer exist\n(these satellite positions are no longer supported):') + '\n\n' + ' '.join(lost_SAT)
+                    self.session.open(MessageBox, message, type=MessageBox.TYPE_WARNING)
         config.plugins.chocholousekpicons_id.setValue(id_backup)
         #self.changeAvailableBackgrounds()
         
-        self.rebuildConfigList()                # 6.
+        self.rebuildConfigList()                ### 6.
     
     def rebuildConfigList(self):
         self.list = []
@@ -573,7 +587,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def getAllSat(self): # Satellites
         lst = re.findall('piconblack-220x132-(.*)_by_chocholousek', self.chochoContent)
         lst.sort(key = self.fnSort)
-        #print('MYDEBUGLOGLINE - getAllSat = %s' % lst)
+        print('MYDEBUGLOGLINE - getAllSat = %s' % lst)
         return lst
     
     def fnSort(self, s):
@@ -1671,19 +1685,46 @@ def newOE():
     return True ---- for commercial versions of Enigma2 core (OE 2.2+) - DreamElite, DreamOS, Merlin, ... etc.
     return False --- for open-source versions of Enigma2 core (OE 2.0 or OE-Alliance 4.x) - OpenATV, OpenPLi, VTi, ... etc.
     '''
-    return os.path.exists('/etc/dpkg')
-#    try:
-#        from enigma import PACKAGE_VERSION
-#        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
-#        if major > 4 or (major == 4 and minor >= 2):    # if major > 4 or major == 4 and minor >= 2:
-#            boo = True                                  #### new enigma core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.2+ ====================== (c)Dreambox core
-#        else:
-#            boo = False                                 #### old enigma core (OpenATV, OpenPLi, VTi, ...) =========== e2 core: OE 2.0 / OE-Alliance 4.x ===== open-source core
-#    except ImportError:
-#        boo = False                                     #### ImportError means compatibility with OE 2.0 core
-#    except ValueError:
-#        boo = False                                     #### ValueError means compatibility with OE 2.0 core (some Enigma2 distributions, such as TeamBlue, returns only 2 arguments from the PACKAGE_VERSION value, instead of 3 arguments)
-#    return boo
+#   return os.path.exists('/etc/dpkg')
+    
+    boo = False
+    
+    try:
+        from enigma import PACKAGE_VERSION
+        major, minor, patch = [ int(n) for n in PACKAGE_VERSION.split('.') ]
+        if major > 4 or (major == 4 and minor >= 2):    # if major > 4 or major == 4 and minor >= 2:
+            boo = True                                  #### new enigma core (DreamElite, DreamOS, Merlin, ...) ===== e2 core: OE 2.2+ ====================== (c)Dreambox core
+    except Exception:
+        pass
+    
+    try:
+        from Components.SystemInfo import SystemInfo
+        if 'MachineBrand' in SystemInfo.keys and 'TeamBlue' in SystemInfo['MachineBrand']:
+            boo = False
+    except Exception:
+        pass
+    
+    try:
+        from boxbranding import getOEVersion
+        if getOEVersion().find('OE-Alliance') >= 0:
+            boo = False
+    except Exception:
+        pass
+    
+    return boo
+
+def runShell(cmd):          # os.system() - I use this primitive Shell output, for better compatibility with older versions of Python than 2.4.x (where the subsupport module is missing), as well as for newer versions of Python 3.x.x (where the commands.getstatusoutput is missing)
+    try:
+        retCode   = os.system(cmd + ' > /tmp/chocholousekpicons-cmd.log 2>&1') // 256   # with redirecting stdout and stderr to a temporary LOG file
+        retOutput = open('/tmp/chocholousekpicons-cmd.log', 'r').read()                 # retrieving saved output from temporary file that was previously created via Shell
+        os.remove('/tmp/chocholousekpicons-cmd.log')
+    except Exception as e:
+        retCode   = -1
+        retOutput = e.message
+    except:
+        retCode   = -1
+        retOutput = ''
+    return retCode, retOutput
 
 #def runShell(cmd):         # commands.getstatusoutput() - works under Python 2.x.x only (does not work under Python 3.x.x)
 #    try:
@@ -1705,19 +1746,6 @@ def newOE():
 #    except:
 #        t = -1, ''
 #    return t
-
-def runShell(cmd):          # os.system() - I use this primitive Shell output, for better compatibility with older versions of Python than 2.4.x (where the subsupport module is missing), as well as for newer versions of Python 3.x.x (where the commands.getstatusoutput is missing)
-    try:
-        retCode   = os.system(cmd + ' > /tmp/chocholousekpicons-cmd.log 2>&1') // 256   # with redirecting stdout and stderr to a temporary LOG file
-        retOutput = open('/tmp/chocholousekpicons-cmd.log', 'r').read()                 # retrieving saved output from temporary file that was previously created via Shell
-        os.remove('/tmp/chocholousekpicons-cmd.log')
-    except Exception as e:
-        retCode   = -1
-        retOutput = e.message
-    except:
-        retCode   = -1
-        retOutput = ''
-    return retCode, retOutput
 
 
 

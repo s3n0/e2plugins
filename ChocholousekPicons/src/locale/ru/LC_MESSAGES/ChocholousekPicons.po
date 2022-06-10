@@ -16,6 +16,13 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
+msgid ""
+"Sorry, the following picon packages no longer exist\n"
+"(these satellite positions are no longer supported):"
+msgstr ""
+"Извините, следующие пакеты picon больше не существуют\n"
+"(эти спутниковые позиции больше не поддерживаются):"
+
 msgid "Error! The downloaded file is not in 7-zip format!"
 msgstr "Ошибка! Загруженный файл имеет формат не 7-zip!"
 

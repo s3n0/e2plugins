@@ -249,4 +249,7 @@ Restoration of the old, albeit primitive, method for detecting the newer Enigma2
 - this should solve constant problems on some new Enigma2 distributions
 - more precisely, this is a problem with changing the font type and size in the configuration menu (AttributeError: 'eListbox' object has no attribute 'setFont')
 
-
+5.0.220610
+Minor addition:
+- upon termination of support for any of the satellite positions, i.e. if the picon pack no longer exists, the satellite position will be automatically deleted from the user configuration
+- the user will be notified by a warning message box

@@ -13,6 +13,13 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 2.2.4\n"
 
+msgid ""
+"Sorry, the following picon packages no longer exist\n"
+"(these satellite positions are no longer supported):"
+msgstr ""
+"Entschuldigung, die folgenden Picon-Pakete existieren nicht mehr\n"
+"(diese Satellitenpositionen werden nicht mehr unterstützt):"
+
 msgid "Error! The downloaded file is not in 7-zip format!"
 msgstr "Error! Die heruntergeladene Datei liegt nicht im 7-Zip-Format vor!"
 
