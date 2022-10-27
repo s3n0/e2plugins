@@ -1,0 +1,410 @@
+# Signed-off-by: Dario Croci <spaeleus@croci.org>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ChocholousekPiconsUpdater v5.0.220610\n"
+"POT-Creation-Date: 2022-10-27 18:29+0200\n"
+"PO-Revision-Date: 2022-10-27 18:55+0200\n"
+"Last-Translator: Dario Croci <spaeleus@croci.org>\n"
+"Language-Team: Dario Croci <spaeleus@croci.org>\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2\n"
+"X-Poedit-Basepath: ../../../../../../../../..\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:86
+msgid "(user defined)"
+msgstr "(definita dall'utente)"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:106
+msgid "copy all: current will deleted"
+msgstr "Copiare tutto: le versioni correnti verranno rimosse"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:107
+msgid "copy all: incremental update"
+msgstr "Copiare tutto: aggiornamento incrementale"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:108
+msgid "sync with TV userbouquets"
+msgstr "Sincronizzare con i bouquet TV"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:109
+msgid "sync with TV+RADIO userbouquets"
+msgstr "Sincronizzare con i bouquet TV+Radio"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:131
+msgid "first select the satellites"
+msgstr "Selezionare innanzitutto i satelliti"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:212
+msgid "Profile reset"
+msgstr "Reset del profilo"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:213
+msgid "Exit"
+msgstr "Uscire"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:214
+msgid "Update plugin"
+msgstr "Aggiornare il plugin"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:215
+msgid "Update picons"
+msgstr "Aggiornare i picon"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:277
+msgid ""
+"Sorry, the following picon packages no longer exist\n"
+"(these satellite positions are no longer supported):"
+msgstr ""
+"I seguenti pacchetti picon non sono più disponibili\n"
+"(queste posizioni satellitari non sono più supportate):"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:286
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1315
+msgid "Configuration profile"
+msgstr "Impostazioni profilo"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:288
+msgid "Allow profile processing"
+msgstr "Consentire l'elaborazione del profilo"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:291
+msgid "Picon folder"
+msgstr "Directory picon"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:293
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:340
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:422
+msgid "User defined folder"
+msgstr "Directory definita dall'utente"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:294
+msgid "Picon update method"
+msgstr "Metodo di aggiornamento picon"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:297
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:299
+msgid "selected"
+msgstr "in totale"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:300
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:338
+msgid "Satellite positions"
+msgstr "Posizioni satellitari"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:301
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:416
+msgid "Picon resolution"
+msgstr "Risoluzione picon"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:302
+msgid "Picon background"
+msgstr "Background picon"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:365
+#, python-format
+msgid ""
+"New plugin version found: %s\n"
+"Do you want to install it now ?"
+msgstr ""
+"Rilevata una nuova versione del plugin: %s\n"
+"Installare la versione aggiornata ora?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:369
+#, python-format
+msgid ""
+"Plugin version is up to date.\n"
+"\n"
+"Installed version: %s"
+msgstr ""
+"La versione del plugin è aggiornata.\n"
+"\n"
+"Versione installata: %s"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:378
+#, python-format
+msgid "Reset the current configuration profile (%s) to the default settings ?"
+msgstr ""
+"Ripristinare le impostazioni del profilo corrente (%s) ai valori di default?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:419
+msgid "Profile configuration"
+msgstr "Impostazioni profilo"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:566
+msgid "No picons found for selected resolution and satellites !"
+msgstr "Nessun picon trovato per risoluzione/satelliti selezionati."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:614
+msgid ""
+"The 7-zip archiver was not found on your system.\n"
+"There is possible to update the 7-zip archiver now in two steps:\n"
+"\n"
+"(1) try to install via the Enigma package manager\n"
+"...or...\n"
+"(2) try to download the binary file \"7za\" (standalone archiver) from the "
+"internet\n"
+"\n"
+"Do you want to try it now?"
+msgstr ""
+"Utility 7-zip non installata nel sistema.\n"
+"È possibile aggiornare l'utility 7-zip in due modalità:\n"
+"\n"
+"(1) Installarla tramite il gestore pacchetti di Enigma2\n"
+"...oppure...\n"
+"(2) Scaricare il file binario \"7za\" (archiver autonomo) da Internet.\n"
+"\n"
+"Tentare l'installazione ora?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:632
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:635
+msgid ""
+"The installation of the 7-zip archiver from the Enigma2\n"
+"feed server was successful."
+msgstr ""
+"Installazione dell'utility 7-zip eseguita correttamente\n"
+"dai feed di Enigma2."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:655
+msgid "Installation of standalone \"7za\" (7-zip) archiver was successful."
+msgstr ""
+"Installazione del pacchetto autonomo \"7za\" (7-zip) eseguita correttamente."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:662
+msgid "Installation of 7-zip archiver failed!"
+msgstr "Installazione dell'utility 7-zip fallita."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:737
+msgid ""
+"The plugin has been updated to the new version.\n"
+"A quick reboot is required.\n"
+"Do a quick reboot now ?"
+msgstr ""
+"Il plugin è stato aggiornato alla versione più recente.\n"
+"È necessario in riavvio della GUI.\n"
+"Eseguire il riavvio della GUI ora?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:742
+msgid "Error ! Downloading plugin installation package failed !"
+msgstr "Errore. Download del pacchetto di installazione del plugin fallito."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:747
+msgid "Updating plugin... please wait."
+msgstr "Aggiornamento plugin. Attendere..."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:808
+msgid "Select satellites:"
+msgstr "Satelliti selezionati:"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:809
+msgid "-"
+msgstr "-"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:810
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:888
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:890
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1003
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1067
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1069
+msgid "Apply"
+msgstr "Applicare"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:811
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1002
+msgid "Cancel"
+msgstr "Annullare"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:921
+msgid ""
+"You have changed the selection of satellites.\n"
+"Apply these changes ?"
+msgstr ""
+"È stata modificata la selezione dei satelliti.\n"
+"Applicare queste modifiche?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:999
+msgid "Path to the picon folder:"
+msgstr "Percorso directory picon:"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1004
+msgid "Create directory"
+msgstr "Creare directory"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1005
+msgid "Delete directory"
+msgstr "Rimuovere la directory"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1093
+msgid "Please enter a name for the new directory:"
+msgstr "Inserire un nome per la nuova directory:"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1107
+msgid "Do you want to delete this directory ?"
+msgstr "Rimuovere la directory?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1110
+#, python-format
+msgid "Note: This directory is not empty - it contains %s item(s)."
+msgstr "Attenzione: la directory non è vuota - Voci presenti: %s."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1133
+msgid ""
+"You have changed the path to the picon folder.\n"
+"Accept changed path ?"
+msgstr ""
+"È stato modificato il percorso della directory picon.\n"
+"Confermare il percorso modificato?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1196
+msgid "No operation ! Picon update failed !"
+msgstr "Nessuna operazione. Aggiornamento picon fallito."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1229
+msgid "Some errors has occurred !"
+msgstr "Si sono verificati errori."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1233
+msgid "Done !"
+msgstr "Fatto."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1233
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1307
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1309
+#, python-format
+msgid "(%s added / %s changed / %s removed)"
+msgstr "(aggiunti: %s / modificati: %s / rimossi: %s)"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1250
+msgid "Restart the Enigma (GUI) now ?"
+msgstr "Riavviare la GUI ora?"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1278
+msgid "Internet connection is OK."
+msgstr "Connessione a internet Ok."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1280
+msgid "Internet connection is not available !"
+msgstr "Connessione a internet non disponibile."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1287
+msgid "Connection to the picon server is OK."
+msgstr "Connessione al server picon Ok."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1289
+msgid "Connection to the picon server is not available !"
+msgstr "Connessione al server picon non disponibile."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1298
+#, python-format
+msgid ""
+"Attempting to free RAM by clearing the system cache (before: %s / after: %s)."
+msgstr ""
+"Tentativo di liberare RAM ripulendo la cache di sistema (prima: %s / dopo: "
+"%s)"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1307
+msgid "After updating the picons you may need to restart the Enigma (GUI)."
+msgstr "Dopo l'aggiornamento dei picon sarà necessario un riavvio della GUI."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1309
+msgid "No picons added or changed."
+msgstr "Nessun picon aggiunto/modificato."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1330
+#, python-format
+msgid ""
+"Error creating directory %s:\n"
+"%s"
+msgstr ""
+"Errore durante la creazione directory %s:\n"
+"%s"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1341
+msgid ""
+"No userbouquet files found !\n"
+"Please check the folder /etc/enigma2 for the userbouquet files."
+msgstr ""
+"Nessun file bouquet presente.\n"
+"Verificare la directory /etc/enigma2 per i file bouquet."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1345
+msgid ""
+"Preparing a list of picons from the picon directory on the local disk..."
+msgstr ""
+"Preparazione di un elenco picon dalla directory picon sul disco locale in "
+"corso..."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1351
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1365
+msgid "...done."
+msgstr "...fatto."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1357
+msgid "Preparing a list of picons from userbouquet files..."
+msgstr "Preparazione di un elenco picon dai file bouquet in corso..."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1375
+msgid "Deleting unnecessary picons from local disk..."
+msgstr "Rimozione dei picon non necessari dal disco locale in corso..."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1381
+#, python-format
+msgid "...%s picons deleted."
+msgstr "Picon rimossi: %s."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1399
+msgid "The process started..."
+msgstr "Processo avviato..."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1399
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1405
+msgid "(downloading and extracting all necessary picons)"
+msgstr "(download/estrazione di tutti i picon necessari in corso)"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1405
+msgid "...the process is complete."
+msgstr "...processo completato."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1423
+#, python-format
+msgid "Download ID for file %s was not found!"
+msgstr "ID di download per il file %s non trovato."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1429
+msgid "Trying download the file archive..."
+msgstr "Tentativo di download del file archivio in corso..."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1431
+msgid "...file download failed !!!"
+msgstr "...download file fallito."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1433
+msgid "...file download successful."
+msgstr "...download file eseguito correttamente."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1437
+msgid "Possible cause:"
+msgstr "Possibile causa:"
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1438
+msgid "Error! The downloaded file is not in 7-zip format!"
+msgstr "Errore. Il file non è in formato 7-zip."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1445
+msgid "Error! No picons found in the downloaded archive file!"
+msgstr "Errore. Nessun picon trovato nell'archivio scaricato."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1450
+msgid "Extracting files from the archive..."
+msgstr "Estrazione file dall'archivio in corso..."
+
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1458
+#: lib/enigma2/python/Plugins/Extensions/ChocholousekPicons/plugin.py:1491
+#, python-format
+msgid "...%s picons were extracted from the archive."
+msgstr "...picon estratti dall'archivio: %s."

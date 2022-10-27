@@ -253,3 +253,8 @@ Restoration of the old, albeit primitive, method for detecting the newer Enigma2
 Minor addition:
 - upon termination of support for any of the satellite positions, i.e. if the picon pack no longer exists, the satellite position will be automatically deleted from the user configuration
 - the user will be notified by a warning message box
+
+5.0.221027
+Patch for a small bug, when the algorithm crashes in OpenATV 7.0, after calling self['config'].getCurrent()[0] while this object does not exist yet (not yet created).
+Added Italian language (thanks to @spaeleus).
+

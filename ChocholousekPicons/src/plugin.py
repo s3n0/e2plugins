@@ -315,13 +315,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
         #self['config'].setList(self.list)
     
     def getCursorTitle(self):
-        return self['config'].getCurrent()[0]
-    
-    def getCursorObject(self):
-        return self['config'].getCurrent()[1]
-    
-    def getCursorObjectAsText(self):
-        return str(self['config'].getCurrent()[1].getText())
+        try:
+            title = str(self['config'].getCurrent()[0]) if self['config'].getCurrent() else ""
+        except Exception:
+            title = ""
+        return title
     
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
