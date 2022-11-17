@@ -258,3 +258,9 @@ Minor addition:
 Patch for a small bug, when the algorithm crashes in OpenATV 7.0, after calling self['config'].getCurrent()[0] while this object does not exist yet (not yet created).
 Added Italian language (thanks to @spaeleus).
 
+5.0.221117
+Added "--force-downgrade" argument to OPKG:
+- since the upgrade from the github server has a higher priority, the argument is needed to install the version from github, instead of the enigma2-feed version
+- this applies if there is still an old version on the enigma2-feed or marked with the wrong git-version
+- plugin configuration in Enigma2 will not be changed (not deleted)
+

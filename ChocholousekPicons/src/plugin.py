@@ -726,7 +726,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     os.system('dpkg --force-all -r %s > /dev/null 2>&1' % pckg_name.split('_',1)[0])
                     os.system('dpkg --force-all -i %s > /dev/null 2>&1' % dwn_file)
                 else:
-                    os.system('opkg --force-reinstall install %s > /dev/null 2>&1' % dwn_file)
+                    os.system('opkg --force-reinstall --force-downgrade install %s > /dev/null 2>&1' % dwn_file)    # --force-downgrade is necessary to install the github version instead of the enigma2-feed version
                 
                 os.remove(dwn_file)
                 print('MYDEBUGLOGLINE - New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
