@@ -40,7 +40,7 @@ plugin_dir_del() {
 #        V_CH1="$(head -c 1 $V_FILE)"
 #        if awk 'BEGIN {return_code=('$V_CH1' <= '4') ? 0 : 1; exit} END {exit return_code}'; then plugin_cfg_del; fi
 #    fi
-}
+#}
 
 ##########################################################################################
 
