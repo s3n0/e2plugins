@@ -51,15 +51,15 @@ PKGNAME="enigma2-plugin-extensions-chocholousek-picons"
 case "$1" in
     install)
         # retrieve the latest version number (from internet)
-    ### VER="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
-    ### VER="$(wget -qO- --proxy off --no-check-certificate https://raw.githubusercontent.com/s3n0/e2plugins/master/ChocholousekPicons/src/version.txt)"
-        VER="$(wget -qO- --proxy off --no-check-certificate https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/src/version.txt?raw=true)"
+    ### VER="$(wget -qO- --no-check-certificate https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/src/version.txt)"
+    ### VER="$(wget -qO- --no-check-certificate https://raw.githubusercontent.com/s3n0/e2plugins/master/ChocholousekPicons/src/version.txt)"
+        VER="$(wget -qO- --no-check-certificate https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/src/version.txt?raw=true)"
         [ -z "$VER" ] && { echo "Error ! The online version was not recognized !"; exit 1; }
         # download the plugin installation package from internet
         FNAME="${PKGNAME}_${VER}_all.$([ -d /etc/dpkg ] && echo -n 'deb' || echo -n 'ipk')"
-    ### wget -qO "/tmp/${FNAME}" --proxy off --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${FNAME}" || { echo "Error ! File download failed !"; exit 1; }
-    ### wget -qO "/tmp/${FNAME}" --proxy off --no-check-certificate "https://raw.githubusercontent.com/s3n0/e2plugins/master/ChocholousekPicons/released_build/${FNAME}" || { echo "Error ! File download failed !"; exit 1; }
-        wget -qO "/tmp/${FNAME}" --proxy off --no-check-certificate "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/released_build/${FNAME}?raw=true" || { echo "Error ! File download failed !"; exit 1; }
+    ### wget -qO "/tmp/${FNAME}" --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/released_build/${FNAME}" || { echo "Error ! File download failed !"; exit 1; }
+    ### wget -qO "/tmp/${FNAME}" --no-check-certificate "https://raw.githubusercontent.com/s3n0/e2plugins/master/ChocholousekPicons/released_build/${FNAME}" || { echo "Error ! File download failed !"; exit 1; }
+        wget -qO "/tmp/${FNAME}" --no-check-certificate "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/released_build/${FNAME}?raw=true" || { echo "Error ! File download failed !"; exit 1; }
         # re-install
         if [ -d /etc/dpkg ]; then
             dpkg -r $PKGNAME                # dpkg -r "${FNAME%%_*}"
