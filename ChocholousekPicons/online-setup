@@ -5,7 +5,7 @@
 show_man_page() {
     echo "===== Chocholousek Picons - online installation script ====="
     echo "USAGE:"
-    echo '      wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/raw/master/ChocholousekPicons/online-setup" | bash -s <ARGUMENT>'
+    echo '      wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s <ARGUMENT>'
     echo "ARGUMENT:"
     echo "      install ....... install the plugin (with the Enigma2 fast restart)"
     echo "      uninstall ..... uninstall the plugin (with the Enigma2 fast restart)"
