@@ -264,3 +264,12 @@ Added "--force-downgrade" argument to OPKG:
 - this applies if there is still an old version on the enigma2-feed or marked with the wrong git-version
 - plugin configuration in Enigma2 will not be changed (not deleted)
 
+5.0.221215
+Minor improvements:
+- added icons of the RCU control buttons (in the main plugin MENU and in the satellite selection MENU)
+- hiding SYNC-update methods in the case of SNP-picons (Service Name Picons - channel name = special shortened .PNG filename)
+- indicating the symbolic link in the file-browser
+
+
+
+
