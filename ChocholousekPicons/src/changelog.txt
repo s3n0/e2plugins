@@ -270,6 +270,10 @@ Minor improvements:
 - hiding SYNC-update methods in the case of SNP-picons (Service Name Picons - channel name = special shortened .PNG filename)
 - indicating the symbolic link in the file-browser
 
-
+5.0.221217
+BUG fix:
+- AttributeError: 'ConfigList' object has no attribute 'moveDown' (thanks to @Kouďas and @Chocholousek for the bug report)
+- Enigma2 distributions based on the "Dreambox" core, do not support .moveDown attribute
+- therefore, a different algorithm will be used for refreshing the available RCU buttons in the MENU
 
 

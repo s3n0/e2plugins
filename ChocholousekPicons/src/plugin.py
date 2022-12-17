@@ -222,6 +222,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         ConfigListScreen.__init__(self, self.list, session=self.session, on_change=self.changedEntry)
         
+        self['config'].onSelectionChanged.append(self.reloadButtons)
+        
         self.lineHeight = 1                     # for text height auto-correction on dmm-enigma2 (1 = enable auto-correction ; 0 = disable auto-correction)
         self.lineheight = 1
         
@@ -249,8 +251,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         {
                 'left'  : self.keyToLeft,
                 'right' : self.keyToRight,
-                'up'    : self.keyToUp,
-                'down'  : self.keyToDown,
+                #'up'    : self.keyToUp,
+                #'down'  : self.keyToDown,
                 'ok'    : self.keyToOk,
                 'yellow': self.keyToPluginUpdate,
                 'blue'  : self.keyToPiconsUpdate,
@@ -352,23 +354,25 @@ class mainConfigScreen(Screen, ConfigListScreen):
             title = ""
         return title
     
-    def keyToUp(self):
-        self['config'].moveUp()
-        self.reloadButtons()
-    
-    def keyToDown(self):
-        self['config'].moveDown()
-        self.reloadButtons()
+#    def keyToUp(self):
+#        if newOE():
+#            self['config'].instance.moveSelection(self['config'].instance.moveUp)
+#        else:
+#            self['config'].moveUp()
+#        self.reloadButtons()
+#    
+#    def keyToDown(self):
+#        if newOE():
+#            self['config'].instance.moveSelection(self['config'].instance.moveDown)
+#        else:
+#            self['config'].moveDown()
+#        self.reloadButtons()
     
     def keyToLeft(self):
         ConfigListScreen.keyLeft(self)
-        #if self.getCursorTitle() != _('User defined folder'):
-        #    self.rebuildConfigList()
     
     def keyToRight(self):
         ConfigListScreen.keyRight(self)
-        #if self.getCursorTitle() != _('User defined folder'):
-        #    self.rebuildConfigList()
     
     def keyToOk(self):
         k = self.getCursorTitle()
@@ -465,15 +469,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if k != _('Profile configuration'):
             self.cfgProfileSave(config.plugins.chocholousekpicons_id.getValue())
     
-    
     def reloadButtons(self):
-        buttons = 'udlr'
+        buttons = 'udlr'                                    # u=up / d=down / l=left / r=right / o=OK
         k = self.getCursorTitle()
         if k == _('User defined folder') or k == _('Satellite positions'):
             buttons = 'udo'
         self.showButtons(buttons)
     
-    def showButtons(self, buttons=''):
+    def showButtons(self, buttons=''):                      # u=up / d=down / l=left / r=right / o=OK
         if 'l' in buttons:
             self.showBtn('l')
         else:
@@ -908,6 +911,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         
         ConfigListScreen.__init__(self, self.list, session=self.session, on_change=self.changedEntry)
         
+        self['config'].onSelectionChanged.append(self.reloadButtons)
+        
         self.lineHeight = 1             # for text height auto-correction on dmm-enigma2 (0 = enable auto-correction ; 1 = disable auto-correction)
         self.lineheight = 1
         
@@ -920,8 +925,8 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         {
                 'left'  : self.keyToLeft,
                 'right' : self.keyToRight,
-                'up'    : self.keyToUp,
-                'down'  : self.keyToDown,
+                #'up'    : self.keyToUp,
+                #'down'  : self.keyToDown,
                 'cancel': self.keyToExit,
                 #'ok'    : self.keyToExit,
                 'green' : self.keyToGreen,
@@ -975,13 +980,19 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
         else:
             self.skin = satellitesConfigScreen.skin
     
-    def keyToUp(self):
-        self['config'].moveUp()
-        self.reloadButtons()
-    
-    def keyToDown(self):
-        self['config'].moveDown()
-        self.reloadButtons()
+#    def keyToUp(self):
+#        if newOE():
+#            self['config'].instance.moveSelection(self['config'].instance.moveUp)
+#        else:
+#            self['config'].moveUp()
+#        self.reloadButtons()
+#    
+#    def keyToDown(self):
+#        if newOE():
+#            self['config'].instance.moveSelection(self['config'].instance.moveDown)
+#        else:
+#            self['config'].moveDown()
+#        self.reloadButtons()
     
     def keyToRight(self):
         self.switchSelectedSat(True)
@@ -1002,7 +1013,7 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
                 sats.remove(sel)
         config.plugins.chocholousekpicons[self.id].sats.setValue(' '.join(sats))    # set the new value as the string (converted from a list variable)
     
-    def changedEntry(self):
+    def changedEntry(self):                             # is invoked by pressing the LEFT or RIGHT cursor keys (on RCU)
         for x in self.onChangedEntry:
             x()
         if set(self.satsBackedUp.split()) ^ set(config.plugins.chocholousekpicons[self.id].sats.value.split()):
@@ -1051,17 +1062,19 @@ class satellitesConfigScreen(Screen, ConfigListScreen):
             self.keyToGreen()
         else:
             self.keyToRed()
-
-    def reloadButtons(self):
+    
+    
+    
+    def reloadButtons(self):                    # u=up / d=down / l=left / r=right
         buttons = 'udlr'
-        k = str(self['config'].getCurrent()[0].split(' ')[0])                     # for example:   u"● 23.5E"  ,  str(u"● 23.5E".split(" ")[1])  =>  u"●"
+        k = str(self['config'].getCurrent()[0].split(' ')[0])               # for example:   u"● 23.5E"  ,  str(u"● 23.5E".split(" ")[1])  =>  u"●"
         if k == u"●":
             buttons = 'udl'
         else:
             buttons = 'udr'
         self.showButtons(buttons)
     
-    def showButtons(self, buttons=''):
+    def showButtons(self, buttons=''):          # u=up / d=down / l=left / r=right
         if 'l' in buttons:
             self.showBtn('l')
         else:
