@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ###########################################################################
-#  Enigma2 plugin, ChocholousekPicons, written by s3n0, 2018-2021
+#  Enigma2 plugin, ChocholousekPicons, written by s3n0, 2018-2023
 ###########################################################################
 
 
@@ -1793,7 +1793,7 @@ def downloadFile(url, target_filename='', save_to_disk=True):
         - if ends with an "/"....................the specified target path will used + the file name will be set according to Cookies OR as a random number
         - if equal to "".........................the "/tmp" target path will used + the file name will be set according to Cookies OR as a random number
         ------ in both cases, the file name will retrieved from Cookies and if the name cannot be retrieved, it is invented as "unknown_filename_<random-num>"
-        - if contains some other characters......the specified target "/path/filename" (the file name is already specified in the input variable) will be set to save the file on local disk
+        - if it contains any other characters....then it means that the target file has been specified, such as: "/path/filename" (i.e. the file name will be specified in this variable)
     
     The save_to_disk variable determines whether the file is saved (=True) to the local disk or not (=False).
     It only means testing purpose of the existence the online file (then this function returns "" on error OR returns the path + file name if the online file exists).
