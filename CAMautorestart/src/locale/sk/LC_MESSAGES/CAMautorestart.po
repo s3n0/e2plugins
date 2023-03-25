@@ -35,7 +35,7 @@ msgid "Enable plugin:"
 msgstr "Plugin aktívny:"
 
 msgid "Restart at (time):"
-msgstr "Reštartovať o (hodiny a minúty)"
+msgstr "Reštartovať o (hodine a minúte):"
 
 msgid "Restart every (days):"
 msgstr "Reštartovať každých (počet dní):"
