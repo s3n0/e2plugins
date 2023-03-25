@@ -14,7 +14,7 @@ from Components.config import ConfigSubsection, config, configfile, getConfigLis
 
 from Plugins.Plugin import PluginDescriptor
 
-from Plugins.Extensions.ChocholousekPicons import _, PLUGIN_PATH  
+from Plugins.Extensions.CAMautorestart import _, PLUGIN_PATH  
 
 from time import localtime, strftime, strptime, time
 # time.localtime()..............................................returns the current date + time in local country
