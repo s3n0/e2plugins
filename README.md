@@ -1,4 +1,4 @@
-+ **CAM autorestart** - simple plugin for auto-restarting the CAM device, every few days, at a certain preset time
++ **CAM autorestart** - simple plugin for auto-restarting the HardwareCAM device, every few days, at a certain preset time
    > - The plugin was created as a request from @CornFlakes999
    > - This is supposedly the only possible solution for the correct functioning of the Swiss Kabelio Module, in Enigma2 set-top boxes.
    > - Unfortunately, I do not have more information about the need to restart the Swiss Kabelio Module for every 24 hours.
