@@ -152,7 +152,7 @@ def doCAMrestart():
         return False
 
 def checkCurrentTime():
-    print('DEBUGLINE - CAMautorestart - checking the time:  %s ==VERSUS== %s' % ( strftime("%H:%M", localtime())  ,  ("%02d:%02d" % tuple(config.plugins.camautorestart.scheduledtime.value)) )  )
+    #print('DEBUGLINE - CAMautorestart - checking the time:  %s ==VERSUS== %s' % ( strftime("%H:%M", localtime())  ,  ("%02d:%02d" % tuple(config.plugins.camautorestart.scheduledtime.value)) )  )
     if config.plugins.camautorestart.enabled.value  \
      and not (localtime().tm_mday  %  config.plugins.camautorestart.scheduleddays.value)  \
        and ([localtime().tm_hour, localtime().tm_min]  ==  config.plugins.camautorestart.scheduledtime.value):
@@ -203,14 +203,14 @@ def sessionStart(reason, session):
         else:
             delayTimer.callback.append(checkCurrentTime)                    # eTimer for old version of Enigma2 core (OE 2.0 / OE-Alliance 4.? open-source core)
         delayTimer.start(60*1000, False)                                    # check the clock every 60 seconds (1 minute)
-        print('DEBUGLINE - CAMautorestart - the timer for the DVB CI restart has been started')
+        print('DEBUGLINE - CAMautorestart - the timer for the DVB CI restart purpose has been started')
     elif reason == 1:
         #print('PLUGINSTARTDEBUGLOG - CAMautorestart - sessionStart executed , reason = 1')
         delayTimer.stop()
         delayTimer = None
 
 def mainStart(session, **kwargs):
-    print('PLUGINSTARTDEBUGLOG - CAMautorestart - mainStart executed ,  "session" in kwargs = %s' % ('session' in kwargs)  )
+    #print('PLUGINSTARTDEBUGLOG - CAMautorestart - mainStart executed ,  "session" in kwargs = %s' % ('session' in kwargs)  )
     session.open(pluginConfigurationMenu)
 
 def Plugins(**kwargs):
