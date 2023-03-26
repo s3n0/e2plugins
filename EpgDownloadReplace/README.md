@@ -14,7 +14,6 @@
       ```
    - How-To remove the plugin EpgDownloadReplace:
       ```bash
-      rm -fr /usr/lib/enigma2/python/Plugins/Extensions/EpgDownloadReplace
-      init 4 && sleep 5 && init 3
+      init 4; sleep 5; rm -fr /usr/lib/enigma2/python/Plugins/Extensions/EpgDownloadReplace; init 3
       ```
 
