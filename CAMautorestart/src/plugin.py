@@ -21,15 +21,13 @@ from time import localtime, strftime, strptime, time
 # time.strftime("format", <time as 9-tuple object>).............returns date and time formated as string
 # time.strptime("<str>-type date and time", "formating")........returns <type 'time.struct_time'>   (i.e. 9-index <tuple> object type)
 
-from os import path as os_path, remove as os_remove, system as os_system
-
 from enigma import eTimer, eDVBCI_UI, eDVBCIInterfaces
 
 #########################################################
 
 config.plugins.camautorestart               = ConfigSubsection()
 config.plugins.camautorestart.enabled       = ConfigYesNo(default=True)
-config.plugins.camautorestart.scheduledtime = ConfigClock(default=0)        # the value is a list data type... it means, as example:  [17, 59]  =  what means [hour, min]
+config.plugins.camautorestart.scheduledtime = ConfigClock(default=0)
 config.plugins.camautorestart.scheduleddays = ConfigInteger(default=1, limits=(1, 15))
 
 #########################################################
@@ -62,7 +60,7 @@ class pluginConfigurationMenu(Screen, ConfigListScreen):
         self.onChangedEntry = []           # list of the changed items for display configuration MENU also sets to clean during initialization
         self.list = []                     # I leave the configuration MENU list blank and fill it up later, or when I change the value (after pressing the left / right buttons)
         
-        ConfigListScreen.__init__(self, self.list, session, on_change = self.changedEntry)
+        ConfigListScreen.__init__(self, self.list, session, on_change=self.changedEntry)
         
         self['txt_green']   = StaticText(_('Save & Exit'))
         self['txt_red']     = StaticText(_('Exit'))
@@ -93,9 +91,9 @@ class pluginConfigurationMenu(Screen, ConfigListScreen):
     
     def keyToBlue(self):
         if doCAMrestart():
-            self.session.open(MessageBox, _('Successful !'), type = MessageBox.TYPE_INFO)
+            self.session.open(MessageBox, _('Successful !'), type=MessageBox.TYPE_INFO)
         else:
-            self.session.open(MessageBox, _('Failed !'), type = MessageBox.TYPE_ERROR)
+            self.session.open(MessageBox, _('Failed !'), type=MessageBox.TYPE_ERROR)
     
     def exitWithCfgSaveForce(self):
         self.exitWithCfgSaveCondition(True)
@@ -108,7 +106,7 @@ class pluginConfigurationMenu(Screen, ConfigListScreen):
         else:
             self.exitWithCfgSaveCondition(False)
     
-    def exitWithCfgSaveCondition(self, condition = True):       # save or cancel changes to user plugin configuration, default = True => save configuration
+    def exitWithCfgSaveCondition(self, condition=True):         # save or cancel changes to user plugin configuration, default = True => save configuration
         if condition:
             for x in self['config'].list:
                 x[1].save() 
@@ -134,9 +132,9 @@ class pluginConfigurationMenu(Screen, ConfigListScreen):
         self['config'].list = self.list
         self['config'].setList(self.list)
     
-    def restartEnigmaBeforeClosing(self, answer = None):
+    def restartEnigmaBeforeClosing(self, answer=None):
         if answer:
-            self.session.open(TryQuitMainloop, 3)           # 0=Toggle Standby; 1=Deep Standby; 2=Reboot System; 3=Restart Enigma2-GUI; 4=Wake Up; 5=Enter To Standby
+            self.session.open(TryQuitMainloop, 3)               # 0=Toggle Standby; 1=Deep Standby; 2=Reboot System; 3=Restart Enigma2-GUI; 4=Wake Up; 5=Enter To Standby
         else:
             self.close()      
 
@@ -207,6 +205,7 @@ def sessionStart(reason, session):
     elif reason == 1:
         #print('PLUGINSTARTDEBUGLOG - CAMautorestart - sessionStart executed , reason = 1')
         delayTimer.stop()
+        delayTimer_conn = None
         delayTimer = None
 
 def mainStart(session, **kwargs):
@@ -215,8 +214,8 @@ def mainStart(session, **kwargs):
 
 def Plugins(**kwargs):
     return [
-        PluginDescriptor(name = "CAM autorestart", description = "Restarting the CAM device at the specified time", where = PluginDescriptor.WHERE_PLUGINMENU, icon = "images/plugin.png", fnc = mainStart), # starts when the plugin is opened via Plugin-MENU
-      # PluginDescriptor(where = PluginDescriptor.WHERE_MENU, fnc = menuHook),               # starts when the plugin is opened via E2-Quick-MENU
-        PluginDescriptor(where = PluginDescriptor.WHERE_SESSIONSTART, fnc = sessionStart),   # starts AFTER the Enigma2 booting
-      # PluginDescriptor(where = PluginDescriptor.WHERE_AUTOSTART, fnc = autoStart)          # starts DURING the Enigma2 booting
+        PluginDescriptor(name="CAM autorestart", description="Restarting the CAM device at the specified time", where=PluginDescriptor.WHERE_PLUGINMENU, icon="images/plugin.png", fnc=mainStart), # starts when the plugin is opened via Plugin-MENU
+      # PluginDescriptor(where=PluginDescriptor.WHERE_MENU, fnc=menuHook),               # starts when the plugin is opened via E2-Quick-MENU
+        PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=sessionStart),   # starts AFTER the Enigma2 booting
+      # PluginDescriptor(where=PluginDescriptor.WHERE_AUTOSTART, fnc=autoStart)          # starts DURING the Enigma2 booting
         ]
