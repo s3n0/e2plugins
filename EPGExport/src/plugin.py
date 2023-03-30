@@ -76,18 +76,19 @@ global WebTimer
 global WebTimer_conn
 global EPGExportAutoStartTimer
 
-epgexport_name        = _("EPGExport")
-epgexport_description = _("export EPG as XML")
+epgexport_name        = "EPG Export"
 epgexport_plugindir   = "/usr/lib/enigma2/python/Plugins/Extensions/EPGExport"
 epgimport_plugindir   = "/usr/lib/enigma2/python/Plugins/Extensions/EPGImport"
 epgload_plugindir     = "/usr/lib/enigma2/python/Plugins/Extensions/EPGLoad"
 epgexport_version     = open(epgexport_plugindir + "/version.txt", "r").read().strip()
-epgexport_title       = _("%s Plugin Version %s") % (epgexport_name, epgexport_version)
+epgexport_description = _("Export EPG as XML")
+epgexport_title       = _("%s plugin - ver. %s") % (epgexport_name, epgexport_version)
 epgexport_selection   = _("EPG Selection") + " " + _("Bouquet")
-epgexport_thanks      = _("%s Plugin Version %s\n\n(c) gutemine 2019\n\nSpecial Thanks to Rytec for the XMLTV Format !") % (epgexport_name, epgexport_version)
+epgexport_thanks      = _("%s plugin ver. %s\n\n(c) gutemine 2019\n\nSpecial Thanks to Rytec for the XMLTV Format !") % (epgexport_name, epgexport_version)
 
 if os_path.exists("/usr/lib/enigma2/python/Plugins/Extensions/GoldenPanel/plugin.pyo"):
     os_remove("/usr/lib/enigma2/python/Plugins/Extensions/GoldenPanel/plugin.pyo")
+
 if os_path.exists("/usr/lib/enigma2/python/Plugins/Extensions/GoldenFeed/plugin.pyo"):
     os_remove("/usr/lib/enigma2/python/Plugins/Extensions/GoldenFeed/plugin.pyo")
 
@@ -99,18 +100,17 @@ compr_opt.append(( "none", _("None")  ))
 compr_opt.append(( "xz"  , _("xz")    ))
 compr_opt.append(( "gz"  , _("gz")    ))
 config.plugins.epgexport.compression = ConfigSelection(default="xz", choices=compr_opt)
-m = open("/proc/mounts", "r")
-mounts = m.read()
-m.close()
+with open("/proc/mounts", "r") as f:
+    mounts = f.read()
 save_opt = []
-save_opt.append(("etc",       "/etc/epgexport"))
-save_opt.append(("volatile",  "/var/volatile/epgexport"))
+save_opt.append(("etc"       , "/etc/epgexport"))
+save_opt.append(("volatile"  , "/var/volatile/epgexport"))
 if mounts.find("/data") is not -1:
-    save_opt.append(("data", "/data/epgexport"))
+    save_opt.append(("data"  , "/data/epgexport"))
 if mounts.find("/media/hdd") is not -1:
-    save_opt.append(("hdd", "/media/hdd/epgexport"))
+    save_opt.append(("hdd"   , "/media/hdd/epgexport"))
 if mounts.find("/media/usb") is not -1:
-    save_opt.append(("usb", "/media/usb/epgexport"))
+    save_opt.append(("usb"   , "/media/usb/epgexport"))
 if mounts.find("/media/sdcard") is not -1:
     save_opt.append(("sdcard", "/media/sdcard/epgexport"))
 config.plugins.epgexport.epgexport = ConfigSelection(default="volatile", choices=save_opt)
@@ -129,8 +129,8 @@ epgserver_opt = []
 epgserver_opt.append(("none" , _("disabled")    ))
 epgserver_opt.append(("ip"   , _("IP Address")  ))
 epgserver_opt.append(("name" , _("Server IP").replace("IP", _("Name"))  ))
-config.plugins.epgexport.server = ConfigSelection(default="none", choices=epgserver_opt)
-config.plugins.epgexport.ip = ConfigIP(default=[192, 168, 0, 100])
+config.plugins.epgexport.server   = ConfigSelection(default="none", choices=epgserver_opt)
+config.plugins.epgexport.ip       = ConfigIP(default=[192, 168, 0, 100])
 config.plugins.epgexport.hostname = ConfigText(default="localhost", visible_width=50, fixed_size=False)
 custom_str = _("Custom (%s)") % ""
 custom_str = custom_str.replace("(", "").replace(")", "").rstrip()
@@ -168,11 +168,10 @@ config.plugins.epgexport.outdated = ConfigSelection(default=str(outdated), choic
 bouquet_options = []
 for bouquet in os_listdir("/etc/enigma2"):
     if bouquet.startswith("userbouquet.") and bouquet.endswith(".tv"):
-        f = open("/etc/enigma2/%s" % bouquet,"r")
-        name = f.readline()
-        f.close()
-        name=name.replace("#NAME ", "").replace(" (TV)", "").rstrip()
-        bouquet_options.append(( name.lower(), name))
+        with open("/etc/enigma2/%s" % bouquet,"r") as f:
+            name = f.readline()
+        name = name.replace("#NAME ", "").replace(" (TV)", "").rstrip()
+        bouquet_options.append(( name.lower(), name ))
 fav = False
 for bouquet in bouquet_options:
     if bouquet[0] == "favorites":
@@ -184,9 +183,9 @@ config.plugins.epgexport.bouquets = ConfigSubList()
 bouquet_length = len(bouquet_options)
 for x in range(bouquet_length):
     config.plugins.epgexport.bouquets.append(ConfigSubsection())
-    config.plugins.epgexport.bouquets[x].export = ConfigYesNo(default=False)
-    config.plugins.epgexport.bouquets[x].name = ConfigText(default="")
-    config.plugins.epgexport.bouquets[x].name.value = bouquet_options[x][0]
+    config.plugins.epgexport.bouquets[x].export      = ConfigYesNo(default=False)
+    config.plugins.epgexport.bouquets[x].name        = ConfigText(default="")
+    config.plugins.epgexport.bouquets[x].name.value  = bouquet_options[x][0]
     config.plugins.epgexport.bouquets[x].name.save()
 
 YELLOWC = "\033[33m"
