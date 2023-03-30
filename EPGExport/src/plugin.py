@@ -23,7 +23,7 @@ from __future__ import division
 ####################################################
 #
 #  ORIGINAL SOURCE (FORKED FROM):
-#    - https://github.com/leaskovski/EPGExport/blob/master/src/plugin.py )
+#    - https://github.com/leaskovski/EPGExport/blob/master/src/plugin.py
 #
 #  2023-03-29 edit by s3n0:
 #    - source code modified for Python3 support
