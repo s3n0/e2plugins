@@ -8,6 +8,7 @@
    > - The original intent for developing this plugin was to save free space on the device's internal disk.
 
 + **EPG Export**
+   > - A NOTE: the plugin is still only in the testing stage ! it is not a 100% functional plugin !
    > - plugin for exporting EPG data in Enigma2, to XML format
    > - the plugin was forked from here: https://github.com/leaskovski/EPGExport
    > - the plugin source code has been refactored to support Python3
