@@ -422,7 +422,7 @@ class EPGExportAutoStartTimer:
 
     def autoEPGExport(self):
         cprint("automatic epg export starts")
-        EPGExport(None, config.plugins.epgexport.compression.value,True,True)
+        EPGExport(None, config.plugins.epgexport.compression.value, True, True)
 
 def sessionstart(reason, **kwargs):
         if reason == 0 and "session" in kwargs:
@@ -472,19 +472,20 @@ def sessionstart(reason, **kwargs):
             EPGExportAutoStartTimer = EPGExportAutoStartTimer(session)
 
 def startingCustomEPGExternal():
-    resourceSource = EPGExportSource()
-    resourceLast = EPGExportLastUpdate()
+    resourceSource   = EPGExportSource()
+    resourceLast     = EPGExportLastUpdate()
     resourceChannels = EPGExportChannels()
     resourcePrograms = EPGExportPrograms()
+
     root = Resource()
-    root.putChild("epgexport.sources.xml", resourceSource)
-    root.putChild("LastUpdate.txt", resourceLast)
-    root.putChild("epgexport.channels.xml", resourceChannels)
-    root.putChild("epgexport.channels.xml.gz", resourceChannels)
-    root.putChild("epgexport.channels.xml.xz", resourceChannels)
-    root.putChild("epgexport", resourcePrograms)
-    root.putChild("epgexport.gz", resourcePrograms)
-    root.putChild("epgexport.xz", resourcePrograms)
+    root.putChild(b"epgexport.sources.xml", resourceSource)
+    root.putChild(b"LastUpdate.txt", resourceLast)
+    root.putChild(b"epgexport.channels.xml", resourceChannels)
+    root.putChild(b"epgexport.channels.xml.gz", resourceChannels)
+    root.putChild(b"epgexport.channels.xml.xz", resourceChannels)
+    root.putChild(b"epgexport", resourcePrograms)
+    root.putChild(b"epgexport.gz", resourcePrograms)
+    root.putChild(b"epgexport.xz", resourcePrograms)
 
     factory = Site(root)
     port = int(config.plugins.epgexport.port.value)
@@ -493,6 +494,12 @@ def startingCustomEPGExternal():
         reactor.run()
     except:
         pass
+
+#def b2s(s):             # converting data type... `string` to `bytes`... if the variable is `string`
+#    if isinstance(s, str):
+#        return bytes(s, 'utf8')
+#    else:
+#        return s
 
 def finishedCustomEPGExternal():
     cprint("Custom Webinterface Finished!!!")
