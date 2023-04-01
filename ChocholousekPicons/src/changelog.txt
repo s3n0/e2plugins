@@ -276,4 +276,10 @@ BUG fix:
 - Enigma2 distributions based on the "Dreambox" core, do not support .moveDown attribute
 - therefore, a different algorithm will be used for refreshing the available RCU buttons in the MENU
 
+5.0.230401
+Minor changes:
+- display of std-output, in the event of an error while testing the availability of the internet (using the "ping" command)
+- readability of the source code
+
+
 

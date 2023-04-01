@@ -1441,7 +1441,7 @@ class piconsUpdateJobScreen(Screen):
     
     #def internetConnection(self):
         #err_code = os.system('ping -c 1 www.google.com > /dev/null 2>&1'):    # removed the argument -w 1 due to incompatibility with SatDreamGr Enigma2 image ?!
-        #return 0 == err_code                                                  # return True, if err_code from linux shell == 0
+        #return 0 == err_code                                                  # return boolean value:   True if err_code == 0 ;   False if err_code != 0
         #######
         #try:
         #    tmp = urllib2.urlopen('http://www.google.com', None, 3)
@@ -1452,20 +1452,20 @@ class piconsUpdateJobScreen(Screen):
     def mainFunc(self):
         
         # Ako prvé sa otestuje internetové pripojenie
-        err = os.system('ping -c 1 www.google.com > /dev/null 2>&1')
+        err, out = runShell('ping -c 1 www.google.com')
         if err == 0:
             self.writeLog(_('Internet connection is OK.'))
         else:
-            msg = _('Internet connection is not available !') + ' (ERROR: %s)' % err
+            msg = _('Internet connection is not available !') + '\nRETURN CODE:\n%s\nSHELL OUTPUT:\n%s\n' % (err, out)
             self.writeLog(msg)
             return True, msg
         
         # Zároveň sa otestuje spojenie s online úložiskom (umiestnenie 7zip balíčkov s pikonami)
-        err = os.system('ping -c 1 picon.cz > /dev/null 2>&1')
+        err, out = runShell('ping -c 1 picon.cz')
         if err == 0:
             self.writeLog(_('Connection to the picon server is OK.'))
         else:
-            msg = _('Connection to the picon server is not available !') + ' (ERROR: %s)' % err
+            msg = _('Connection to the picon server is not available !') + '\nRETURN CODE:\n%s\nSHELL OUTPUT:\n%s\n' % (err, out)
             self.writeLog(msg)
             return True, msg
         
@@ -1672,19 +1672,19 @@ class piconsUpdateJobScreen(Screen):
         #self.storeVarInFile('SRC_for_Extract--%s' % dwn_file, self.SRC_for_Extract)
         os.remove(dwn_file)
     
-    def fileHeader7z(self, f_path):
-        with open(f_path, 'rb') as f:
-            f_header = f.read(4)
-        if f_header == b'7z\xbc\xaf':                                       # check the 7-zip file header (the first 4 bytes from file)
+    def fileHeader7z(self, zip_file):
+        with open(zip_file, 'rb') as f:
+            zip_header = f.read(4)
+        if zip_header == b'7z\xbc\xaf':                                     # check the 7-zip file header (the first 4 bytes from file)
             return True
         else:
             return False
     
-    def checkVPNerror(self, f_path):
+    def checkVPNerror(self, html_file):
         err, out = runShell('ifconfig -a | grep -q tun0')
-        with open(f_path, 'rb') as f:                                       # I use the "bytes" file format because the content doesn't have to be just text / string data (for Python 3.x purpose)
-            f_content = f.read()
-        if f_content.startswith('<!doctype html>'.encode()) and ('//picon.cz/error'.encode() in f_content) and (err == 0):
+        with open(html_file, 'rb') as f:                                    # I use the "bytes" file format because the content doesn't have to be just text / string data (for Python 3.x purpose)
+            file_content = f.read()
+        if file_content.startswith('<!doctype html>'.encode()) and ('//picon.cz/error'.encode() in file_content) and (err == 0):
             return True
         else:
             return False
@@ -1948,7 +1948,7 @@ def Plugins(**kwargs):
     return [ PluginDescriptor(
                 where = PluginDescriptor.WHERE_PLUGINMENU,
                 name = 'Chocholousek picons',
-                description = 'Download and update Chocholousek picons',
+                description = 'Enigma2 plugin for downloading and updating picons (almost all EU satellites)',
                 icon = plugin_logo,
                 needsRestart = False,
                 fnc = pluginMenu)  ]
