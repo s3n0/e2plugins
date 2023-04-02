@@ -193,7 +193,7 @@ ENDC = "\033[m"
 
 def cprint(text):
     with open("/tmp/epgexport.log", "a") as f:
-        f.write(strftime("%x %X", gmtime()) + " - " + text + "\n")
+        f.write( strftime("%x %X", gmtime()) +  " - " + text + "\n" )
 
 def checkLastUpdate():
     update_file_name = "/etc/epgexport/LastUpdate.txt"
@@ -878,9 +878,9 @@ class EPGExport(Screen):
                 # so search it from the services list that we used to build the query
                 try:
                     service = next(s for s in self.services if s.ref == ServiceReference(x[0]).ref)
-                    cprint("extractEPG found: %s" % str(service))
+                    cprint("extractEPG found: %s" % service)
                 except Exception as e:
-                    cprint("extractEPG exception: %s" % str(e))
+                    cprint("extractEPG exception: %s" % e)
 
                 tmp_list = [ ]
             tmp_list.append((x[2], x[3], x[4], x[5], x[6], x[7]))
@@ -1162,13 +1162,13 @@ class EPGExportChannels(resource.Resource):
         cprint("CHANNELS REQUEST: %s" % req.uri)
         channels = ""
         new = checkLastUpdate()
-        if req.uri.find("epgexport.channels.xml.xz") is not -1:
+        if req.uri.find(b"epgexport.channels.xml.xz") is not -1:
             if new or not os_path.exists("/etc/epgexport/epgexport.channels.xml.xz"):
                 # web request for xz file
                 cprint("EXPORTING CHANNELS xz")
                 EPGExport(None,"xz",True, False)
             f = open("/etc/epgexport/epgexport.channels.xml.xz", "rb")
-        elif req.uri.find("epgexport.channels.xml.gz") is not -1:
+        elif req.uri.find(b"epgexport.channels.xml.gz") is not -1:
             if new or not os_path.exists("/etc/epgexport/epgexport.channels.xml.gz"):
                 # web request for gz file
                 cprint("EXPORTING CHANNELS gz")
@@ -1193,13 +1193,13 @@ class EPGExportPrograms(resource.Resource):
         cprint("PROGRAMS REQUEST: %s" % req.uri)
         programs = ""
         new = checkLastUpdate()
-        if req.uri.find("epgexport.xz") is not -1:
+        if req.uri.find(b"epgexport.xz") is not -1:
             if new or not os_path.exists("/etc/epgexport/epgexport.xz"):
                 # web request for xz file
                 cprint("EXPORTING PROGRAMS xz")
                 EPGExport(None, "xz", False, True)
             f = open("/etc/epgexport/epgexport.xz", "rb")
-        elif req.uri.find("epgexport.gz") is not -1:
+        elif req.uri.find(b"epgexport.gz") is not -1:
             if new or not os_path.exists("/etc/epgexport/epgexport.gz"):
                 # web request for gz file
                 cprint("EXPORTING PROGRAMS gz")
