@@ -281,5 +281,11 @@ Minor changes:
 - display of std-output, in the event of an error while testing the availability of the internet (using the "ping" command)
 - readability of the source code
 
+5.0.230403
+Fix for compiling "*.py" files:
+Due to problems between PY2 and PY3, in conjunction with the correct Enigma core version,
+the IPK / DEB installation packages will contain only "*.py" files and not "*.pyc|*.pyo" files.
+
+
 
 
