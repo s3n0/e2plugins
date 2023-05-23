@@ -26,18 +26,18 @@
   # (warning ! the plugin configuration will be deleted !)
   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s install
   # or:
-  curl "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s install
+  curl -JL "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s install
   
   # UN-INSTALL:
   # (warning ! the plugin configuration will be deleted !)
   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s uninstall
   # or:
-  curl "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s uninstall
+  curl -JL "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s uninstall
   
   # just CLEAN the plugin configuration in Enigma2:
   wget -qO- --no-check-certificate "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s del-config
   # or:
-  curl "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s del-config
+  curl -JL "https://github.com/s3n0/e2plugins/blob/master/ChocholousekPicons/online-setup?raw=true" | bash -s del-config
   ```
 
 ### **Enigma2 based on OE 2.0 and OE Alliance 4.x core (ATV, PLi, VTi, BlackHole, TeamBlue, etc.) - using the ".ipk" installation package:**
