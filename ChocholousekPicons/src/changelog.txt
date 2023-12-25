@@ -286,6 +286,9 @@ Fix for compiling "*.py" files:
 Due to problems between PY2 and PY3, in conjunction with the correct Enigma core version,
 the IPK / DEB installation packages will contain only "*.py" files and not "*.pyc|*.pyo" files.
 
-
+5.0.231225
+Minor changes:
+- improved detection of a possible error with VPN connection (using an internet gateway from a VPN connection)
+- changed plugin TAG in debug log output (from original "MYDEBUGLOGLINE" to "[ChocholousekPicons]")
 
 

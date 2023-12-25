@@ -301,7 +301,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     user_SAT = list(  set(user_SAT) - set(lost_SAT)  )
                     config.plugins.chocholousekpicons[id].sats.setValue(' '.join(user_SAT))
                     config.plugins.chocholousekpicons[id].sats.save()
-                    print('MYDEBUGLOGLINE - these satellites are no longer supported (non-existent picon packages): %s' % (' '.join(lost_SAT)))
+                    print('[ChocholousekPicons] these satellites are no longer supported (non-existent picon packages): %s' % (' '.join(lost_SAT)))
                     message = _('Sorry, the following picon packages no longer exist\n(these satellite positions are no longer supported):') + '\n\n' + ' '.join(lost_SAT)
                     self.session.open(MessageBox, message, type=MessageBox.TYPE_WARNING)
         config.plugins.chocholousekpicons_id.setValue(id_backup)
@@ -559,7 +559,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
             url = 'https://picon.cz/download/' + fields[0]
             new_file = PLUGIN_PATH + fields[1]
         else:
-            print('MYDEBUGLOGLINE - Error ! The archive file name "filmbox-premium" (preview picons file) was not found in the contents of the file "id_for_permalinks*.log" !')
+            print('[ChocholousekPicons] Error ! The archive file name "filmbox-premium" (preview picons file) was not found in the contents of the file "id_for_permalinks*.log" !')
             return
         
         k = glob.glob(PLUGIN_PATH + 'filmbox-premium-*.7z')
@@ -567,7 +567,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         if self.parseVer(new_file) > self.parseVer(current_file):                   # comparsion of two strings like of a two numbers, for example, as the following:   '191125' > '191013'
             if not downloadFile(url, new_file):                                     # the ".7z" archive-file with preview images (channel picons for the one and the same TV channel)
-                print('MYDEBUGLOGLINE - Picons preview file download failed ! (URL = %s , target file = %s)' % (url, new_file))
+                print('[ChocholousekPicons] Picons preview file download failed ! (URL = %s , target file = %s)' % (url, new_file))
                 return
             self.deleteFiles(current_file)
             self.deleteFiles(PLUGIN_PATH + 'images/filmbox-premium-*.png')
@@ -575,21 +575,21 @@ class mainConfigScreen(Screen, ConfigListScreen):
             status, out = runShell('%s e -y -o"%s" "%s" "*.png"' % (self.bin7zip, PLUGIN_PATH + 'images', new_file))
             # check the status error and clean the archive file (will be filled with a short note)
             if status == 0:
-                print('MYDEBUGLOGLINE - Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file))
+                print('[ChocholousekPicons] Picon preview files were successfully updated to ver. %s. The archive file was extracted into the plugin directory.' % self.parseVer(new_file))
                 with open(new_file, 'w') as f:
                     f.write('This file was cleaned by the plugin algorithm. It will be used to preserve the local version of the picon preview images.')
             elif status == 127:             # exit code = 127  (32512 // 256) = system : shell-command is missing OR executable file was not found
-                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\nShell output:\n%s' % (status, out))
+                print('[ChocholousekPicons] Error %s !!! The 7-zip archiver was not found. Please check and install the enigma package "p7zip".\nShell output:\n%s' % (status, out))
                 self.deleteFiles(new_file)
             elif status == 2:               # exit code = 2    (512 // 256)   =  7-zip : FATAL ERROR
-                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\nShell output:\n%s' % (status, new_file, out))
+                print('[ChocholousekPicons] Error %s !!! The 7-zip archiver did not find the archive file. Please check the correct path to directory and check the correct file name: %s\nShell output:\n%s' % (status, new_file, out))
                 self.deleteFiles(new_file)
             else:
-                print('MYDEBUGLOGLINE - Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out))
+                print('[ChocholousekPicons] Error %s !!! The 7-zip archiver failed with an unknown error.\nShell output:\n%s' % (status, out))
                 self.deleteFiles(new_file)
     
     def deleteFiles(self, mask):
-        print('MYDEBUGLOGLINE - deleting files by mask: %s' % mask)
+        print('[ChocholousekPicons] deleting files by mask: %s' % mask)
         lst = glob.glob(mask)
         if lst:
             for file in lst:
@@ -612,10 +612,10 @@ class mainConfigScreen(Screen, ConfigListScreen):
         dir_list = sorted(glob.glob(PLUGIN_PATH + 'id_for_permalinks*.log'), key=os.path.basename)          # key=os.path.getctime
         if dir_list:
             self.chochoContent = open(dir_list[-1], 'r').read()                 # glob returns a list variable (however, a string is needed, so we only extract the last index from the list variable)
-            print('MYDEBUGLOGLINE - The %s file has been successfully loaded to memory.' % (dir_list[-1]) )
+            print('[ChocholousekPicons] The %s file has been successfully loaded to memory.' % (dir_list[-1]) )
         else:
             self.chochoContent = ''
-            print('MYDEBUGLOGLINE - Warning ! The file %s was not found !' % (PLUGIN_PATH + 'id_for_permalinks*.log') )
+            print('[ChocholousekPicons] Warning ! The file %s was not found !' % (PLUGIN_PATH + 'id_for_permalinks*.log') )
     
     def downloadChochoFile(self):
         '''
@@ -636,13 +636,13 @@ class mainConfigScreen(Screen, ConfigListScreen):
                 downloaded_file = downloadFile(url, PLUGIN_PATH)
                 if downloaded_file:
                     self.deleteFiles(current_filename)
-                    print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.parseVer(current_filename), self.parseVer(new_filename)))
+                    print('[ChocholousekPicons] File "id_for_permalinks*.log" was updated -- from %s, to %s' % (self.parseVer(current_filename), self.parseVer(new_filename)))
                 else:
-                    print('MYDEBUGLOGLINE - Error ! File download failed ! file=%s, url=%s' % (downloaded_file, url))
+                    print('[ChocholousekPicons] Error ! File download failed ! file=%s, url=%s' % (downloaded_file, url))
             else:
-                print('MYDEBUGLOGLINE - File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.parseVer(current_filename), self.parseVer(new_filename)))
+                print('[ChocholousekPicons] File "id_for_permalinks*.log" is up to date, no update required. (current: %s, online: %s)' % (self.parseVer(current_filename), self.parseVer(new_filename)))
         else:
-            print('MYDEBUGLOGLINE - Error ! File "id_for_permalinks*.log" was not found on the internet ! (url = %s)' % url)
+            print('[ChocholousekPicons] Error ! File "id_for_permalinks*.log" was not found on the internet ! (url = %s)' % url)
     
     def changeAvailableMethods(self):
         id = config.plugins.chocholousekpicons_id.getValue()
@@ -686,7 +686,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
     def getAllSat(self): # Satellites
         lst = re.findall('piconblack-220x132-(.*)_by_chocholousek', self.chochoContent)
         lst.sort(key = self.fnSort)
-        print('MYDEBUGLOGLINE - getAllSat = %s' % lst)
+        print('[ChocholousekPicons] getAllSat = %s' % lst)
         return lst
     
     def fnSort(self, s):
@@ -781,7 +781,7 @@ class mainConfigScreen(Screen, ConfigListScreen):
         if status == 0:
             return out.lower()                                          # return architectures from system, like as:  'mips'
         
-        print('MYDEBUGLOGLINE - Error! Could not get information about chipset-architecture! Returning an empty string!')
+        print('[ChocholousekPicons] Error! Could not get information about chipset-architecture! Returning an empty string!')
         return ''
     
     ###########################################################################
@@ -798,9 +798,9 @@ class mainConfigScreen(Screen, ConfigListScreen):
             try:
                 url_handle = urllib2.urlopen(url + '/src/version.txt')
             except urllib2.URLError as err:
-                print('MYDEBUGLOGLINE - Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+                print('[ChocholousekPicons] Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
             except Exception as err:
-                print('MYDEBUGLOGLINE - Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
+                print('[ChocholousekPicons] Error: %s , while trying to fetch URL: %s' % (err, url + '/src/version.txt'))
             else:
                 self.plugin_ver_online = url_handle.read().strip()
                 if not isinstance(self.plugin_ver_online, str):         # in Python 3.x, from "urllib.urlopen.read()", is returned a variable of type bytes, not a string... so... we need to convert bytes to string
@@ -830,14 +830,14 @@ class mainConfigScreen(Screen, ConfigListScreen):
                     os.system('opkg --force-reinstall --force-downgrade install %s > /dev/null 2>&1' % dwn_file)    # --force-downgrade is necessary to install the github version instead of the enigma2-feed version
                 
                 os.remove(dwn_file)
-                print('MYDEBUGLOGLINE - New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
+                print('[ChocholousekPicons] New plugin version was installed ! (old ver.:%s , new ver.:%s)' % (plugin_ver_local, self.plugin_ver_online)  )
                 plugin_ver_local = self.plugin_ver_online
                 
                 message = _('The plugin has been updated to the new version.\nA quick reboot is required.\nDo a quick reboot now ?')
                 self.session.openWithCallback(self.restartEnigmaOrCloseScreen, MessageBox, message, type=MessageBox.TYPE_YESNO, default=True)
             
             else:
-                print('MYDEBUGLOGLINE - New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
+                print('[ChocholousekPicons] New plugin version download failed ! (old ver.:%s, new ver.:%s, url:%s)' % (plugin_ver_local, self.plugin_ver_online, dwn_url)  )
                 message = _('Error ! Downloading plugin installation package failed !') + '\n' + dwn_url
                 self.session.open(MessageBox, message, type=MessageBox.TYPE_ERROR)
     
@@ -1232,7 +1232,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
         return result_dir
     
     #def changedEntry(self):
-    #    print('MYDEBUGLOGLINE - changedEntry = %s' % [ x for x in self.onChangedEntry ])
+    #    print('[ChocholousekPicons] changedEntry = %s' % [ x for x in self.onChangedEntry ])
     #    for x in self.onChangedEntry:
     #        x()
     
@@ -1292,7 +1292,7 @@ class directoryBrowserScreen(Screen, ConfigListScreen):
     
     def deleteDir_FromCallBack(self, confirmed):
         if confirmed:
-            print('MYDEBUGLOGLINE - deleting directory: %s' % self.getDirAppointedToCursor())
+            print('[ChocholousekPicons] deleting directory: %s' % self.getDirAppointedToCursor())
             err, out = runShell('rm -r %s' % self.getDirAppointedToCursor())
             #os.removedirs(self.getDirAppointedToCursor())
             self.rebuildConfigList()
@@ -1536,6 +1536,7 @@ class piconsUpdateJobScreen(Screen):
             self.writeLog( _('Preparing a list of picons from userbouquet files...') + ' "/etc/enigma2/userbouquet.*.{tv,radio}"' )
             bq_contents = ''
             for bq_file in self.bouquet_files:
+                print('[ChocholousekPicons] Loading content from the file "%s".' % bq_file)
                 with open(bq_file, 'r') as f:
                     bq_contents += f.read()
             self.SRC_in_Bouquets = re.findall('.*#SERVICE\s([0-9a-fA-F]+_0_[0-9a-fA-F_]+0_0_0).*\n*' , bq_contents.replace(":","_")  )
@@ -1613,7 +1614,7 @@ class piconsUpdateJobScreen(Screen):
         
         # 3. Kontrola stiahnutého súboru na jeho obsah - jedná sa o formát 7-zip alebo HTML ? Nieje to ERROR ?! A v prípade HTML súboru, je tam obsahnutý tiež oznam o chybe ?
         if not self.fileHeader7z(dwn_file):
-            add_msg = ' ' + _('Possible cause:') + ' VPN interface' if self.checkVPNerror(dwn_file) else ''
+            add_msg = ' %s %s' % (_('Possible cause:'), _('using a VPN as an internet gateway')) if self.checkVPNerror(dwn_file) else ''
             self.writeLog(_('Error! The downloaded file is not in 7-zip format!') + add_msg)
             return
         
@@ -1651,7 +1652,7 @@ class piconsUpdateJobScreen(Screen):
             count_added = 0
             for src in M:
                 if src in self.SRC_in_HDD:                                  # ak sa uz pikona z archivu nachadza na HDD, tak...
-                    #print('MYDEBUGLOGLINE - compare two PNG files size - HDD:%s / Archive:%s' % (self.SRC_in_HDD[src], self.SRC_in_Archive[src])  )
+                    #print('[ChocholousekPicons] compare two PNG files size - HDD:%s / Archive:%s' % (self.SRC_in_HDD[src], self.SRC_in_Archive[src])  )
                     if self.SRC_in_HDD[src] != self.SRC_in_Archive[src]:        # porovnam este velkosti tychto dvoch pikon (Archive VS. HDD) a ak su velkosti picon odlisne...
                         self.SRC_for_Extract.append(src)                        # tak pridam tuto pikonu na zoznam kopirovanych pikon (zoznam pikon na extrahovanie, z dovodu odlisnej velkosti suboru)
                         count_changed += 1
@@ -1681,10 +1682,9 @@ class piconsUpdateJobScreen(Screen):
             return False
     
     def checkVPNerror(self, html_file):
-        err, out = runShell('ifconfig -a | grep -q tun0')
-        with open(html_file, 'rb') as f:                                    # I use the "bytes" file format because the content doesn't have to be just text / string data (for Python 3.x purpose)
-            file_content = f.read()
-        if file_content.startswith('<!doctype html>'.encode()) and ('//picon.cz/error'.encode() in file_content) and (err == 0):
+        with open(html_file, 'rb') as f:                                    # using byte-code... because the contents of the file can still be in "bytes" format and not "string" format...
+            file_content = f.read()                                         # ...and then Python 3 may report an error
+        if 'possible_VPN_error'.encode() in file_content:                   # searching for a string, but after "converting" it into a byte-code form
             return True
         else:
             return False
@@ -1741,7 +1741,7 @@ class piconsUpdateJobScreen(Screen):
                     size, path = fields[0], fields[-1]
                     tmp.update({ path.split('/')[-1].split('.')[0] :  int(size) })      #  { "service_reference_code" :  file_size }
             else:
-                print('MYDEBUGLOGLINE - Error ! Could not find the beginning and end of the list in the "%s" archive when listing "*.png" files.' % archiveFile)
+                print('[ChocholousekPicons] Error ! Could not find the beginning and end of the list in the "%s" archive when listing "*.png" files.' % archiveFile)
         else:
             self.writeLog7zipError(status, out, archiveFile)
         return tmp  # returns an empty string on error, otherwise returns the list of all file names without extension + file sizes
@@ -1757,7 +1757,7 @@ class piconsUpdateJobScreen(Screen):
     def writeLog(self, text=''):
         timestamp = str((datetime.now() - self.startTime).total_seconds()).ljust(10,"0")[:6]        # by subtracting time from datetime(), we get a new object: datetime.timedelta(), which can then be converted to seconds (float value) with the .total_seconds() method
         m = '[%s] %s' % (timestamp, text)
-        print('MYDEBUGLOGLINE - %s' % m)
+        print('[ChocholousekPicons] %s' % m)
         self.logWindowText += '\n' + m
         with open(self.tmpLogFile, 'a') as f:
             f.write(m + '\n')
@@ -1823,7 +1823,7 @@ def downloadFile(url, target_filename='', save_to_disk=True):
         if 'drive.google' in url:
             for c in cookie_jar:
                 if c.name.startswith('download_warning'):                           # in case of drive.google download a virus warning message is possible (for some downloads)
-                    print('MYDEBUGLOGLINE - url: %s - "warning_message" detected' % url)
+                    print('[ChocholousekPicons] url: %s - "warning_message" detected' % url)
                     url = url.replace('&id=', '&confirm=%s&id=' % c.value)          # and then it's necessary to add a parameter with confirmation of the warning message
                     req = urllib2.Request(url, data=None, headers=headers)
                     handler = urllib2.urlopen(req, timeout=15)
@@ -1847,11 +1847,11 @@ def downloadFile(url, target_filename='', save_to_disk=True):
                 f.write(data)
     
     except Exception as e:
-        print('MYDEBUGLOGLINE - download failed - error: %s , URL: %s , target_filename: %s' % (str(e), url, target_filename) )
+        print('[ChocholousekPicons] download failed - error: %s , URL: %s , target_filename: %s' % (str(e), url, target_filename) )
         target_filename = ''
     
     except:
-        print('MYDEBUGLOGLINE - download failed - URL: %s , target_filename: %s' % (url, target_filename) )
+        print('[ChocholousekPicons] download failed - URL: %s , target_filename: %s' % (url, target_filename) )
         target_filename = ''
     
     return target_filename
