@@ -20,7 +20,7 @@
 
 ## **How to un/install plugin (via Shell)**
 
-### **Online shell-script (automatic .ipk / .deb selection):**
+### **Online shell-script setup (automatic .ipk / .deb package detection):**
   ```shell
   # INSTALL - the latest released version of the plugin:
   # (warning ! the plugin configuration will be deleted !)
