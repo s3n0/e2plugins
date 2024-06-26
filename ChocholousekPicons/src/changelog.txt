@@ -291,4 +291,7 @@ Minor changes:
 - improved detection of a possible error with VPN connection (using an internet gateway from a VPN connection)
 - changed plugin TAG in debug log output (from original "MYDEBUGLOGLINE" to "[ChocholousekPicons]")
 
-
+5.0.240626
+Minor improvement:
+- although the use of SNP picons is not very popular, due to their partial support in the plugin, it was necessary to change the search algorithm of all available satellite packages
+- picon designer @Chocholousek, will now be able to add some other SNP picon packs to the database (but they are still not primarily used in the plugin)

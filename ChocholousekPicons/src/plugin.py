@@ -684,7 +684,8 @@ class mainConfigScreen(Screen, ConfigListScreen):
         return '\n'.join(result)
     
     def getAllSat(self): # Satellites
-        lst = re.findall('piconblack-220x132-(.*)_by_chocholousek', self.chochoContent)
+        lst = re.findall('-220x132-(.*)_by_chocholousek', self.chochoContent)
+        lst = list(set(lst))                          # remove duplicates from list
         lst.sort(key = self.fnSort)
         print('[ChocholousekPicons] getAllSat = %s' % lst)
         return lst
