@@ -1624,7 +1624,7 @@ class piconsUpdateJobScreen(Screen):
             if 'possible_VPN_error' in file_content:
                 add_msg = ' %s %s' % ( _('Possible cause:'), _('using a VPN as an internet gateway') )
             elif '<title>' in file_content:
-                add_msg = ' %s %s' % ( _(' HTML title found:'), file_content.split('<title>')[1].split('</title>')[0] )
+                add_msg = _(' HTML title found: ') + str( file_content.split('<title>')[1].split('</title>')[0] )
             else:
                 add_msg = ''
             self.writeLog(_('Error! The downloaded file is not in 7-zip format!') + add_msg)

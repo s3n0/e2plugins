@@ -300,3 +300,12 @@ Minor improvement:
 Minor improvement:
 - in case of a problem receiving an HTML file instead of a 7zip file, the found HTML title from the file will be displayed
 - fixed wrong resolution, in case of alternate image "image_not_found.png"
+
+5.0.240904
+BUG fix:
+----
+File "/usr/lib/enigma2/python/Components/ScrollLabel.py", line 58, in setText
+TypeError: in method 'eLabel_setText', argument 2 of type 'std::string const &'
+----
+- this was a string conversion issue between C++ and Python, in Enigma2 - Gemini Project 4.2
+- thx to @Warder for the BUG report and for testing the BUG fix in Gemini
