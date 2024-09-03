@@ -295,3 +295,8 @@ Minor changes:
 Minor improvement:
 - although the use of SNP picons is not very popular, due to their partial support in the plugin, it was necessary to change the search algorithm of all available satellite packages
 - picon designer @Chocholousek, will now be able to add some other SNP picon packs to the database (but they are still not primarily used in the plugin)
+
+5.0.240903
+Minor improvement:
+- in case of a problem receiving an HTML file instead of a 7zip file, the found HTML title from the file will be displayed
+- fixed wrong resolution, in case of alternate image "image_not_found.png"

@@ -229,11 +229,11 @@ class mainConfigScreen(Screen, ConfigListScreen):
         
         self['previewImage'] = Pixmap()
         
-        self['u'] = Pixmap()
-        self['d'] = Pixmap()
-        self['l'] = Pixmap()
-        self['r'] = Pixmap()
-        self['o'] = Pixmap()
+        self['u'] = Pixmap()        # icon: up
+        self['d'] = Pixmap()        # icon: down
+        self['l'] = Pixmap()        # icon: left
+        self['r'] = Pixmap()        # icon: right
+        self['o'] = Pixmap()        # icon: OK
         
         self['txt_red']      = StaticText(_('Profile reset'))
         self['txt_green']    = StaticText(_('Exit'))
@@ -523,11 +523,15 @@ class mainConfigScreen(Screen, ConfigListScreen):
         self.session.open(TryQuitMainloop, 3)               # 0=Toggle Standby ; 1=Deep Standby ; 2=Reboot System ; 3=Restart Enigma ; 4=Wake Up ; 5=Enter Standby   ### FUNGUJE po vyvolani a uspesnom dokonceni aktualizacie PLUGINu   ### NEFUNGUJE pri zavolani z funkcie leaveSetupScreen(self) po aktualizacii picon lebo vyhodi chybu: RuntimeError: modal open are allowed only from a screen which is modal!
     
     def showPreviewImage(self):
-        self['previewImage'].instance.setPixmapFromFile(self.getPreviewImagePath())
+        image_path = self.getPreviewImagePath()
+        self['previewImage'].instance.setPixmapFromFile(image_path)
         self['previewImage'].instance.setScale(0)
         id = config.plugins.chocholousekpicons_id.getValue()
-        imgSize = config.plugins.chocholousekpicons[id].resolution.getValue().split("x")            # resolution of the preview image
-        imgWidth, imgHeight = int(imgSize[0]), int(imgSize[1])
+        if 'image_not_found' in image_path:
+            imgWidth, imgHeight = 500, 300
+        else:
+            imgSize = config.plugins.chocholousekpicons[id].resolution.getValue().split("x")            # resolution of the preview image
+            imgWidth, imgHeight = int(imgSize[0]), int(imgSize[1])
         mainScreenSize = self.instance.size()
         cfgScreenPosition = self['config'].getPosition()
         self['previewImage'].setPosition(  (mainScreenSize.width() - imgWidth) // 2  ,   mainScreenSize.height() - imgHeight - cfgScreenPosition[1]  )
@@ -1613,11 +1617,18 @@ class piconsUpdateJobScreen(Screen):
             return
         self.writeLog(_('...file download successful.'))
         
-        # 3. Kontrola stiahnutého súboru na jeho obsah - jedná sa o formát 7-zip alebo HTML ? Nieje to ERROR ?! A v prípade HTML súboru, je tam obsahnutý tiež oznam o chybe ?
+        # 3. Kontrola stiahnutého súboru na jeho obsah - jedná sa o formát 7-zip alebo HTML ? Nie je to ERROR ? A v prípade HTML súboru, je tam obsiahnutý tiež oznam o chybe ?
         if not self.fileHeader7z(dwn_file):
-            add_msg = ' %s %s' % (_('Possible cause:'), _('using a VPN as an internet gateway')) if self.checkVPNerror(dwn_file) else ''
+            with open(dwn_file, 'rb') as f:                         # using byte-code... because the contents of the file can still be in "bytes" format and not "string" format...
+                file_content = f.read().decode('utf-8')             # ...and then Python 3 may report an error... so, for both PY2 + PY3, we need use the byte-code format - due to compatibility in both
+            if 'possible_VPN_error' in file_content:
+                add_msg = ' %s %s' % ( _('Possible cause:'), _('using a VPN as an internet gateway') )
+            elif '<title>' in file_content:
+                add_msg = ' %s %s' % ( _(' HTML title found:'), file_content.split('<title>')[1].split('</title>')[0] )
+            else:
+                add_msg = ''
             self.writeLog(_('Error! The downloaded file is not in 7-zip format!') + add_msg)
-            return
+            return                                                  # leave the algorithm for processing the 7z archive file
         
         # 4. Načítanie zoznamu všetkých .png súborov z archívu, včetne ich atribútov (veľkostí súborov)
         #self.writeLog(_('Browse the contents of the downloaded archive file.'))
@@ -1678,14 +1689,6 @@ class piconsUpdateJobScreen(Screen):
         with open(zip_file, 'rb') as f:
             zip_header = f.read(4)
         if zip_header == b'7z\xbc\xaf':                                     # check the 7-zip file header (the first 4 bytes from file)
-            return True
-        else:
-            return False
-    
-    def checkVPNerror(self, html_file):
-        with open(html_file, 'rb') as f:                                    # using byte-code... because the contents of the file can still be in "bytes" format and not "string" format...
-            file_content = f.read()                                         # ...and then Python 3 may report an error
-        if 'possible_VPN_error'.encode() in file_content:                   # searching for a string, but after "converting" it into a byte-code form
             return True
         else:
             return False
