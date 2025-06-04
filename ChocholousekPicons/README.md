@@ -18,6 +18,8 @@
 
 * The plugin works on Enigma2 distributions based on both Python 2 and Python 3.
 
+* The author of the picons is [Chocholousek](https://www.linuxsat-support.com/cms/user/25586-chocholousek/). The online data server for picons is provided by the company [Ellano.sk](https://ellano.sk/) and the web domain with picons is [Picon.cz](https://picon.cz/).
+
 ## **How to un/install plugin (via Shell)**
 
 ### **Online shell-script setup (automatic .ipk / .deb package detection):**
