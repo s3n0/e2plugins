@@ -1,5 +1,11 @@
 ## **Chocholousek Picons - Enigma2 plugin**
 
+* __!!! Statement: !!!__
+
+   * Chocholousek as the author of the picon has stopped communicating. I personally have no contact with him anymore. I don't know what happened to him. Chocholousek as the author of the picon stopped updating his picons on the storage server sometime around 2024/09 to 2024/10. In 2026/01, some picon update appeared, but it was very imperfect and sloppy. It looked as if the 2026/01 update was not even created by Chocholousek himself, who was a really precise person.
+
+   * The plugin is functional, but the picons on the servers have been out of date for about 2 years. Anyone who wants to can continue to use the plugin. However, the picon storage server has not been updated for 2 years. So that means that it only contains outdated picons.
+
 * Plugin was developed for downloading + updating Chocholousek's picons in Enigma2 set-top box
 
 * The original intent for developing this plugin was to save free space on the device's internal disk. The plugin downloads a series of file archives (7-zip) with picons, for user-selected satellite positions. From the archives, the plugin unpacks only the necessary picons to the internal disk (depending on the service reference codes found in the "userboquet" files).
